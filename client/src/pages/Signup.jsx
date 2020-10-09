@@ -4,39 +4,12 @@ import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    justifyContent: 'center',
-  },
-  title: {
-    fontWeight: 600,
-  },
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    padding: '4rem 0',
-    borderRadius: '5px',
-  },
-  form: {
-    width: '75%', // Fix IE 11 issue.
-    marginTop: theme.spacing(8),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-    background: 'linear-gradient(90deg, #2AA897, #4FBE75)',
-    height: '3rem',
-    fontWeight: 600,
-  },
-}));
+import formStyles from '../themes/formStyles';
 
 const SignupPage = () => {
-  const classes = useStyles();
+  const classes = formStyles();
 
   return (
     <Container component="main" maxWidth="sm">
