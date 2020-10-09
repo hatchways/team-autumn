@@ -6,6 +6,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 
+import { Link } from 'react-router-dom';
 import formStyles from '../themes/formStyles';
 
 const LoginPage = () => {
@@ -22,26 +23,32 @@ const LoginPage = () => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  variant="outlined"
-                  required
                   fullWidth
+                  required
+                  autoFocus
+                  variant="outlined"
                   id="email"
-                  label="Your email"
                   name="email"
+                  label="Your email"
                   autoComplete="email"
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  variant="outlined"
-                  required
                   fullWidth
+                  required
+                  variant="outlined"
+                  id="password"
                   name="password"
                   label="Password"
                   type="password"
-                  id="password"
                   autoComplete="current-password"
                 />
+              </Grid>
+              <Grid item xs={12} className={classes.linkText}>
+                <Typography component={Link} to="/signup">
+                  Need an account?
+                </Typography>
               </Grid>
             </Grid>
             <Grid item container xs={12}>

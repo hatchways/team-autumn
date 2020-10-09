@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import { Link } from 'react-router-dom';
 
 import formStyles from '../themes/formStyles';
 
@@ -22,38 +23,43 @@ const SignupPage = () => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  variant="outlined"
-                  required
                   fullWidth
+                  required
+                  autoFocus
+                  variant="outlined"
                   id="email"
-                  label="Your email"
                   name="email"
+                  label="Your email"
                   autoComplete="email"
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  autoComplete="name"
-                  name="name"
-                  variant="outlined"
-                  required
                   fullWidth
+                  required
+                  variant="outlined"
                   id="name"
+                  name="name"
                   label="Name"
-                  autoFocus
+                  autoComplete="name"
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  variant="outlined"
-                  required
                   fullWidth
+                  required
+                  variant="outlined"
+                  id="password"
                   name="password"
                   label="Password"
                   type="password"
-                  id="password"
                   autoComplete="current-password"
                 />
+              </Grid>
+              <Grid item xs={12} className={classes.linkText}>
+                <Typography component={Link} to="/login">
+                  Already have an account?
+                </Typography>
               </Grid>
             </Grid>
             <Grid item container xs={12}>

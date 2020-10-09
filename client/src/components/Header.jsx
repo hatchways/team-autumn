@@ -42,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
 
 const Header = () => {
   const classes = useStyles();
-  console.log(window.location.pathname);
 
   return (
     <AppBar className={classes.root} position="static">
@@ -60,7 +59,7 @@ const Header = () => {
           variant="outlined"
           className={classes.loginButton}
           component={Link}
-          to="/signup"
+          to="/login"
         >
           Login
         </Button>

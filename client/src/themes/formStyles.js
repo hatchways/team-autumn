@@ -26,6 +26,10 @@ const formStyles = makeStyles((theme) => ({
     height: '3rem',
     fontWeight: 600,
     textTransform: 'none',
+    borderRadius: '5px',
+  },
+  linkText: {
+    textAlign: 'right',
   },
 }));
 
