@@ -3,7 +3,7 @@ import { createMuiTheme } from '@material-ui/core';
 
 export const theme = createMuiTheme({
   typography: {
-    fontFamily: '"Roboto"',
+    fontFamily: '"Open Sans", sans-serif',
   },
   primary: '#f04040',
   secondary: '#1f1f1f',

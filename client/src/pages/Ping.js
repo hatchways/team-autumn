@@ -5,9 +5,11 @@ import React, { useState, useEffect } from "react";
 function Ping(props) {
   const [result, setResult] = useState("");
   const [answer, setAnswer] = useState("");
+  const {incrementStep} = props;
+
   useEffect(() => {
-    props.incrementStep();
-  }, []);
+    incrementStep();
+  }, [incrementStep]);
 
   const submitAnswer = () => {
     console.log("run");
