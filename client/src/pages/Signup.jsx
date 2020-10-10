@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
@@ -8,9 +8,16 @@ import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
 
 import formStyles from '../themes/formStyles';
+import UserContext from '../components/UserContext';
 
 const SignupPage = () => {
   const classes = formStyles();
+  const [isSignedIn, setIsSignedIn] = useContext(UserContext);
+
+  const onFormSubmit = (e) => {
+    e.preventDefault();
+    setIsSignedIn(true);
+  };
 
   return (
     <Container component="main" maxWidth="sm">
@@ -19,7 +26,11 @@ const SignupPage = () => {
           <Typography className={classes.title} component="h2" variant="h4">
             Create an account
           </Typography>
-          <form className={classes.form} noValidate>
+          <form
+            className={classes.form}
+            noValidate
+            onSubmit={(e) => onFormSubmit(e)}
+          >
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField

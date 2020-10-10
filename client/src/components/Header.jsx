@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -7,6 +7,8 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { Link } from 'react-router-dom';
+
+import UserContext from './UserContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Header = () => {
+  const [isSignedIn, setIsSignedIn] = useContext(UserContext);
   const classes = useStyles();
 
   return (
@@ -52,20 +55,39 @@ const Header = () => {
             <span className={classes.logoSecond}>sender</span>
           </Link>
         </Typography>
-        <Typography className={classes.message}>
-          <strong>Alreaady have an account?</strong>
-        </Typography>
-        <Button
-          variant="outlined"
-          className={classes.loginButton}
-          component={Link}
-          to="/login"
-        >
-          Login
-        </Button>
+        {isSignedIn ? (
+          <Button
+            variant="outlined"
+            to="/logout"
+            className={classes.loginButton}
+            component={Link}
+          >
+            Logout
+          </Button>
+        ) : (
+          <>
+            <Typography className={classes.message}>
+              <strong>Already have an account?</strong>
+            </Typography>
+            <Button
+              variant="outlined"
+              className={classes.loginButton}
+              component={Link}
+              to="/login"
+            >
+              Login
+            </Button>
+          </>
+        )}
       </Toolbar>
     </AppBar>
   );
 };
 
 export default Header;
+
+// (
+
+//             ) : (
+
+//             )
