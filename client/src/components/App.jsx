@@ -11,10 +11,10 @@ import Header from './Header';
 import UserContext from './UserContext';
 
 function App() {
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [user, setUser] = useState({});
   return (
     <MuiThemeProvider theme={theme}>
-      <UserContext.Provider value={[isSignedIn, setIsSignedIn]}>
+      <UserContext.Provider value={[user, setUser]}>
         <BrowserRouter>
           <Header />
           <Switch>

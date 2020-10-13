@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 
-const UserContext = React.createContext(false);
+const UserContext = React.createContext();
 
 export const UserProvider = ({ children }) => {
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  return (
-    <UserContext.Provider value={[isSignedIn, setIsSignedIn]}>
-      {children}
-    </UserContext.Provider>
-  );
+  const [user, setUser] = useState({});
+  return <UserContext.Provider value={[user, setUser]}>{children}</UserContext.Provider>;
 };
 
 export default UserContext;

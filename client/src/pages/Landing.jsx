@@ -52,19 +52,11 @@ class LandingPage extends Component {
             <Link to="/ping">Step 2: Click here </Link>
             <Route
               path="/ping"
-              render={(props) => (
-                <Ping
-                  {...props}
-                  incrementStep={this.incrementStep}
-                  step={step}
-                />
-              )}
+              render={(props) => <Ping {...props} incrementStep={this.incrementStep} step={step} />}
             />
           </>
         )}
-        {step >= 3 && (
-          <Typography>All done! Now go make a pull request!</Typography>
-        )}
+        {step >= 3 && <Typography>All done! Now go make a pull request!</Typography>}
       </div>
     );
   }

@@ -1,11 +1,5 @@
 import React, { useContext } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { AppBar, Toolbar, Button, Typography, makeStyles } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 
 import UserContext from './UserContext';
@@ -43,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Header = () => {
-  const [isSignedIn] = useContext(UserContext);
+  const [user] = useContext(UserContext);
   const classes = useStyles();
 
   return (
@@ -55,13 +49,8 @@ const Header = () => {
             <span className={classes.logoSecond}>sender</span>
           </Link>
         </Typography>
-        {isSignedIn ? (
-          <Button
-            variant="outlined"
-            to="/logout"
-            className={classes.loginButton}
-            component={Link}
-          >
+        {user ? (
+          <Button variant="outlined" to="/logout" className={classes.loginButton} component={Link}>
             Logout
           </Button>
         ) : (
@@ -69,12 +58,7 @@ const Header = () => {
             <Typography className={classes.message}>
               <strong>Already have an account?</strong>
             </Typography>
-            <Button
-              variant="outlined"
-              className={classes.loginButton}
-              component={Link}
-              to="/login"
-            >
+            <Button variant="outlined" className={classes.loginButton} component={Link} to="/login">
               Login
             </Button>
           </>

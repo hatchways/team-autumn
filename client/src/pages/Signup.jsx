@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
@@ -8,15 +8,19 @@ import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
 
 import formStyles from '../themes/formStyles';
-import UserContext from '../components/UserContext';
+import useForm from '../hooks/useForm';
 
 const SignupPage = () => {
   const classes = formStyles();
-  const [setIsSignedIn] = useContext(UserContext);
+  const { values, updateValue, submitForm, validateFormField, errors } = useForm({
+    firstName: '',
+    lastName: '',
+    email: '',
+  });
 
   const onFormSubmit = (e) => {
     e.preventDefault();
-    setIsSignedIn(true);
+    submitForm(e);
   };
 
   return (
@@ -26,11 +30,7 @@ const SignupPage = () => {
           <Typography className={classes.title} component="h2" variant="h4">
             Create an account
           </Typography>
-          <form
-            className={classes.form}
-            noValidate
-            onSubmit={(e) => onFormSubmit(e)}
-          >
+          <form className={classes.form} noValidate onSubmit={(e) => onFormSubmit(e)}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -38,32 +38,39 @@ const SignupPage = () => {
                   required
                   autoFocus
                   variant="outlined"
+                  id="firstName"
+                  name="firstName"
+                  label="First Name"
+                  autoComplete="firstName"
+                  value={values.firstName}
+                  onChange={updateValue}
+                  onBlur={validateFormField}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  required
+                  variant="outlined"
+                  id="lastName"
+                  name="lastName"
+                  label="Last Name"
+                  autoComplete="lastName"
+                  value={values.lastName}
+                  onChange={updateValue}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  required
+                  variant="outlined"
                   id="email"
                   name="email"
-                  label="Your email"
+                  label="Email Address"
                   autoComplete="email"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  required
-                  variant="outlined"
-                  id="first-name"
-                  name="first-name"
-                  label="First Name"
-                  autoComplete="first-name"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  required
-                  variant="outlined"
-                  id="last-name"
-                  name="last-name"
-                  label="Last Name"
-                  autoComplete="last-name"
+                  value={values.email}
+                  onChange={updateValue}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -75,6 +82,8 @@ const SignupPage = () => {
                   name="password"
                   label="Password"
                   type="password"
+                  value={values.password}
+                  onChange={updateValue}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -82,10 +91,12 @@ const SignupPage = () => {
                   fullWidth
                   required
                   variant="outlined"
-                  id="confirm-password"
-                  name="confirm-password"
+                  id="confirmPassword"
+                  name="confirmPassword"
                   label="Confirm Password"
                   type="password"
+                  value={values.confirmPassword}
+                  onChange={updateValue}
                 />
               </Grid>
               <Grid item xs={12} className={classes.linkText}>
