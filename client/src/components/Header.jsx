@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Header = () => {
-  const [isSignedIn, setIsSignedIn] = useContext(UserContext);
+  const [isSignedIn] = useContext(UserContext);
   const classes = useStyles();
 
   return (

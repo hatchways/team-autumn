@@ -12,7 +12,7 @@ import UserContext from '../components/UserContext';
 
 const SignupPage = () => {
   const classes = formStyles();
-  const [isSignedIn, setIsSignedIn] = useContext(UserContext);
+  const [setIsSignedIn] = useContext(UserContext);
 
   const onFormSubmit = (e) => {
     e.preventDefault();
@@ -49,10 +49,21 @@ const SignupPage = () => {
                   fullWidth
                   required
                   variant="outlined"
-                  id="name"
-                  name="name"
-                  label="Name"
-                  autoComplete="name"
+                  id="first-name"
+                  name="first-name"
+                  label="First Name"
+                  autoComplete="first-name"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  required
+                  variant="outlined"
+                  id="last-name"
+                  name="last-name"
+                  label="Last Name"
+                  autoComplete="last-name"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -64,7 +75,17 @@ const SignupPage = () => {
                   name="password"
                   label="Password"
                   type="password"
-                  autoComplete="current-password"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  required
+                  variant="outlined"
+                  id="confirm-password"
+                  name="confirm-password"
+                  label="Confirm Password"
+                  type="password"
                 />
               </Grid>
               <Grid item xs={12} className={classes.linkText}>

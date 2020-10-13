@@ -16,7 +16,7 @@ const LoginPage = () => {
   const { values, updateValue } = useForm({
     email: '',
   });
-  const [isSignedIn, setIsSignedIn] = useContext(UserContext);
+  const [setIsSignedIn] = useContext(UserContext);
 
   const onFormSubmit = (e) => {
     e.preventDefault();
