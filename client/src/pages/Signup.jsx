@@ -35,7 +35,7 @@ const SignupPage = () => {
                   autoFocus
                   color="primary"
                   error={!!errors.firstName}
-                  helperText="First Name is required"
+                  helperText={errors.firstName?.message}
                   variant="outlined"
                   id="firstName"
                   name="firstName"
