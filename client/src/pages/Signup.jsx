@@ -6,21 +6,17 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 
 import formStyles from '../themes/formStyles';
-import useForm from '../hooks/useForm';
 
 const SignupPage = () => {
   const classes = formStyles();
-  const { values, updateValue, submitForm, validateFormField, errors } = useForm({
-    firstName: '',
-    lastName: '',
-    email: '',
-  });
 
-  const onFormSubmit = (e) => {
-    e.preventDefault();
-    submitForm(e);
+  const { register, errors, handleSubmit, watch } = useForm({ mode: 'onBlur' });
+
+  const onFormSubmit = (data) => {
+    alert(JSON.stringify(data));
   };
 
   return (
@@ -30,73 +26,108 @@ const SignupPage = () => {
           <Typography className={classes.title} component="h2" variant="h4">
             Create an account
           </Typography>
-          <form className={classes.form} noValidate onSubmit={(e) => onFormSubmit(e)}>
+          <form className={classes.form} onSubmit={handleSubmit((data) => onFormSubmit(data))}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
                   required
                   autoFocus
+                  error={!!errors.firstName}
+                  helperText="First Name is required"
                   variant="outlined"
                   id="firstName"
                   name="firstName"
                   label="First Name"
                   autoComplete="firstName"
-                  value={values.firstName}
-                  onChange={updateValue}
-                  onBlur={validateFormField}
+                  inputRef={register({
+                    required: 'First name is required',
+                    minLength: {
+                      value: 2,
+                      message: 'First name must be at least two characters long',
+                    },
+                    pattern: {
+                      value: /^[A-Za-z]+$/i,
+                      message: 'Only letters allowed in first name',
+                    },
+                  })}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
                   required
+                  error={!!errors.lastName}
+                  helperText={errors.lastName?.message}
                   variant="outlined"
                   id="lastName"
                   name="lastName"
                   label="Last Name"
                   autoComplete="lastName"
-                  value={values.lastName}
-                  onChange={updateValue}
+                  inputRef={register({
+                    required: 'Last name is required',
+                    minLength: {
+                      value: 2,
+                      message: 'Last name must be at least two characters long',
+                    },
+                    pattern: {
+                      value: /^[A-Za-z]+$/i,
+                      message: 'Only letters allowed in last name',
+                    },
+                  })}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
                   required
+                  error={!!errors.email}
+                  helperText={errors.email?.message}
                   variant="outlined"
                   id="email"
                   name="email"
                   label="Email Address"
                   autoComplete="email"
-                  value={values.email}
-                  onChange={updateValue}
+                  inputRef={register({
+                    required: 'Email address is required',
+                    pattern: {
+                      value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+                      message: 'Valid email format: xxxx@yyy.zzz',
+                    },
+                  })}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
                   required
+                  error={!!errors.password}
+                  helperText={errors.password?.message}
                   variant="outlined"
                   id="password"
                   name="password"
                   label="Password"
                   type="password"
-                  value={values.password}
-                  onChange={updateValue}
+                  inputRef={register({
+                    required: 'Password is required',
+                    minLength: { value: 6, message: 'Password must be at least six characters' },
+                  })}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
                   required
+                  error={!!errors.confirmPassword}
+                  helperText={errors.confirmPassword?.message}
                   variant="outlined"
                   id="confirmPassword"
                   name="confirmPassword"
                   label="Confirm Password"
                   type="password"
-                  value={values.confirmPassword}
-                  onChange={updateValue}
+                  inputRef={register({
+                    validate: (val) => val === watch('password') || 'Passwords must match',
+                  })}
                 />
               </Grid>
               <Grid item xs={12} className={classes.linkText}>
@@ -113,7 +144,7 @@ const SignupPage = () => {
                   variant="contained"
                   fullWidth
                   color="primary"
-                  className={classes.submit}
+                  className={classes.action}
                 >
                   Create
                 </Button>

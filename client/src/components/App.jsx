@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { MuiThemeProvider } from '@material-ui/core';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import './App.css';
 import { theme } from '../themes/theme';
-import LandingPage from '../pages/Landing';
 import SignupPage from '../pages/Signup';
 import LoginPage from '../pages/Login';
 import Header from './Header';
@@ -18,7 +17,10 @@ function App() {
         <BrowserRouter>
           <Header />
           <Switch>
-            <Route exact path="/" component={LandingPage} />
+            <Route exact path="/">
+              {/* {Modify this when the dashboard is available} */}
+              <Redirect to="/signup" />
+            </Route>
             <Route path="/signup" component={SignupPage} />
             <Route path="/login" component={LoginPage} />
           </Switch>

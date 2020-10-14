@@ -20,7 +20,7 @@ const formStyles = makeStyles((theme) => ({
     width: '75%', // Fix IE 11 issue.
     marginTop: theme.spacing(8),
   },
-  submit: {
+  action: {
     margin: theme.spacing(3, 0, 2),
     background: 'linear-gradient(90deg, #2AA897, #4FBE75)',
     height: '3rem',
