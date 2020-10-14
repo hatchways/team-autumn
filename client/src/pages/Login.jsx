@@ -8,7 +8,7 @@ import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
-import formStyles from '../themes/formStyles';
+import formStyles from '../assets/styles/formStyles';
 // import UserContext from '../components/UserContext';
 
 const LoginPage = () => {
