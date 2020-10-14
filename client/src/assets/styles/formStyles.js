@@ -22,7 +22,7 @@ const formStyles = makeStyles((theme) => ({
   },
   action: {
     margin: theme.spacing(3, 0, 2),
-    background: 'linear-gradient(90deg, #2AA897, #4FBE75)',
+    background: `linear-gradient(90deg, ${theme.palette.primary.main} , ${theme.palette.secondary.main})`,
     height: '3rem',
     fontWeight: 600,
     textTransform: 'none',
