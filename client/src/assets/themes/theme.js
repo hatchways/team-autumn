@@ -5,8 +5,19 @@ export const theme = createMuiTheme({
   typography: {
     fontFamily: '"Open Sans", sans-serif',
   },
-  primary: '#f04040',
-  secondary: '#1f1f1f',
-  error: '#d8000c',
-  bgcolor: '#f6f6f6',
+  palette: {
+    primary: {
+      main: '#2AA897',
+    },
+    secondary: {
+      main: '#4FBE75',
+    },
+    error: {
+      main: '#d8000c',
+    },
+    background: {
+      paper: '#fff',
+      default: '#f6f6f6',
+    },
+  },
 });

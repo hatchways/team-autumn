@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { MuiThemeProvider } from '@material-ui/core';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
-import './App.css';
 import { theme } from '../assets/themes/theme';
 import SignupPage from '../pages/Signup';
 import LoginPage from '../pages/Login';

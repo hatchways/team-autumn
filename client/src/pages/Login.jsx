@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
 import formStyles from '../assets/styles/formStyles';
-// import UserContext from '../components/UserContext';
 
 const LoginPage = () => {
   const classes = formStyles();

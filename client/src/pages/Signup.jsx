@@ -33,6 +33,7 @@ const SignupPage = () => {
                   fullWidth
                   required
                   autoFocus
+                  color="primary"
                   error={!!errors.firstName}
                   helperText="First Name is required"
                   variant="outlined"
@@ -57,6 +58,7 @@ const SignupPage = () => {
                 <TextField
                   fullWidth
                   required
+                  color="primary"
                   error={!!errors.lastName}
                   helperText={errors.lastName?.message}
                   variant="outlined"
@@ -81,6 +83,7 @@ const SignupPage = () => {
                 <TextField
                   fullWidth
                   required
+                  color="primary"
                   error={!!errors.email}
                   helperText={errors.email?.message}
                   variant="outlined"
@@ -101,6 +104,7 @@ const SignupPage = () => {
                 <TextField
                   fullWidth
                   required
+                  color="primary"
                   error={!!errors.password}
                   helperText={errors.password?.message}
                   variant="outlined"
@@ -118,6 +122,7 @@ const SignupPage = () => {
                 <TextField
                   fullWidth
                   required
+                  color="primary"
                   error={!!errors.confirmPassword}
                   helperText={errors.confirmPassword?.message}
                   variant="outlined"
@@ -136,8 +141,7 @@ const SignupPage = () => {
                 </Typography>
               </Grid>
             </Grid>
-            <Grid item container xs={12}>
-              <Grid item xs={4} />
+            <Grid item container className={classes.centered} xs={12}>
               <Grid item xs={4}>
                 <Button
                   type="submit"
@@ -149,7 +153,6 @@ const SignupPage = () => {
                   Create
                 </Button>
               </Grid>
-              <Grid item xs={4} />
             </Grid>
           </form>
         </div>

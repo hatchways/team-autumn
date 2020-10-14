@@ -28,6 +28,9 @@ const formStyles = makeStyles((theme) => ({
     textTransform: 'none',
     borderRadius: '5px',
   },
+  centered: {
+    justifyContent: 'center',
+  },
   linkText: {
     textAlign: 'right',
   },
