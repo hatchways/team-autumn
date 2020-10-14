@@ -5,17 +5,19 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-
 import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+
 import formStyles from '../themes/formStyles';
 // import UserContext from '../components/UserContext';
 
 const LoginPage = () => {
   const classes = formStyles();
 
-  const onFormSubmit = (e) => {
-    e.preventDefault();
-    // setIsSignedIn(true);
+  const { register, errors, handleSubmit } = useForm();
+
+  const onFormSubmit = (data) => {
+    alert(JSON.stringify(data));
   };
 
   return (
@@ -25,7 +27,7 @@ const LoginPage = () => {
           <Typography className={classes.title} component="h2" variant="h4">
             Login to your account
           </Typography>
-          <form className={classes.form} onSubmit={onFormSubmit}>
+          <form className={classes.form} onSubmit={handleSubmit((data) => onFormSubmit(data))}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -37,6 +39,7 @@ const LoginPage = () => {
                   name="email"
                   label="Your email"
                   autoComplete="email"
+                  inputRef={register}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -49,6 +52,7 @@ const LoginPage = () => {
                   label="Password"
                   type="password"
                   autoComplete="current-password"
+                  inputRef={register}
                 />
               </Grid>
               <Grid item xs={12} className={classes.linkText}>
