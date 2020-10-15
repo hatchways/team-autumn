@@ -21,6 +21,7 @@ const SignupPage = () => {
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
+      profilePicture: 'https://unsplash.com/photos/ILip77SbmOE',
     });
   };
 

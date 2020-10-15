@@ -1,8 +1,19 @@
-import React, { useContext } from 'react';
-import { AppBar, Toolbar, Button, Typography, makeStyles } from '@material-ui/core';
+import React, { useState, useContext } from 'react';
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Typography,
+  makeStyles,
+  Avatar,
+  Menu,
+  MenuItem,
+} from '@material-ui/core';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { Link, useLocation } from 'react-router-dom';
 
 import UserContext from './UserContext';
+import portrait from '../assets/images/portrait.png';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,6 +45,13 @@ const useStyles = makeStyles((theme) => ({
     width: '7.5rem',
     height: '2.5rem',
   },
+  profileButton: {
+    textTransform: 'none',
+    marginRight: theme.spacing(2),
+  },
+  dropdownIcon: {
+    color: '#9e9e9e',
+  },
 }));
 
 const Login = () => {
@@ -64,7 +82,57 @@ const Signup = () => {
   );
 };
 
-const Avatar = () => <p>Avatar goes here</p>;
+const Profile = () => {
+  const classes = useStyles();
+  const [user] = useContext(UserContext);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const renderAvatar = () =>
+    user.profilePicture ? (
+      <Avatar alt={`${user.firstName} ${user.lastName}`} src={portrait} />
+    ) : (
+      <Avatar>{`${user.firstName[0]}${user.lastName[0]}`}</Avatar>
+    );
+  // Todo: Fix positioning of profile menu
+  return (
+    <>
+      {renderAvatar()}
+      <Button
+        className={classes.profileButton}
+        endIcon={<ArrowDropDownIcon className={classes.dropdownIcon} />}
+        onClick={handleClick}
+      >
+        {`${user.firstName} ${user.lastName}`}
+      </Button>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        keepMounted
+        open={!!anchorEl}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem onClick={handleClose}>Logout</MenuItem>
+      </Menu>
+    </>
+  );
+};
 
 const Header = () => {
   const location = useLocation();
@@ -84,7 +152,7 @@ const Header = () => {
         </Typography>
         {!userPresent && location.pathname.includes('signup') && <Login />}
         {!userPresent && location.pathname.includes('login') && <Signup />}
-        {userPresent && <Avatar />}
+        {userPresent && <Profile />}
       </Toolbar>
     </AppBar>
   );
