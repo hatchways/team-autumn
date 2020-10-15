@@ -22,16 +22,23 @@ const LinkTab = (props) => {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
+    flexGrow: 0.2,
     backgroundColor: theme.palette.background.paper,
+    minHeight: 64,
   },
   tabLink: {
     textTransform: 'none',
-    borderColor: theme.palette.secondary.main,
-    fontWeight: 600,
+    fontWeight: 700,
     '&[aria-selected="true"] > span': {
       color: theme.palette.secondary.main,
     },
+    paddingTop: 16,
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
+  topIndicator: {
+    top: 0,
+    height: 4,
   },
 }));
 
@@ -44,13 +51,19 @@ const TabNav = ({ tabs }) => {
   };
 
   return (
-    <Tabs className={classes.root} value={value} onChange={handleChange} aria-label="main-nav-tabs">
+    <Tabs
+      className={classes.root}
+      classes={{ indicator: classes.topIndicator }}
+      value={value}
+      onChange={handleChange}
+      aria-label="main-nav-tabs"
+    >
       {tabs.map((tab) => (
         <LinkTab
           className={classes.tabLink}
           label={tab.label}
           to={tab.to}
-          id={`nav-tab-${tab.id}`}
+          id={tab.id}
           key={tab.id}
         />
       ))}

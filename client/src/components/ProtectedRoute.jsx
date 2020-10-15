@@ -4,7 +4,7 @@ import { Route, Redirect } from 'react-router-dom';
 import UserContext from './UserContext';
 
 const PrivateRoute = ({ component, ...rest }) => {
-  const [user, setUser] = useContext(UserContext);
+  const [user] = useContext(UserContext);
   if (user) {
     return <Route {...rest} component={component} />;
   }
@@ -12,5 +12,3 @@ const PrivateRoute = ({ component, ...rest }) => {
 };
 
 export default PrivateRoute;
-
-// render={(props) => (user ? <Component {...props} /> : <Redirect to="/signup" />)}
