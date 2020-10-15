@@ -34,7 +34,7 @@ def register_entry():
     err, user_json_str = validate_json_input(request.get_json(), user_schema)
     if err:
         print(err)
-        return fail_response(error_code.EMPTY_REQUIRED_FILED), 400
+        return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
     user_json = json.loads(user_json_str)
     if user_json["password"] != user_json["confirm_password"]:
         return fail_response(error_code.PASSWORD_MISMATCH)

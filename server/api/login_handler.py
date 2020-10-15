@@ -23,15 +23,14 @@ register_handler = Blueprint('login_handler', __name__)
 
 def login(first_login=False):
     """
-
+    TODO
     """
     err, user_json_str = validate_json_input(request.get_json(), login_schema)
     if err:
-        print(err)
-        return fail_response(error_code.EMPTY_REQUIRED_FILED), 400
+        # TODO: log
+        return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
     user_json = json.loads(user_json_str)
     user_in_db = User.get_by_email(user_json["email"])
-    print(user_in_db)
     if not user_in_db:
         return fail_response(error_code.USER_NOT_EXIST), 400
     user_in_db = user_in_db[0]
@@ -44,5 +43,4 @@ def login(first_login=False):
     refresh_token = create_refresh_token(ret_user)
     ret_user["access_token"] = access_token
     ret_user["refresh_token"] = refresh_token
-    print(ret_user)
     return success_response(user_info=ret_user), 200
