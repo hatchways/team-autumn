@@ -28,7 +28,7 @@ def fail_response(ecode):
 
 
 def success_response(**kwargs):
-    ret = {"status": True}
+    ret = {"status": True, "error_code": 0}
     if kwargs:
         ret.update(kwargs)
     return jsonify(ret)
