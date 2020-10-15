@@ -10,7 +10,7 @@ from api.login_handler import login
 register_handler = Blueprint('register_handler', __name__)
 
 user_schema = {
-    # "type": "object",
+    "type": "object",
     "properties": {
         "first_name": get_schema(),
         "last_name": get_schema(),
@@ -31,11 +31,9 @@ def register_entry():
     """
     if not request.is_json:
         return fail_response(error_code.MIME_NOT_JSON), 400
-    err, user_json_str = validate_json_input(request.get_json(), user_schema)
+    err, user_json = validate_json_input(request.get_json(), user_schema)
     if err:
-        print(err)
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
-    user_json = json.loads(user_json_str)
     if user_json["password"] != user_json["confirm_password"]:
         return fail_response(error_code.PASSWORD_MISMATCH)
 
@@ -47,6 +45,7 @@ def register_entry():
 
     # ADD TO db
     salted_password = bcrypt.generate_password_hash(user_json["password"]).decode()
+    user_json = user_json.copy()
     del user_json["password"]
     del user_json["confirm_password"]
     User(**user_json, salted_password=salted_password).save()
