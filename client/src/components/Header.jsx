@@ -14,10 +14,11 @@ import { Link, useLocation } from 'react-router-dom';
 
 import UserContext from './UserContext';
 import portrait from '../assets/images/portrait.png';
+import TabNav from './TabNav';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    background: 'white',
+    background: theme.palette.background.paper,
     color: 'black',
     flexGrow: 1,
   },
@@ -52,6 +53,11 @@ const useStyles = makeStyles((theme) => ({
   dropdownIcon: {
     color: '#9e9e9e',
   },
+  tabLink: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 }));
 
 const Login = () => {
@@ -82,10 +88,11 @@ const Signup = () => {
   );
 };
 
-const Profile = () => {
+const LoggedInNav = () => {
+  const [anchorEl, setAnchorEl] = useState(null);
+
   const classes = useStyles();
   const [user] = useContext(UserContext);
-  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -104,6 +111,7 @@ const Profile = () => {
   // Todo: Fix positioning of profile menu
   return (
     <>
+      <TabNav />
       {renderAvatar()}
       <Button
         className={classes.profileButton}
@@ -135,26 +143,31 @@ const Profile = () => {
 };
 
 const Header = () => {
-  const location = useLocation();
   const [user] = useContext(UserContext);
+  const location = useLocation();
+
   const classes = useStyles();
 
-  const userPresent = Object.keys(user).length > 0;
-
   return (
-    <AppBar className={classes.root} position="fixed">
-      <Toolbar>
-        <Typography variant="h1" className={classes.logo}>
-          <Link to="/" className={classes.link}>
-            <span>mail</span>
-            <span className={classes.logoSecond}>sender</span>
-          </Link>
-        </Typography>
-        {!userPresent && location.pathname.includes('signup') && <Login />}
-        {!userPresent && location.pathname.includes('login') && <Signup />}
-        {userPresent && <Profile />}
-      </Toolbar>
-    </AppBar>
+    <>
+      <AppBar className={classes.root} position="fixed">
+        <Toolbar>
+          <Typography variant="h1" className={classes.logo}>
+            <Link to="/" className={classes.link}>
+              <span>mail</span>
+              <span className={classes.logoSecond}>sender</span>
+            </Link>
+          </Typography>
+          {!user && location.pathname.includes('signup') && <Login />}
+          {!user && location.pathname.includes('login') && <Signup />}
+          {user && (
+            <>
+              <LoggedInNav />
+            </>
+          )}
+        </Toolbar>
+      </AppBar>
+    </>
   );
 };
 

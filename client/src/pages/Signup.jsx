@@ -6,6 +6,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { useForm } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 
 import formStyles from '../assets/styles/formStyles';
 import UserContext from '../components/UserContext';
@@ -13,6 +14,7 @@ import UserContext from '../components/UserContext';
 const SignupPage = () => {
   const classes = formStyles();
   const [user, setUser] = useContext(UserContext);
+  const history = useHistory();
 
   const { register, errors, handleSubmit, watch } = useForm({ mode: 'onBlur' });
 
@@ -23,6 +25,7 @@ const SignupPage = () => {
       email: data.email,
       profilePicture: 'https://unsplash.com/photos/ILip77SbmOE',
     });
+    history.push('/campaigns');
   };
 
   return (
