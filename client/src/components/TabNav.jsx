@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TabNav = () => {
+const TabNav = ({ tabs }) => {
   const classes = useStyles();
   const [value, setValue] = useState(0);
 
@@ -44,31 +44,16 @@ const TabNav = () => {
   };
 
   return (
-    <Tabs className={classes.root} value={value} onChange={handleChange} aria-label="nav-tabs">
-      <LinkTab
-        className={classes.tabLink}
-        label="Campaigns"
-        to="/campaigns"
-        id="nav-tab-campaigns"
-      />
-      <LinkTab
-        className={classes.tabLink}
-        label="Prospects"
-        to="/prospects"
-        id="nav-tab-prospects"
-      />
-      <LinkTab
-        className={classes.tabLink}
-        label="Templates"
-        to="/templates"
-        id="nav-tab-templates"
-      />
-      <LinkTab
-        className={classes.tabLink}
-        label="Reporting"
-        to="/reporting"
-        id="nav-tab-reporting"
-      />
+    <Tabs className={classes.root} value={value} onChange={handleChange} aria-label="main-nav-tabs">
+      {tabs.map((tab) => (
+        <LinkTab
+          className={classes.tabLink}
+          label={tab.label}
+          to={tab.to}
+          id={`nav-tab-${tab.id}`}
+          key={tab.id}
+        />
+      ))}
     </Tabs>
   );
 };

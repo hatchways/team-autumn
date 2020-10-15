@@ -46,6 +46,9 @@ const useStyles = makeStyles((theme) => ({
     width: '7.5rem',
     height: '2.5rem',
   },
+  tabs: {
+    marginLeft: theme.spacing(-5),
+  },
   profileButton: {
     textTransform: 'none',
     marginRight: theme.spacing(2),
@@ -57,8 +60,33 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    textDecoration: 'none',
+    color: 'black',
   },
 }));
+
+const tabs = [
+  {
+    label: 'Campaigns',
+    to: '/campaigns',
+    id: 'nav-tab-campaigns',
+  },
+  {
+    label: 'Prospects',
+    to: '/prospects',
+    id: 'nav-tab-prospects',
+  },
+  {
+    label: 'Templates',
+    to: '/templates',
+    id: 'nav-tab-templates',
+  },
+  {
+    label: 'Reporting',
+    to: '/reporting',
+    id: 'nav-tab-reporting',
+  },
+];
 
 const Login = () => {
   const classes = useStyles();
@@ -111,7 +139,7 @@ const LoggedInNav = () => {
   // Todo: Fix positioning of profile menu
   return (
     <>
-      <TabNav />
+      <TabNav className={classes.tabs} tabs={tabs} />
       {renderAvatar()}
       <Button
         className={classes.profileButton}
@@ -135,8 +163,16 @@ const LoggedInNav = () => {
         open={!!anchorEl}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link className={classes.tabLink} to="/profile">
+            Profile
+          </Link>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link className={classes.tabLink} to="/logout">
+            Logout
+          </Link>
+        </MenuItem>
       </Menu>
     </>
   );
@@ -160,11 +196,7 @@ const Header = () => {
           </Typography>
           {!user && location.pathname.includes('signup') && <Login />}
           {!user && location.pathname.includes('login') && <Signup />}
-          {user && (
-            <>
-              <LoggedInNav />
-            </>
-          )}
+          {user && <LoggedInNav />}
         </Toolbar>
       </AppBar>
     </>

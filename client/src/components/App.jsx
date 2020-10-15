@@ -9,6 +9,8 @@ import CampaignsPage from '../pages/CampaignsPage';
 import ProspectsPage from '../pages/ProspectsPage';
 import TemplatesPage from '../pages/TemplatesPage';
 import ReportingPage from '../pages/ReportingPage';
+import ProfilePage from '../pages/ProfilePage';
+import Logout from '../pages/Logout';
 import ProtectedRoute from './ProtectedRoute';
 import Layout from './Layout';
 import UserContext from './UserContext';
@@ -26,6 +28,8 @@ function App() {
               <ProtectedRoute path="/prospects" component={ProspectsPage} />
               <ProtectedRoute path="/templates" component={TemplatesPage} />
               <ProtectedRoute path="/reporting" component={ReportingPage} />
+              <ProtectedRoute path="/profile" component={ProfilePage} />
+              <ProtectedRoute path="/logout" component={Logout} />
               <Route path="/signup" component={SignupPage} />
               <Route path="/login" component={LoginPage} />
             </Switch>
