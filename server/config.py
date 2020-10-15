@@ -1,3 +1,4 @@
 import os
 
-TEAM_NAME = os.environ['TEAM_NAME']
+TEAM_NAME = os.environ.get('TEAM_NAME', "TEAM_AUTUMN")
+
