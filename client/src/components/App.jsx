@@ -5,7 +5,7 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { theme } from '../assets/themes/theme';
 import SignupPage from '../pages/Signup';
 import LoginPage from '../pages/Login';
-import Header from './Header';
+import Layout from './Layout';
 import UserContext from './UserContext';
 
 function App() {
@@ -14,15 +14,16 @@ function App() {
     <MuiThemeProvider theme={theme}>
       <UserContext.Provider value={[user, setUser]}>
         <BrowserRouter>
-          <Header />
-          <Switch>
-            <Route exact path="/">
-              {/* {Modify this when the dashboard is available} */}
-              <Redirect to="/signup" />
-            </Route>
-            <Route path="/signup" component={SignupPage} />
-            <Route path="/login" component={LoginPage} />
-          </Switch>
+          <Layout>
+            <Switch>
+              <Route exact path="/">
+                {/* {Modify this when the dashboard is available} */}
+                <Redirect to="/signup" />
+              </Route>
+              <Route path="/signup" component={SignupPage} />
+              <Route path="/login" component={LoginPage} />
+            </Switch>
+          </Layout>
         </BrowserRouter>
       </UserContext.Provider>
     </MuiThemeProvider>

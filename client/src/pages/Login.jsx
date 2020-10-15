@@ -5,7 +5,6 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
 import formStyles from '../assets/styles/formStyles';
@@ -53,11 +52,6 @@ const LoginPage = () => {
                   autoComplete="current-password"
                   inputRef={register}
                 />
-              </Grid>
-              <Grid item xs={12} className={classes.linkText}>
-                <Typography component={Link} to="/signup">
-                  Need an account?
-                </Typography>
               </Grid>
             </Grid>
             <Grid item container xs={12}>

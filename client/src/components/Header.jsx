@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { AppBar, Toolbar, Button, Typography, makeStyles } from '@material-ui/core';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import UserContext from './UserContext';
 
@@ -36,12 +36,45 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const Login = () => {
+  const classes = useStyles();
+  return (
+    <>
+      <Typography className={classes.message}>
+        <strong>Already have an account?</strong>
+      </Typography>
+      <Button variant="outlined" className={classes.loginButton} component={Link} to="/login">
+        Login
+      </Button>
+    </>
+  );
+};
+
+const Signup = () => {
+  const classes = useStyles();
+  return (
+    <>
+      <Typography className={classes.message}>
+        <strong>Need an account?</strong>
+      </Typography>
+      <Button variant="outlined" className={classes.loginButton} component={Link} to="/signup">
+        Create
+      </Button>
+    </>
+  );
+};
+
+const Avatar = () => <p>Avatar goes here</p>;
+
 const Header = () => {
+  const location = useLocation();
   const [user] = useContext(UserContext);
   const classes = useStyles();
 
+  const userPresent = Object.keys(user).length > 0;
+
   return (
-    <AppBar className={classes.root} position="static">
+    <AppBar className={classes.root} position="fixed">
       <Toolbar>
         <Typography variant="h1" className={classes.logo}>
           <Link to="/" className={classes.link}>
@@ -49,20 +82,9 @@ const Header = () => {
             <span className={classes.logoSecond}>sender</span>
           </Link>
         </Typography>
-        {user ? (
-          <Button variant="outlined" to="/logout" className={classes.loginButton} component={Link}>
-            Logout
-          </Button>
-        ) : (
-          <>
-            <Typography className={classes.message}>
-              <strong>Already have an account?</strong>
-            </Typography>
-            <Button variant="outlined" className={classes.loginButton} component={Link} to="/login">
-              Login
-            </Button>
-          </>
-        )}
+        {!userPresent && location.pathname.includes('signup') && <Login />}
+        {!userPresent && location.pathname.includes('login') && <Signup />}
+        {userPresent && <Avatar />}
       </Toolbar>
     </AppBar>
   );

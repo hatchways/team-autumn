@@ -1,22 +1,27 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
 import formStyles from '../assets/styles/formStyles';
+import UserContext from '../components/UserContext';
 
 const SignupPage = () => {
   const classes = formStyles();
+  const [user, setUser] = useContext(UserContext);
 
   const { register, errors, handleSubmit, watch } = useForm({ mode: 'onBlur' });
 
   const onFormSubmit = (data) => {
-    alert(JSON.stringify(data));
+    setUser({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+    });
   };
 
   return (
@@ -134,11 +139,6 @@ const SignupPage = () => {
                     validate: (val) => val === watch('password') || 'Passwords must match',
                   })}
                 />
-              </Grid>
-              <Grid item xs={12} className={classes.linkText}>
-                <Typography component={Link} to="/login">
-                  Already have an account?
-                </Typography>
               </Grid>
             </Grid>
             <Grid item container className={classes.centered} xs={12}>
