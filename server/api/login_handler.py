@@ -9,7 +9,7 @@ from addon import bcrypt, jwt
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity
 
 login_schema = {
-    # "type": "object",
+    "type": "object",
     "properties": {
         "email": get_schema(format="email"),
         "password": get_schema(minLength=6),
@@ -25,11 +25,11 @@ def login(first_login=False):
     """
     TODO
     """
-    err, user_json_str = validate_json_input(request.get_json(), login_schema)
+    err, user_json = validate_json_input(request.get_json(), login_schema)
+    print(user_json)
     if err:
         # TODO: log
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
-    user_json = json.loads(user_json_str)
     user_in_db = User.get_by_email(user_json["email"])
     if not user_in_db:
         return fail_response(error_code.USER_NOT_EXIST), 400
