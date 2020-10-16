@@ -27,7 +27,18 @@ user_schema = {
 def register_entry():
     """
     API to handle register POST request.
-
+    input json needs to match the user_schema or HTTP 400 error code will be returned
+    User info will be saved to mongoDb.
+    If success, this method will call login method directly and return HTTP 201 code.
+    Returns:
+        str: return json include request status
+            if success, the return will be in the format
+                {"status":True, "error_code":0,"user_info":
+                    {'email': str, 'first_name': str, 'last_name': str, 'refresh_token': str, 'access_token': str}
+                }
+            if fail, the return will be in the format
+                {"status":False, "error_code":-[1-9]}
+        int: HTTP status code
     """
     if not request.is_json:
         return fail_response(error_code.MIME_NOT_JSON), 400

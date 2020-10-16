@@ -24,7 +24,7 @@ class RegisterHandlerTest(TestBase):
     def test_user_schema(self):
         fake_json = fake_user_json()
         ret = validate_json_input(fake_json, user_schema)
-        self.assertTrue(ret[0] is None,ret)
+        self.assertTrue(ret[0] is None, ret)
 
         fake_json = fake_user_json()
         fake_json["password"] = "123"

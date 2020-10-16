@@ -22,10 +22,10 @@ def fake_user_json():
 class AuthHandlerTest(TestBase):
 
     def test_login(self):
-
         fake_json = fake_user_json()
         _ = self.api.post('/register', json=fake_json)
         response = self.api.post('/login', json=fake_json)
+        print(response.json)
         self.assertTrue("user_info" in response.json)
         # TODO cookie test
         self.assertTrue("access_token" in response.json["user_info"])
@@ -35,24 +35,29 @@ class AuthHandlerTest(TestBase):
     def test_wrong_password(self):
         fake_json = fake_user_json()
         _ = self.api.post('/register', json=fake_json)
-        fake_json["password"]="000000"
+        fake_json["password"] = "000000"
         response = self.api.post('/login', json=fake_json)
-        self.assertTrue("error_code" in response.json and response.json["error_code"]==error_code.PASSWORD_MISMATCH)
+        self.assertTrue("error_code" in response.json and response.json["error_code"] == error_code.PASSWORD_MISMATCH)
+
+    def test_user_dne(self):
+        fake_json = fake_user_json()
+        response = self.api.post('/login', json=fake_json)
+        self.assertTrue("error_code" in response.json and response.json["error_code"] == error_code.USER_NOT_EXIST)
 
     def test_unauthorized_access(self):
         fake_json = fake_user_json()
         _ = self.api.post('/register', json=fake_json)
         response = self.api.post('/login', json=fake_json)
         response = self.api.post('/logout', json=fake_json)
-        self.assertTrue("error_code" in response.json and response.json["error_code"]==error_code.UNAUTHORIZED_ACCESS)
+        self.assertTrue("error_code" in response.json and response.json["error_code"] == error_code.UNAUTHORIZED_ACCESS)
 
     def test_logout(self):
         fake_json = fake_user_json()
         _ = self.api.post('/register', json=fake_json)
         response = self.api.post('/login', json=fake_json)
         access_token = response.json["user_info"]["access_token"]
-        response = self.api.post('/logout', json=fake_json, headers={"Authorization": "Bearer "+access_token,
-                                                                     "HTTP_AUTHORIZATION": "Bearer "+access_token})
+        response = self.api.post('/logout', json=fake_json, headers={"Authorization": "Bearer " + access_token,
+                                                                     "HTTP_AUTHORIZATION": "Bearer " + access_token})
         print(response.json)
         # TODO selenium test to handle the cookie part
         self.assertTrue("error_code" in response.json and response.json["error_code"] == error_code.UNAUTHORIZED_ACCESS)
