@@ -14,8 +14,10 @@ app = Flask(__name__)
 # True for production
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']  # Configure application to store JWTs in cookies #TODO: test can pass when this is commented out.
 app.config['JWT_COOKIE_SECURE'] = not DEV_mode  # Only allow JWT cookies to be sent over https.
-app.config['JWT_COOKIE_CSRF_PROTECT'] = True    # Enable csrf double submit protection.
+app.config['JWT_COOKIE_CSRF_PROTECT'] = not DEV_mode    # Enable csrf double submit protection. / False can pass the test.
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=5)    # JWT expire time
+app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN-ACCESS"
+app.config["JWT_REFRESH_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN-REFRESH"
 # The secret is for test only
 app.config['JWT_SECRET_KEY'] = os.environ.get('SECRET',
                                               b'VkO\xce\x0b\xc8\xde\xf1l\xaaQ+\x8bT\xfa\xbf\xb4\xf7\xdf\xc3OP\xcb\x86')
