@@ -1,5 +1,6 @@
 import jsonschema
 from flask import jsonify
+from flask_jwt_extended import set_access_cookies, set_refresh_cookies
 
 
 def get_schema(input_type="string", **kwargs):

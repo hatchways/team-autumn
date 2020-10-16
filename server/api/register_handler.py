@@ -5,7 +5,7 @@ from db.model import User
 from api import error_code
 from addon import bcrypt, jwt
 from api.util import get_schema, validate_json_input, fail_response
-from api.login_handler import login
+from api.auth_handler import login
 
 register_handler = Blueprint('register_handler', __name__)
 
