@@ -19,8 +19,18 @@ class User(MongoModel):
 
     @staticmethod
     def get_by_email(email):
+        """
+        Get user by email.
+
+        Args:
+            email: The expected email field, can be in mongodb query set grammar.
+
+        Returns:
+            (None|User): return user object or none.
+        """
         ret = User.objects.raw({"email": email})
-        return list(ret)
+        ret_list = list(ret)
+        return ret_list[0] if ret_list else None
 
     def to_dict(self, remove_password=True):
         ret = self.to_son().to_dict()
