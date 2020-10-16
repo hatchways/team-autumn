@@ -42,25 +42,45 @@ class AuthHandlerTest(TestBase):
     def test_user_dne(self):
         fake_json = fake_user_json()
         response = self.api.post('/login', json=fake_json)
-        self.assertTrue("error_code" in response.json and response.json["error_code"] == error_code.USER_NOT_EXIST)
+        # only PASSWORD_MISMATCH will be returned for security concer
+        self.assertTrue("error_code" in response.json and response.json["error_code"] == error_code.PASSWORD_MISMATCH)
 
     def test_unauthorized_access(self):
         fake_json = fake_user_json()
-        _ = self.api.post('/register', json=fake_json)
-        response = self.api.post('/login', json=fake_json)
         response = self.api.post('/logout', json=fake_json)
         self.assertTrue("error_code" in response.json and response.json["error_code"] == error_code.UNAUTHORIZED_ACCESS)
 
     def test_logout(self):
+        # TODO manually set cookies
         fake_json = fake_user_json()
-        _ = self.api.post('/register', json=fake_json)
-        response = self.api.post('/login', json=fake_json)
+        response = self.api.post('/register', json=fake_json)
         access_token = response.json["user_info"]["access_token"]
-        response = self.api.post('/logout', json=fake_json, headers={"Authorization": "Bearer " + access_token,
-                                                                     "HTTP_AUTHORIZATION": "Bearer " + access_token})
-        print(response.json)
-        # TODO selenium test to handle the cookie part
+        # Try to log out user
+        response = self.api.post('/logout', json=fake_json)
+        self.assertTrue(response.json["status"] is True)
+        self.assertTrue(response.json["logout"] is True)
+        # After user sign out, they have no more access to protected api.
+        response = self.api.post('/logout', json=fake_json, headers={"Authorization": "Bearer " + access_token})
         self.assertTrue("error_code" in response.json and response.json["error_code"] == error_code.UNAUTHORIZED_ACCESS)
+
+    def test_refresh(self):
+        fake_json = fake_user_json()
+        response = self.api.post('/register', json=fake_json)
+        access_token = response.json["user_info"]["access_token"]
+        # Try to refresh
+        response = self.api.post('/refresh', json=fake_json)
+
+        # User will get a new access token now
+        old_access_token = response.json["user_info"]["access_token"]
+        self.assertTrue(response.json["status"] is True)
+        new_access_token = response.json["user_info"]["access_token"]
+
+
+        # TODO After user refresh, the old jwt token should be expire
+        self.api.set_cookie("/", "access_token_cookie", old_access_token)
+        response = self.api.post('/logout', json=fake_json, )
+        # self.assertTrue("error_code" in response.json and response.json["error_code"] ==
+        # error_code.UNAUTHORIZED_ACCESS)
 
     def tearDown(self):
         User.objects.raw({"email": {"$regex": r".*@test\.test"}}).delete()

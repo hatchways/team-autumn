@@ -42,11 +42,14 @@ def login():
         # TODO: log
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
     user_in_db = User.get_by_email(user_json["email"])
-    if not user_in_db:
-        return fail_response(error_code.USER_NOT_EXIST), 400
-    user_in_db = user_in_db[0]
 
-    if not bcrypt.check_password_hash(user_in_db.salted_password, user_json["password"]):
+    # To avoid time analysis side channel attack.
+    if not user_in_db:
+        user_password_input = "$2b$12$0000000000000000000000000000000000lqwlNhRDOQcSSJOJwi"  # This Should always fail
+    else:
+        user_password_input = user_in_db.salted_password
+
+    if not bcrypt.check_password_hash(user_password_input, user_json["password"]):
         return fail_response(error_code.PASSWORD_MISMATCH), 400
 
     ret_user = user_in_db.to_dict(remove_password=True)
@@ -54,10 +57,10 @@ def login():
     refresh_token = create_refresh_token(ret_user)
     ret_user["access_token"] = access_token
     ret_user["refresh_token"] = refresh_token
-    login_in_cookies = jsonify({"login": True})
-    set_access_cookies(login_in_cookies, access_token)
-    set_refresh_cookies(login_in_cookies, refresh_token)
-    return success_response(user_info=ret_user), 200
+    cur_response = success_response(user_info=ret_user, login=True)
+    set_access_cookies(cur_response, access_token)
+    set_refresh_cookies(cur_response, refresh_token)
+    return cur_response, 200
 
 
 @auth_handler.route('/logout', methods=['POST'])
@@ -76,10 +79,9 @@ def logout():
                     {"status":False, "error_code":-[1-9]}
             int: HTTP status code
         """
-    get_jwt_identity()
-    resp = jsonify({'logout': True})
-    unset_jwt_cookies(resp)
-    return success_response(logout=True), 200
+    cur_response = success_response(logout=True)
+    unset_jwt_cookies(cur_response)
+    return cur_response, 200
 
 
 @auth_handler.route('/refresh', methods=['POST'])
@@ -99,9 +101,9 @@ def refresh():
         int: HTTP status code
     """
     new_token = create_access_token(get_jwt_identity())
-    resp = jsonify({'refresh': True})
-    set_access_cookies(resp, new_token)
-    return success_response(user_info={"token": new_token}, refresh=True), 200
+    cur_response = success_response(user_info={"access_token": new_token}, refresh=True)
+    set_access_cookies(cur_response, new_token)
+    return cur_response, 200
 
 
 @jwt.unauthorized_loader
@@ -115,5 +117,4 @@ def unauthorized_access(callback):
         str: {"status":False, "error_code":error_code.UNAUTHORIZED_ACCESS}
         int: HTTP status code
     """
-    print(request.headers)
     return fail_response(error_code.UNAUTHORIZED_ACCESS), 401
