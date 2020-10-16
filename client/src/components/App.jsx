@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { MuiThemeProvider } from '@material-ui/core';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import { theme } from '../assets/themes/theme';
-import SignupPage from '../pages/SignupPage';
-import LoginPage from '../pages/LoginPage';
-import CampaignsPage from '../pages/CampaignsPage';
-import ProspectsPage from '../pages/ProspectsPage';
-import TemplatesPage from '../pages/TemplatesPage';
-import ReportingPage from '../pages/ReportingPage';
-import ProfilePage from '../pages/ProfilePage';
-import Logout from '../pages/Logout';
+import SignupPage from '../pages/auth/SignupPage';
+import LoginPage from '../pages/auth/LoginPage';
+import Logout from '../pages/auth/LogoutPage';
+import CampaignsPage from '../pages/campaigns/CampaignsPage';
+import ProspectsPage from '../pages/prospects/ProspectsPage';
+import TemplatesPage from '../pages/templates/TemplatesPage';
+import ReportingPage from '../pages/reporting/ReportingPage';
+import ProfilePage from '../pages/profile/ProfilePage';
 import ProtectedRoute from './ProtectedRoute';
 import Layout from './Layout';
-import UserContext from './UserContext';
+import UserContext from '../contexts/UserContext';
 
 const App = () => {
   const [user, setUser] = useState();
@@ -37,6 +38,7 @@ const App = () => {
 
   return (
     <MuiThemeProvider theme={theme}>
+      <CssBaseline />
       <UserContext.Provider value={[user, setUser]}>
         <BrowserRouter>
           <Layout>
