@@ -8,12 +8,12 @@ import Container from '@material-ui/core/Container';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 
-import formStyles from '../assets/styles/formStyles';
-import UserContext from '../components/UserContext';
+import formStyles from '../../assets/styles/formStyles';
+import UserContext from '../../contexts/UserContext';
 
 const SignupPage = () => {
   const classes = formStyles();
-  const [user, setUser] = useContext(UserContext);
+  const [, setUser] = useContext(UserContext);
   const history = useHistory();
 
   const { register, errors, handleSubmit, watch } = useForm({ mode: 'onBlur' });

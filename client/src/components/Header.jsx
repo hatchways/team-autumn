@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Button, Typography, Avatar, Menu, MenuItem } from '@ma
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { Link, useLocation } from 'react-router-dom';
 
-import UserContext from './UserContext';
+import UserContext from '../contexts/UserContext';
 import portrait from '../assets/images/portrait.png';
 import TabNav from './TabNav';
 import headerStyles from '../assets/styles/headerStyles';

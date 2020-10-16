@@ -2,9 +2,11 @@ import { makeStyles } from '@material-ui/core';
 
 const headerStyles = makeStyles((theme) => ({
   root: {
+    position: 'fixed',
     background: theme.palette.background.paper,
     color: 'black',
     flexGrow: 1,
+    zIndex: 1,
   },
   link: {
     textDecoration: 'none',

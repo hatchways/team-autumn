@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { useForm } from 'react-hook-form';
 
-import formStyles from '../assets/styles/formStyles';
+import formStyles from '../../assets/styles/formStyles';
 
 const LoginPage = () => {
   const classes = formStyles();

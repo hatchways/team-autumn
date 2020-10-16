@@ -1,9 +1,9 @@
 import React, { useEffect, useContext } from 'react';
 import { Redirect } from 'react-router-dom';
-import UserContext from '../components/UserContext';
+import UserContext from '../../contexts/UserContext';
 
 const Logout = () => {
-  const [user, setUser] = useContext(UserContext);
+  const [setUser] = useContext(UserContext);
   useEffect(() => {
     setUser(false);
   }, [setUser]);
