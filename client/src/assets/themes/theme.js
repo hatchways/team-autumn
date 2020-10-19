@@ -19,5 +19,6 @@ export const theme = createMuiTheme({
       paper: '#fff',
       default: '#f6f6f6',
     },
+    divider: '#4FBE75',
   },
 });

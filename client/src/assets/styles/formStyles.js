@@ -8,7 +8,7 @@ const formStyles = makeStyles((theme) => ({
     fontWeight: 600,
   },
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(12),
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
