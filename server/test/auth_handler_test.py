@@ -66,21 +66,23 @@ class AuthHandlerTest(TestBase):
     def test_refresh(self):
         fake_json = fake_user_json()
         response = self.api.post('/register', json=fake_json)
-        access_token = response.json["user_info"]["access_token"]
+        old_access_token = response.json["user_info"]["access_token"]
         # Try to refresh
         response = self.api.post('/refresh', json=fake_json)
 
         # User will get a new access token now
-        old_access_token = response.json["user_info"]["access_token"]
+
         self.assertTrue(response.json["status"] is True)
         new_access_token = response.json["user_info"]["access_token"]
+        # The cookie is changed
+        for i in self.api.cookie_jar:
+            if i.name == "access_token_cookie":
+                self.assertTrue(i.value == new_access_token)
+                self.assertTrue(i.value != old_access_token)
 
-
-        # TODO After user refresh, the old jwt token should be expire
-        self.api.set_cookie("/", "access_token_cookie", old_access_token)
-        response = self.api.post('/logout', json=fake_json, )
-        # self.assertTrue("error_code" in response.json and response.json["error_code"] ==
-        # error_code.UNAUTHORIZED_ACCESS)
+        # New token can be used for protected api
+        response = self.api.post('/logout', json=fake_json)
+        self.assertTrue(response.json["status"] is True)
 
     def tearDown(self):
         User.objects.raw({"email": {"$regex": r".*@test\.test"}}).delete()
