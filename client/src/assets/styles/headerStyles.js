@@ -6,7 +6,6 @@ const headerStyles = makeStyles((theme) => ({
     background: theme.palette.background.paper,
     color: 'black',
     flexGrow: 1,
-    zIndex: 1,
   },
   link: {
     textDecoration: 'none',
