@@ -1,9 +1,24 @@
 import React, { useContext } from 'react';
+import { makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
 import ProspectsContext from '../../contexts/ProspectsContext';
 import EnhancedDataTable from '../../components/EnhancedDataTable';
+
+const useStyles = makeStyles((theme) => ({
+  basic: {
+    textTransform: 'none',
+    height: '3rem',
+    fontWeight: 600,
+    borderRadius: '5px',
+    margin: theme.spacing(3, 0, 2),
+  },
+  action: {
+    background: `linear-gradient(90deg, ${theme.palette.primary.main} , ${theme.palette.secondary.main})`,
+    color: 'white',
+  },
+}));
 
 const testData = [
   {
@@ -50,18 +65,31 @@ const headCells = [
 ];
 
 const ProspectsContent = () => {
+  const classes = useStyles();
   const [search] = useContext(ProspectsContext);
   const filteredData = testData.filter((d) => d.email.includes(search));
   return (
     <>
       <Typography variant="h3">Prospects</Typography>
       <div>
-        <Button variant="outlined">Imports</Button>
-        <Button variant="contained" color="secondary">
+        <Button className={classes.basic} variant="outlined">
+          Imports
+        </Button>
+        <Button
+          className={`${classes.basic} ${classes.action}`}
+          variant="contained"
+          color="secondary"
+        >
           Add new prospect
         </Button>
       </div>
-      <EnhancedDataTable data={filteredData} ariaLabel="prospects" headCells={headCells} />
+      <EnhancedDataTable
+        data={filteredData}
+        ariaLabel="prospects"
+        headCells={headCells}
+        requiresCheckbox
+        initialSortBy="email"
+      />
     </>
   );
 };

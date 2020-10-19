@@ -8,9 +8,11 @@ import Container from '@material-ui/core/Container';
 import { useForm } from 'react-hook-form';
 
 import formStyles from '../../assets/styles/formStyles';
+import buttonStyles from '../../assets/styles/buttonStyles';
 
 const LoginPage = () => {
-  const classes = formStyles();
+  const formClasses = formStyles();
+  const buttonClasses = buttonStyles();
 
   const { register, errors, handleSubmit } = useForm();
 
@@ -21,11 +23,11 @@ const LoginPage = () => {
   return (
     <Container component="main" maxWidth="sm">
       <Box boxShadow={1}>
-        <div className={classes.paper}>
-          <Typography className={classes.title} component="h2" variant="h4">
+        <div className={formClasses.paper}>
+          <Typography className={formClasses.title} component="h2" variant="h4">
             Login to your account
           </Typography>
-          <form className={classes.form} onSubmit={handleSubmit((data) => onFormSubmit(data))}>
+          <form className={formClasses.form} onSubmit={handleSubmit((data) => onFormSubmit(data))}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -55,19 +57,17 @@ const LoginPage = () => {
               </Grid>
             </Grid>
             <Grid item container xs={12}>
-              <Grid item xs={4} />
               <Grid item xs={4}>
                 <Button
                   type="submit"
                   variant="contained"
                   fullWidth
                   color="primary"
-                  className={classes.action}
+                  className={`${buttonClasses.action} ${buttonClasses.base}`}
                 >
                   Login
                 </Button>
               </Grid>
-              <Grid item xs={4} />
             </Grid>
           </form>
         </div>
