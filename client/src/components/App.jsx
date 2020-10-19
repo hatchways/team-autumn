@@ -40,6 +40,7 @@ const App = () => {
 
   return (
     <MuiThemeProvider theme={theme}>
+      {console.log(theme)}
       <CssBaseline />
       <UserContext.Provider value={[user, setUser]}>
         <BrowserRouter>

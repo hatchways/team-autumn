@@ -7,9 +7,7 @@ const ProspectsDrawer = () => {
   const [search, setSearch] = useContext(ProspectsContext);
   return (
     <>
-      <form>
-        <SearchInput search={search} setSearch={setSearch} />
-      </form>
+      <SearchInput search={search} setSearch={setSearch} />
     </>
   );
 };
