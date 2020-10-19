@@ -16,7 +16,7 @@ const SignupPage = () => {
   const [user, setUser] = useContext(UserContext);
   const history = useHistory();
 
-  const { register, errors, handleSubmit, watch } = useForm({ mode: 'onBlur' });
+  const { register, errors, handleSubmit, watch } = useForm();
 
   const onFormSubmit = (data) => {
     setUser({
