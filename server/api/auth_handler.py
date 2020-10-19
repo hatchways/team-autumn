@@ -8,6 +8,7 @@ from api import error_code
 from addon import bcrypt, jwt
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required, \
     jwt_refresh_token_required,unset_jwt_cookies
+import time
 
 login_schema = {
     "type": "object",
@@ -43,12 +44,10 @@ def login():
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
     user_in_db = User.get_by_email(user_json["email"])
 
-    # To avoid time analysis side channel attack.
     if not user_in_db:
-        user_password_input = "$2b$12$0000000000000000000000000000000000lqwlNhRDOQcSSJOJwi"  # This Should always fail
-    else:
-        user_password_input = user_in_db.salted_password
+        return fail_response(error_code.PASSWORD_MISMATCH)
 
+    user_password_input = user_in_db.salted_password
     if not bcrypt.check_password_hash(user_password_input, user_json["password"]):
         return fail_response(error_code.PASSWORD_MISMATCH), 400
 
@@ -107,7 +106,7 @@ def refresh():
 
 
 @jwt.unauthorized_loader
-def unauthorized_access(callback):
+def _unauthorized_access(callback):
     """
     Will be called when user access JWT middleware protected API endpoint without proper authorization.
     Args:
@@ -118,3 +117,18 @@ def unauthorized_access(callback):
         int: HTTP status code
     """
     return fail_response(error_code.UNAUTHORIZED_ACCESS), 401
+
+
+@jwt.user_claims_loader
+def _add_keyword(identity_dict):
+    """
+    This will auto add keywords to the identity dictionary.
+    Args:
+        identity_dict: the dict given to create_access_token()
+
+    Returns:
+        dict: new augmented dict
+    """
+    return {**identity_dict,
+            "iat": int(time.time())
+            }
