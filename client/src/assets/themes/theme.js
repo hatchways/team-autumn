@@ -21,4 +21,7 @@ export const theme = createMuiTheme({
     },
     divider: '#4FBE75',
   },
+  zIndex: {
+    drawer: 1099,
+  },
 });

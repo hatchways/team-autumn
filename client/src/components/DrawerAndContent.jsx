@@ -6,9 +6,7 @@ const drawerWidth = 300;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    position: 'fixed',
     display: 'flex',
-    zIndex: -1,
   },
   drawer: {
     width: drawerWidth,

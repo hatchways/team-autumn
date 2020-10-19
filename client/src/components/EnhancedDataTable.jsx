@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,7 +12,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 const createData = (datum) => ({ ...datum });
 
-function descendingComparator(a, b, orderBy) {
+const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -20,15 +20,14 @@ function descendingComparator(a, b, orderBy) {
     return 1;
   }
   return 0;
-}
+};
 
-function getComparator(order, orderBy) {
-  return order === 'desc'
+const getComparator = (order, orderBy) =>
+  order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
-}
 
-function stableSort(array, comparator) {
+const stableSort = (array, comparator) => {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -36,7 +35,7 @@ function stableSort(array, comparator) {
     return a[1] - b[1];
   });
   return stabilizedThis.map((el) => el[0]);
-}
+};
 
 const EnhancedTableHead = ({
   classes,
@@ -115,6 +114,9 @@ const useStyles = makeStyles((theme) => ({
     top: 20,
     width: 1,
   },
+  blank: {
+    display: 'none',
+  },
   container: {
     maxHeight: 500,
   },
@@ -122,9 +124,9 @@ const useStyles = makeStyles((theme) => ({
 
 const EnhancedDataTable = ({ data, ariaLabel, headCells }) => {
   const classes = useStyles();
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
-  const [selected, setSelected] = React.useState([]);
+  const [order, setOrder] = useState('asc');
+  const [orderBy, setOrderBy] = useState('id');
+  const [selected, setSelected] = useState([]);
 
   const rows = data.map((datum) => createData(datum));
 
@@ -136,7 +138,7 @@ const EnhancedDataTable = ({ data, ariaLabel, headCells }) => {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.name);
+      const newSelecteds = rows.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
@@ -161,9 +163,10 @@ const EnhancedDataTable = ({ data, ariaLabel, headCells }) => {
     }
 
     setSelected(newSelected);
+    console.log(selected);
   };
 
-  const isSelected = (name) => selected.indexOf(name) !== -1;
+  const isSelected = (id) => selected.indexOf(id) !== -1;
 
   return (
     <div className={classes.root}>
@@ -206,7 +209,7 @@ const EnhancedDataTable = ({ data, ariaLabel, headCells }) => {
                         inputProps={{ 'aria-labelledby': labelId }}
                       />
                     </TableCell>
-                    <TableCell component="th" id={labelId} scope="row" padding="none">
+                    <TableCell component="th" align="left" id={labelId} scope="row" padding="none">
                       {row.id}
                     </TableCell>
                     {Object.entries(row)
