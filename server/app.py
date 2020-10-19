@@ -28,10 +28,7 @@ default_db_alias = "user-db"
 db_addr = os.environ.get("db_addr", None)
 if DEV_mode:
     # Your own mongodb address here
-    db_addr = "mongodb+srv://dbUser:{}BkA@{}.mongodb.net/db?retryWrites=true&w=majority".format(
-    "mqMgkPzs90L5x",
-    "cluster0.7p53t"
-)
+    db_addr = "mongodb://localhost:27017/test_db"
 connect(db_addr, alias=os.environ.get("db_alias", default_db_alias))
 
 app.register_blueprint(home_handler)
