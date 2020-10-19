@@ -41,37 +41,35 @@ export default function AlertDialog() {
   }, []);
 
   return (
-    <div>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {bodyText}
-          </DialogContentText>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          {bodyText}
+        </DialogContentText>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <GoogleButton
+            onClick={() => {
+              console.log("Google button clicked");
             }}
-          >
-            <GoogleButton
-              onClick={() => {
-                console.log("Google button clicked");
-              }}
-            />
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color={"primary"}>
-            {buttonText}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+          />
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color={"primary"}>
+          {buttonText}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }

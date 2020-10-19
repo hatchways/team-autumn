@@ -7,6 +7,7 @@ import SignupPage from '../pages/Signup';
 import LoginPage from '../pages/Login';
 import Header from './Header';
 import UserContext from './UserContext';
+import ViewCampaign from '../pages/ViewCampaign'
 
 function App() {
   const [user, setUser] = useState({});
@@ -22,6 +23,7 @@ function App() {
             </Route>
             <Route path="/signup" component={SignupPage} />
             <Route path="/login" component={LoginPage} />
+            <Route path="/campaigns/:id" component={ViewCampaign} />
           </Switch>
         </BrowserRouter>
       </UserContext.Provider>

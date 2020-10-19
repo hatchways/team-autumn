@@ -24,7 +24,7 @@ const LoginPage = () => {
       <Box boxShadow={1}>
         <div className={classes.paper}>
           <Typography className={classes.title} component="h2" variant="h4">
-            Login to your account
+            Log in to your account
           </Typography>
           <form className={classes.form} onSubmit={handleSubmit((data) => onFormSubmit(data))}>
             <Grid container spacing={2}>
