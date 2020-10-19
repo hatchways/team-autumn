@@ -47,6 +47,7 @@ const EnhancedTableHead = ({
   onRequestSort,
   ariaLabel,
   headCells,
+  requiresCheckbox,
 }) => {
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -55,14 +56,17 @@ const EnhancedTableHead = ({
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': `select all ${ariaLabel}` }}
-          />
-        </TableCell>
+        {requiresCheckbox && (
+          <TableCell padding="checkbox">
+            <Checkbox
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={onSelectAllClick}
+              inputProps={{ 'aria-label': `select all ${ariaLabel}` }}
+            />
+          </TableCell>
+        )}
+
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -122,10 +126,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const EnhancedDataTable = ({ data, ariaLabel, headCells }) => {
+const EnhancedDataTable = ({ data, ariaLabel, headCells, requiresCheckbox, initialSortBy }) => {
   const classes = useStyles();
   const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('id');
+  const [orderBy, setOrderBy] = useState(initialSortBy);
   const [selected, setSelected] = useState([]);
 
   const rows = data.map((datum) => createData(datum));
@@ -188,6 +192,7 @@ const EnhancedDataTable = ({ data, ariaLabel, headCells }) => {
               rowCount={rows.length}
               ariaLabel={ariaLabel}
               headCells={headCells}
+              requiresCheckbox={requiresCheckbox}
             />
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
@@ -203,12 +208,15 @@ const EnhancedDataTable = ({ data, ariaLabel, headCells }) => {
                     key={row.email}
                     selected={isItemSelected}
                   >
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isItemSelected}
-                        inputProps={{ 'aria-labelledby': labelId }}
-                      />
-                    </TableCell>
+                    {requiresCheckbox && (
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isItemSelected}
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </TableCell>
+                    )}
+
                     <TableCell component="th" align="left" id={labelId} scope="row" padding="none">
                       {row.id}
                     </TableCell>

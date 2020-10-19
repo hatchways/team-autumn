@@ -9,10 +9,13 @@ import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 
 import formStyles from '../../assets/styles/formStyles';
+import buttonStyles from '../../assets/styles/buttonStyles';
+
 import UserContext from '../../contexts/UserContext';
 
 const SignupPage = () => {
-  const classes = formStyles();
+  const formClasses = formStyles();
+  const buttonClasses = buttonStyles();
   const [, setUser] = useContext(UserContext);
   const history = useHistory();
 
@@ -31,11 +34,11 @@ const SignupPage = () => {
   return (
     <Container component="main" maxWidth="sm">
       <Box boxShadow={1}>
-        <div className={classes.paper}>
-          <Typography className={classes.title} component="h2" variant="h4">
+        <div className={formClasses.paper}>
+          <Typography className={formClasses.title} component="h2" variant="h4">
             Create an account
           </Typography>
-          <form className={classes.form} onSubmit={handleSubmit((data) => onFormSubmit(data))}>
+          <form className={formClasses.form} onSubmit={handleSubmit((data) => onFormSubmit(data))}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -145,14 +148,14 @@ const SignupPage = () => {
                 />
               </Grid>
             </Grid>
-            <Grid item container className={classes.centered} xs={12}>
+            <Grid item container className={formClasses.centered} xs={12}>
               <Grid item xs={4}>
                 <Button
                   type="submit"
                   variant="contained"
                   fullWidth
                   color="primary"
-                  className={classes.action}
+                  className={`${buttonClasses.base} ${buttonClasses.action}`}
                 >
                   Create
                 </Button>
