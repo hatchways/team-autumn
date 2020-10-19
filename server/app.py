@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']  # Configure application to store JWTs in cookies
 app.config['JWT_COOKIE_SECURE'] = not DEV_mode  # Only allow JWT cookies to be sent over https.
-app.config['JWT_COOKIE_CSRF_PROTECT'] = not DEV_mode  # Enable csrf double submit protection. / False can pass the test.
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # Enable csrf double submit protection. / False can pass the test.
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=5)    # JWT expire time
 app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN-ACCESS"
 app.config["JWT_REFRESH_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN-REFRESH"
@@ -28,7 +28,10 @@ default_db_alias = "user-db"
 db_addr = os.environ.get("db_addr", None)
 if DEV_mode:
     # Your own mongodb address here
-    db_addr = "mongodb://localhost:27017/test_db"
+    db_addr = "mongodb+srv://dbUser:{}BkA@{}.mongodb.net/db?retryWrites=true&w=majority".format(
+    "mqMgkPzs90L5x",
+    "cluster0.7p53t"
+)
 connect(db_addr, alias=os.environ.get("db_alias", default_db_alias))
 
 app.register_blueprint(home_handler)
