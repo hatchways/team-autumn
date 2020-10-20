@@ -10,7 +10,6 @@ import os
 
 app = Flask(__name__)
 app.config.from_object("config.Config")
-print(app.config.get("ENV", 111))
 bcrypt.init_app(app)
 jwt.init_app(app)
 
