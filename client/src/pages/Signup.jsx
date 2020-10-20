@@ -27,16 +27,24 @@ const SignupPage = () => {
       password: data.password,
       confirm_password: data.confirmPassword,
     };
-    const response = await axios({
+    // const response = await axios({
+    //   method: 'POST',
+    //   url: '/register',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   data: JSON.stringify(formData),
+    // });
+
+    const response = await fetch('/register', {
       method: 'POST',
-      url: 'http://localhost:5000/register',
       headers: {
         'Content-Type': 'application/json',
       },
       data: JSON.stringify(formData),
     });
-    // console.log(response);
 
+    console.log(response);
     // change this to response properties after submission
     setUser({
       firstName: data.firstName,
