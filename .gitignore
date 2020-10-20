@@ -28,6 +28,3 @@ instance/
 
 # VSCode
 .vscode
-
-.env
-
