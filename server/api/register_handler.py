@@ -41,14 +41,16 @@ def register_entry():
         int: HTTP status code
     """
     if not request.is_json:
-        current_app.logger.info('?')
+        current_app.logger.info('not json')
         return fail_response(error_code.MIME_NOT_JSON), 400
     err, user_json = validate_json_input(request.get_json(), user_schema)
+
     if err:
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
     if user_json["password"] != user_json["confirm_password"]:
         return fail_response(error_code.PASSWORD_MISMATCH), 400
 
+    current_app.logger.info('?')
     # Assumption: user input is legit now
 
     # Check if user exists

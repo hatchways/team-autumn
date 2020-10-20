@@ -7,7 +7,6 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
-import axios from 'axios';
 
 import formStyles from '../assets/styles/formStyles';
 import UserContext from '../components/UserContext';
@@ -27,30 +26,34 @@ const SignupPage = () => {
       password: data.password,
       confirm_password: data.confirmPassword,
     };
-    // const response = await axios({
-    //   method: 'POST',
-    //   url: '/register',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   data: JSON.stringify(formData),
-    // });
+    console.log(formData);
+    try {
+      const response = await fetch('/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // data: JSON.stringify(formData),
+        body: JSON.stringify(formData),
+      });
+      const res = await response.json();
+      const userData = res.user_info;
+      setUser({
+        firstName: userData.first_name,
+        lastName: userData.last_name,
+        email: userData.email,
+      });
+      console.log(userData);
+    } catch (err) {
+      console.log(err);
+    }
 
-    const response = await fetch('/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify(formData),
-    });
-
-    console.log(response);
     // change this to response properties after submission
-    setUser({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-    });
+    // setUser({
+    //   firstName: data.firstName,
+    //   lastName: data.lastName,
+    //   email: data.email,
+    // });
 
     // history.push('/campaigns');
   };
