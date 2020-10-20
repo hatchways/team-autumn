@@ -22,4 +22,7 @@ app.register_blueprint(register_handler)
 app.register_blueprint(auth_handler)
 app.register_blueprint(gmail_auth_handler)
 
+<<<<<<< HEAD
 # app.run()
+=======
+>>>>>>> 13800d858c412dee9b95fcf492201cdbd539e883
