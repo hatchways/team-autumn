@@ -7,25 +7,44 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
+import axios from 'axios';
 
 import formStyles from '../assets/styles/formStyles';
 import UserContext from '../components/UserContext';
 
 const SignupPage = () => {
   const classes = formStyles();
-  const [user, setUser] = useContext(UserContext);
+  const [, setUser] = useContext(UserContext);
   const history = useHistory();
 
   const { register, errors, handleSubmit, watch } = useForm();
 
-  const onFormSubmit = (data) => {
+  const onFormSubmit = async (data) => {
+    const formData = {
+      first_name: data.firstName,
+      last_name: data.lastName,
+      email: data.email,
+      password: data.password,
+      confirm_password: data.confirmPassword,
+    };
+    const response = await axios({
+      method: 'POST',
+      url: 'http://localhost:5000/register',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify(formData),
+    });
+    // console.log(response);
+
+    // change this to response properties after submission
     setUser({
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
-      profilePicture: 'https://unsplash.com/photos/ILip77SbmOE',
     });
-    history.push('/campaigns');
+
+    // history.push('/campaigns');
   };
 
   return (

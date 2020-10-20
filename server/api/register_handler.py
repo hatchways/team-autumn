@@ -1,5 +1,5 @@
 import json
-from flask import jsonify, request, Blueprint, Response
+from flask import jsonify, request, Blueprint, Response, current_app
 from db.model import User
 # Ref: https://medium.com/@riken.mehta/full-stack-tutorial-3-flask-jwt-e759d2ee5727
 from api import error_code
@@ -40,6 +40,7 @@ def register_entry():
                 {"status":False, "error_code":-[1-9]}
         int: HTTP status code
     """
+    current_app.logger.info(request.json)
     if not request.is_json:
         return fail_response(error_code.MIME_NOT_JSON), 400
     err, user_json = validate_json_input(request.get_json(), user_schema)
@@ -54,8 +55,11 @@ def register_entry():
     if User.get_by_email(user_json["email"]):
         return fail_response(error_code.USER_EXIST)
 
+    # return 'User Created'
+
     # ADD TO db
-    salted_password = bcrypt.generate_password_hash(user_json["password"]).decode()
+    salted_password = bcrypt.generate_password_hash(
+        user_json["password"]).decode()
     user_json = user_json.copy()
     del user_json["password"]
     del user_json["confirm_password"]

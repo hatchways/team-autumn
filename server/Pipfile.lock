@@ -108,6 +108,14 @@
             "index": "pypi",
             "version": "==0.7.1"
         },
+        "flask-cors": {
+            "hashes": [
+                "sha256:6bcfc100288c5d1bcb1dbb854babd59beee622ffd321e444b05f24d6d58466b8",
+                "sha256:cee4480aaee421ed029eaa788f4049e3e26d15b5affb6a880dade6bafad38324"
+            ],
+            "index": "pypi",
+            "version": "==3.0.9"
+        },
         "flask-jwt-extended": {
             "hashes": [
                 "sha256:0aa8ee6fa7eb3be9314e39dd199ac8e19389a95371f9d54e155c7aa635e319dd"
@@ -321,14 +329,6 @@
             ],
             "markers": "python_version >= '3.5'",
             "version": "==2.4.2"
-        },
-        "colorama": {
-            "hashes": [
-                "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b",
-                "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"
-            ],
-            "markers": "sys_platform == 'win32'",
-            "version": "==0.4.4"
         },
         "isort": {
             "hashes": [
