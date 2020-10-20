@@ -14,7 +14,7 @@ const LoginPage = () => {
   const formClasses = formStyles();
   const buttonClasses = buttonStyles();
 
-  const { register, errors, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm();
 
   const onFormSubmit = (data) => {
     alert(JSON.stringify(data));

@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     textTransform: 'none',
     fontWeight: 700,
     '&[aria-selected="true"] > span': {
-      color: theme.palette.secondary.main,
+      color: theme.palette.primary.light,
     },
     paddingTop: 16,
     paddingLeft: 0,

@@ -18,7 +18,7 @@ const headerStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(2),
   },
   logoSecond: {
-    color: '#4FBE75',
+    color: theme.palette.primary.light,
   },
   message: {
     marginRight: theme.spacing(3),
