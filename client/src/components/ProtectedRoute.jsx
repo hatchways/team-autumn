@@ -5,7 +5,8 @@ import UserContext from './UserContext';
 
 const PrivateRoute = ({ component, ...rest }) => {
   const [user] = useContext(UserContext);
-  if (user) {
+  const userData = localStorage.getItem('user');
+  if (userData || user) {
     return <Route {...rest} component={component} />;
   }
   return <Redirect to="/signup" />;

@@ -40,7 +40,7 @@ const SignupPage = () => {
       password: data.password,
       confirm_password: data.confirmPassword,
     };
-    console.log(formData);
+
     try {
       const response = await fetch('/register', {
         method: 'POST',
@@ -51,7 +51,17 @@ const SignupPage = () => {
       });
 
       const res = await response.json();
+      console.log(res);
       const userData = res.user_info;
+
+      localStorage.setItem(
+        'user',
+        JSON.stringify({
+          firstName: userData.first_name,
+          lastName: userData.last_name,
+          email: userData.email,
+        })
+      );
 
       setUser({
         firstName: userData.first_name,

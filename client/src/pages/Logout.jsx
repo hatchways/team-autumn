@@ -3,9 +3,10 @@ import { Redirect } from 'react-router-dom';
 import UserContext from '../components/UserContext';
 
 const Logout = () => {
-  const [user, setUser] = useContext(UserContext);
+  const [, setUser] = useContext(UserContext);
   useEffect(() => {
-    setUser(false);
+    setUser();
+    localStorage.removeItem('user');
   }, [setUser]);
 
   return <Redirect to="signup" />;

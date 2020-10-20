@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MuiThemeProvider } from '@material-ui/core';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
@@ -15,8 +15,19 @@ import ProtectedRoute from './ProtectedRoute';
 import Layout from './Layout';
 import UserContext from './UserContext';
 
-function App() {
-  const [user, setUser] = useState(false);
+const App = () => {
+  const [user, setUser] = useState();
+  // localStorage.clear();
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem('user');
+    console.log(loggedInUser);
+    if (loggedInUser) {
+      const foundUser = JSON.parse(loggedInUser);
+      console.log(foundUser);
+      setUser(foundUser);
+    }
+  }, []);
+
   return (
     <MuiThemeProvider theme={theme}>
       <UserContext.Provider value={[user, setUser]}>
@@ -38,6 +49,6 @@ function App() {
       </UserContext.Provider>
     </MuiThemeProvider>
   );
-}
+};
 
 export default App;
