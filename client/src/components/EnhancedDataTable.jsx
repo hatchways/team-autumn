@@ -54,10 +54,10 @@ const EnhancedTableHead = ({
   };
 
   return (
-    <TableHead>
-      <TableRow>
+    <TableHead className={classes.head}>
+      <TableRow className={classes.tableRow}>
         {requiresCheckbox && (
-          <TableCell padding="checkbox">
+          <TableCell className={classes.tableCell} padding="checkbox">
             <Checkbox
               indeterminate={numSelected > 0 && numSelected < rowCount}
               checked={rowCount > 0 && numSelected === rowCount}
@@ -69,12 +69,14 @@ const EnhancedTableHead = ({
 
         {headCells.map((headCell) => (
           <TableCell
+            className={classes.tableCell}
             key={headCell.id}
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
+              className={classes.sortLabel}
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
@@ -95,17 +97,20 @@ const EnhancedTableHead = ({
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%',
     marginTop: theme.spacing(8),
-    marginLeft: theme.spacing(8),
-    marginRight: theme.spacing(8),
   },
   paper: {
-    width: '100%',
     marginBottom: theme.spacing(2),
   },
   table: {
-    minWidth: 750,
+    borderRadius: theme.shape.borderRadius,
+    margin: theme.spacing(1),
+  },
+  head: {
+    backgroundColor: theme.palette.primary.main,
+  },
+  headText: {
+    fontWeight: 600,
   },
   visuallyHidden: {
     border: 0,
@@ -122,7 +127,19 @@ const useStyles = makeStyles((theme) => ({
     display: 'none',
   },
   container: {
-    maxHeight: 500,
+    maxHeight: 650,
+  },
+  tableRow: {
+    '&$hover:hover': {
+      backgroundColor: theme.palette.primary.main,
+    },
+  },
+  tableCell: {
+    color: 'white',
+    fontWeight: 600,
+    '&.MuiTableSortLabel-root.MuiTableSortLabel-active': {
+      color: 'white',
+    },
   },
 }));
 
@@ -167,7 +184,6 @@ const EnhancedDataTable = ({ data, ariaLabel, headCells, requiresCheckbox, initi
     }
 
     setSelected(newSelected);
-    console.log(selected);
   };
 
   const isSelected = (id) => selected.indexOf(id) !== -1;
@@ -217,7 +233,7 @@ const EnhancedDataTable = ({ data, ariaLabel, headCells, requiresCheckbox, initi
                       </TableCell>
                     )}
 
-                    <TableCell component="th" align="left" id={labelId} scope="row" padding="none">
+                    <TableCell component="th" align="left" id={labelId} scope="row">
                       {row.id}
                     </TableCell>
                     {Object.entries(row)

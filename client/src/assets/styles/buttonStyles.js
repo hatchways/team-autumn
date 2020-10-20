@@ -9,7 +9,7 @@ const buttonStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
   action: {
-    background: `linear-gradient(90deg, ${theme.palette.primary.main} , ${theme.palette.secondary.main})`,
+    background: `linear-gradient(90deg, ${theme.palette.primary.dark} , ${theme.palette.primary.light})`,
     color: 'white',
   },
 }));
