@@ -95,6 +95,8 @@ const EnhancedTableHead = ({
   );
 };
 
+// TODO: add styling to .MuiTableContainer-root - remove overflow
+
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(8),
