@@ -1,24 +1,38 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
+import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 
 import formStyles from '../assets/styles/formStyles';
 import UserContext from '../components/UserContext';
 
+const backdropStyles = makeStyles((theme) => ({
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
+}));
+
 const SignupPage = () => {
   const classes = formStyles();
+  const backdropClasses = backdropStyles();
+  const [loading, setLoading] = useState(false);
   const [, setUser] = useContext(UserContext);
   const history = useHistory();
 
   const { register, errors, handleSubmit, watch } = useForm();
 
   const onFormSubmit = async (data) => {
+    setLoading(true);
     const formData = {
       first_name: data.firstName,
       last_name: data.lastName,
@@ -33,31 +47,32 @@ const SignupPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        // data: JSON.stringify(formData),
         body: JSON.stringify(formData),
       });
+
       const res = await response.json();
       const userData = res.user_info;
+
       setUser({
         firstName: userData.first_name,
         lastName: userData.last_name,
         email: userData.email,
       });
-      console.log(userData);
+
+      setLoading(false);
+      history.push('/campaigns');
     } catch (err) {
       console.log(err);
     }
-
-    // change this to response properties after submission
-    // setUser({
-    //   firstName: data.firstName,
-    //   lastName: data.lastName,
-    //   email: data.email,
-    // });
-
-    // history.push('/campaigns');
   };
 
+  if (loading) {
+    return (
+      <Backdrop className={backdropClasses.backdrop} open={loading}>
+        <CircularProgress />
+      </Backdrop>
+    );
+  }
   return (
     <Container component="main" maxWidth="sm">
       <Box boxShadow={1}>
