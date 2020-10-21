@@ -14,17 +14,23 @@ import Logout from '../pages/Logout';
 import ProtectedRoute from './ProtectedRoute';
 import Layout from './Layout';
 import UserContext from './UserContext';
+import FormContext from './FormContext';
 
 const App = () => {
   const [user, setUser] = useState();
-  // localStorage.clear();
+  const [values, setValues] = useState();
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user');
-    console.log(loggedInUser);
     if (loggedInUser) {
+      console.log(loggedInUser);
       const foundUser = JSON.parse(loggedInUser);
-      console.log(foundUser);
-      setUser(foundUser);
+      setUser({
+        firstName: foundUser.first_name,
+        lastName: foundUser.last_name,
+        email: foundUser.email,
+        accessToken: foundUser.access_token,
+        refreshToken: foundUser.refresh_token,
+      });
     }
   }, []);
 
@@ -41,8 +47,10 @@ const App = () => {
               <ProtectedRoute path="/reporting" component={ReportingPage} />
               <ProtectedRoute path="/profile" component={ProfilePage} />
               <ProtectedRoute path="/logout" component={Logout} />
-              <Route path="/signup" component={SignupPage} />
-              <Route path="/login" component={LoginPage} />
+              <FormContext.Provider value={[values, setValues]}>
+                <Route path="/signup" component={SignupPage} />
+                <Route path="/login" component={LoginPage} />
+              </FormContext.Provider>
             </Switch>
           </Layout>
         </BrowserRouter>

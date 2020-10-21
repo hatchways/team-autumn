@@ -6,7 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 import UserContext from './UserContext';
 import portrait from '../assets/images/portrait.png';
 import TabNav from './TabNav';
-import headerStyles from '../assets/styles/headerStyles';
+import { headerStyles } from '../assets/styles/styles';
 
 const tabs = [
   {
@@ -90,21 +90,7 @@ const LoggedInNav = () => {
       >
         {`${user.firstName} ${user.lastName}`}
       </Button>
-      <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-        keepMounted
-        open={!!anchorEl}
-        onClose={handleClose}
-      >
+      <Menu id="user-menu" anchorEl={anchorEl} keepMounted open={!!anchorEl} onClose={handleClose}>
         <MenuItem onClick={handleClose}>
           <Link className={classes.tabLink} to="/profile">
             Profile

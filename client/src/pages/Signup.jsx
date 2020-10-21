@@ -1,5 +1,4 @@
-import React, { useState, useContext } from 'react';
-import { makeStyles } from '@material-ui/core';
+import React, { useState, useEffect, useContext } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
@@ -8,28 +7,26 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 
-import formStyles from '../assets/styles/formStyles';
 import UserContext from '../components/UserContext';
-
-const backdropStyles = makeStyles((theme) => ({
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
-  },
-}));
+import FormContext from '../components/FormContext';
+import { formStyles } from '../assets/styles/styles';
 
 const SignupPage = () => {
   const classes = formStyles();
-  const backdropClasses = backdropStyles();
   const [loading, setLoading] = useState(false);
   const [, setUser] = useContext(UserContext);
+  const [values, setValues] = useContext(FormContext);
   const history = useHistory();
+  const { register, errors, handleSubmit, watch, setError, getValues } = useForm();
 
-  const { register, errors, handleSubmit, watch } = useForm();
+  useEffect(() => {
+    const formValues = getValues();
+    setValues(formValues);
+    console.log(formValues);
+  }, [getValues, setValues]);
 
   const onFormSubmit = async (data) => {
     setLoading(true);
@@ -52,25 +49,27 @@ const SignupPage = () => {
 
       const res = await response.json();
       console.log(res);
-      const userData = res.user_info;
+      if (res.status !== false) {
+        const userData = res.user_info;
 
-      localStorage.setItem(
-        'user',
-        JSON.stringify({
+        localStorage.setItem('user', JSON.stringify(userData));
+
+        setUser({
           firstName: userData.first_name,
           lastName: userData.last_name,
           email: userData.email,
-        })
-      );
-
-      setUser({
-        firstName: userData.first_name,
-        lastName: userData.last_name,
-        email: userData.email,
-      });
-
-      setLoading(false);
-      history.push('/campaigns');
+          accessToken: userData.access_token,
+          refreshToken: userData.refresh_token,
+        });
+        setLoading(false);
+        history.push('/campaigns');
+      } else {
+        setLoading(false);
+        setError('email', {
+          type: 'manual',
+          message: 'Email already in use',
+        });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -78,7 +77,7 @@ const SignupPage = () => {
 
   if (loading) {
     return (
-      <Backdrop className={backdropClasses.backdrop} open={loading}>
+      <Backdrop className={classes.backdrop} open={loading}>
         <CircularProgress />
       </Backdrop>
     );
@@ -105,6 +104,7 @@ const SignupPage = () => {
                   name="firstName"
                   label="First Name"
                   autoComplete="firstName"
+                  defaultValue={values?.firstName || ''}
                   inputRef={register({
                     required: 'First name is required',
                     minLength: {
@@ -130,6 +130,7 @@ const SignupPage = () => {
                   name="lastName"
                   label="Last Name"
                   autoComplete="lastName"
+                  defaultValue={values?.lastName || ''}
                   inputRef={register({
                     required: 'Last name is required',
                     minLength: {
@@ -155,6 +156,7 @@ const SignupPage = () => {
                   name="email"
                   label="Email Address"
                   autoComplete="email"
+                  defaultValue={values?.email || ''}
                   inputRef={register({
                     required: 'Email address is required',
                     pattern: {
