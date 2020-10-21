@@ -12,7 +12,8 @@ const LoginPage = () => {
   const classes = formStyles();
   const history = useHistory;
 
-  const formikHandleSubmit = async (values, setSubmitting) => {
+  const formikHandleSubmit = async (values, setSubmitting, setFieldError) => {
+    const errors = {};
     try {
       const response = await fetch('/login', {
         method: 'POST',
@@ -23,27 +24,36 @@ const LoginPage = () => {
       });
 
       const res = await response.json();
-      const userData = res.user_info;
 
-      localStorage.setItem('user', JSON.stringify(userData));
+      if (res.user_info) {
+        const userData = res.user_info;
 
-      setUser({
-        firstName: userData.first_name,
-        lastName: userData.last_name,
-        email: userData.email,
-      });
-      setSubmitting(false);
-      history.push('/campaigns');
+        localStorage.setItem('user', JSON.stringify(userData));
+
+        setUser({
+          firstName: userData.first_name,
+          lastName: userData.last_name,
+          email: userData.email,
+        });
+        setSubmitting(false);
+        history.push('/campaigns');
+      } else {
+        // username / password mismatch
+        setFieldError('email', 'Invalid username/password combo');
+        setSubmitting(false);
+        return errors;
+      }
     } catch (err) {
-      console.log(err);
+      console.log('Bad Request', err);
+      setSubmitting(false);
     }
   };
 
   return (
     <Formik
       initialValues={{ email: '', password: '' }}
-      onSubmit={(values, { setSubmitting }) => {
-        formikHandleSubmit(values, setSubmitting);
+      onSubmit={(values, { setSubmitting, setFieldError }) => {
+        formikHandleSubmit(values, setSubmitting, setFieldError);
       }}
       validationSchema={Yup.object().shape({
         email: Yup.string().email('Invalid email').required('Email is required'),
