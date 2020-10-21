@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,6 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
+import tableStyles from '../assets/styles/tableStyles';
 
 const createData = (datum) => ({ ...datum });
 
@@ -95,58 +95,14 @@ const EnhancedTableHead = ({
   );
 };
 
-// TODO: add styling to .MuiTableContainer-root - remove overflow
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: theme.spacing(8),
-  },
-  paper: {
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    borderRadius: theme.shape.borderRadius,
-    margin: theme.spacing(1),
-  },
-  head: {
-    backgroundColor: theme.palette.primary.main,
-  },
-  headText: {
-    fontWeight: 600,
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
-  },
-  blank: {
-    display: 'none',
-  },
-  container: {
-    maxHeight: 650,
-  },
-  tableRow: {
-    '&$hover:hover': {
-      backgroundColor: theme.palette.primary.main,
-    },
-  },
-  tableCell: {
-    color: 'white',
-    fontWeight: 600,
-    '&.MuiTableSortLabel-root.MuiTableSortLabel-active': {
-      color: 'white',
-    },
-  },
-}));
-
-const EnhancedDataTable = ({ data, ariaLabel, headCells, requiresCheckbox, initialSortBy }) => {
-  const classes = useStyles();
+const EnhancedDataTable = ({
+  data,
+  ariaLabel,
+  headCells,
+  requiresCheckbox,
+  initialSortBy = 'id',
+}) => {
+  const classes = tableStyles();
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState(initialSortBy);
   const [selected, setSelected] = useState([]);
