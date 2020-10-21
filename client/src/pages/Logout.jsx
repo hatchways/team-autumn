@@ -1,15 +1,12 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 import UserContext from '../components/UserContext';
-import { formStyles } from '../assets/styles/styles';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Logout = () => {
   const [user, setUser] = useContext(UserContext);
   const [loading, setLoading] = useState(false);
-  const classes = formStyles();
   useEffect(() => {
     const logout = async () => {
       setLoading(true);
@@ -32,11 +29,7 @@ const Logout = () => {
   }, [setUser, user?.accessToken]);
 
   if (loading) {
-    return (
-      <Backdrop className={classes.backdrop} open={loading}>
-        <CircularProgress />
-      </Backdrop>
-    );
+    return <LoadingSpinner open={loading} />;
   }
   return <Redirect to="/signup" />;
 };
