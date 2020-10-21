@@ -1,12 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-
-import UserContext from './UserContext';
+import Cookies from 'js-cookie';
 
 const PublicRoute = ({ component, ...rest }) => {
-  const [user] = useContext(UserContext);
-  // const userData = localStorage.getItem('user');
-  if (!user) {
+  const accessToken = Cookies.get('accessToken');
+  if (!accessToken) {
     return <Route {...rest} component={component} />;
   }
   return <Redirect to="/campaigns" />;

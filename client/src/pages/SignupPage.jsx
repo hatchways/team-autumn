@@ -86,7 +86,7 @@ const SignupPage = () => {
                         label="Your first name"
                         type="text"
                         disabled={isSubmitting}
-                        error={errors.firstName}
+                        error={!!errors.firstName}
                         helperText={errors.firstName}
                         onBlur={handleBlur}
                         onChange={handleChange}
@@ -103,7 +103,7 @@ const SignupPage = () => {
                         label="Your last name"
                         type="text"
                         disabled={isSubmitting}
-                        error={errors.lastName}
+                        error={!!errors.lastName}
                         helperText={errors.lastName}
                         onBlur={handleBlur}
                         onChange={handleChange}
@@ -120,7 +120,7 @@ const SignupPage = () => {
                         label="Your email"
                         type="email"
                         disabled={isSubmitting}
-                        error={errors.email}
+                        error={!!errors.email}
                         helperText={errors.email}
                         onBlur={handleBlur}
                         onChange={handleChange}
@@ -137,7 +137,7 @@ const SignupPage = () => {
                         label="Password"
                         type="password"
                         disabled={isSubmitting}
-                        error={errors.password}
+                        error={!!errors.password}
                         helperText={errors.password}
                         onBlur={handleBlur}
                         onChange={handleChange}
@@ -154,7 +154,7 @@ const SignupPage = () => {
                         label="Confirm password"
                         type="password"
                         disabled={isSubmitting}
-                        error={errors.confirmPassword}
+                        error={!!errors.confirmPassword}
                         helperText={errors.confirmPassword}
                         onBlur={handleBlur}
                         onChange={handleChange}

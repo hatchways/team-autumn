@@ -3,6 +3,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { Container, Box, Grid, Typography, TextField, Button } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 import UserContext from '../components/UserContext';
 import { formStyles } from '../assets/styles/styles';
@@ -10,7 +11,7 @@ import { formStyles } from '../assets/styles/styles';
 const LoginPage = () => {
   const [, setUser] = useContext(UserContext);
   const classes = formStyles();
-  const history = useHistory;
+  const history = useHistory();
 
   const formikHandleSubmit = async (values, setSubmitting, setFieldError) => {
     try {
@@ -26,8 +27,8 @@ const LoginPage = () => {
 
       if (res.user_info) {
         const userData = res.user_info;
-
-        localStorage.setItem('user', JSON.stringify(userData));
+        Cookies.set('refreshToken', userData.refresh_token);
+        Cookies.set('accessToken', userData.access_token);
 
         setUser({
           firstName: userData.first_name,
@@ -43,7 +44,6 @@ const LoginPage = () => {
       }
     } catch (err) {
       console.log('Bad Request', err);
-      setSubmitting(false);
     }
   };
 
@@ -83,7 +83,7 @@ const LoginPage = () => {
                         label="Your email"
                         type="email"
                         disabled={isSubmitting}
-                        error={errors.email}
+                        error={!!errors.email}
                         helperText={errors.email}
                         onBlur={handleBlur}
                         onChange={handleChange}
@@ -100,7 +100,7 @@ const LoginPage = () => {
                         label="Password"
                         type="password"
                         disabled={isSubmitting}
-                        error={errors.password}
+                        error={!!errors.password}
                         helperText={errors.password}
                         onBlur={handleBlur}
                         onChange={handleChange}

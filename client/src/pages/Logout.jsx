@@ -1,18 +1,17 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Cookies from 'js-cookie';
 
-import UserContext from '../components/UserContext';
 import { formStyles } from '../assets/styles/styles';
 
 const Logout = () => {
-  const [user, setUser] = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const classes = formStyles();
   useEffect(() => {
     const logout = async () => {
-      const { accessToken } = user;
+      const accessToken = Cookies.get('accessToken');
       try {
         const response = await fetch('/logout', {
           method: 'POST',
@@ -21,15 +20,15 @@ const Logout = () => {
           },
         });
         await response.json(); // later, verify logout succeeded before continuing
-        localStorage.removeItem('user');
-        setUser();
+        Cookies.remove('accessToken');
+        Cookies.remove('refreshToken');
+        setLoading(false);
       } catch (err) {
         console.log(err);
       }
     };
     logout();
-    setLoading(false);
-  }, [setUser, user]);
+  }, []);
 
   if (loading) {
     return (
