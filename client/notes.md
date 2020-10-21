@@ -10,5 +10,5 @@
 Three potential paths:
 
 - success -> server responds with 201
-- email in use -> server responds with 400
+- email in use -> server responds with 400 (need to figure out how to save form values between requests - maybe sessionStorage?)
 - invalid credentials -> server responds with 400

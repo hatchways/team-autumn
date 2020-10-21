@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MuiThemeProvider } from '@material-ui/core';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Switch } from 'react-router-dom';
 
 import { theme } from '../assets/themes/theme';
 import SignupPage from '../pages/Signup';
@@ -12,6 +12,7 @@ import ReportingPage from '../pages/ReportingPage';
 import ProfilePage from '../pages/ProfilePage';
 import Logout from '../pages/Logout';
 import ProtectedRoute from './ProtectedRoute';
+import PublicRoute from './PublicRoute';
 import Layout from './Layout';
 import UserContext from './UserContext';
 import FormContext from './FormContext';
@@ -22,7 +23,6 @@ const App = () => {
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user');
     if (loggedInUser) {
-      console.log(loggedInUser);
       const foundUser = JSON.parse(loggedInUser);
       setUser({
         firstName: foundUser.first_name,
@@ -48,8 +48,8 @@ const App = () => {
               <ProtectedRoute path="/profile" component={ProfilePage} />
               <ProtectedRoute path="/logout" component={Logout} />
               <FormContext.Provider value={[values, setValues]}>
-                <Route path="/signup" component={SignupPage} />
-                <Route path="/login" component={LoginPage} />
+                <PublicRoute path="/signup" component={SignupPage} />
+                <PublicRoute path="/login" component={LoginPage} />
               </FormContext.Provider>
             </Switch>
           </Layout>

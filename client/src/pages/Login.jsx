@@ -40,14 +40,7 @@ const LoginPage = () => {
       const res = await response.json();
       const userData = res.user_info;
 
-      localStorage.setItem(
-        'user',
-        JSON.stringify({
-          firstName: userData.first_name,
-          lastName: userData.last_name,
-          email: userData.email,
-        })
-      );
+      localStorage.setItem('user', JSON.stringify(userData));
 
       setUser({
         firstName: userData.first_name,

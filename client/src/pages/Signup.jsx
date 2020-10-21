@@ -25,7 +25,7 @@ const SignupPage = () => {
   useEffect(() => {
     const formValues = getValues();
     setValues(formValues);
-    console.log(formValues);
+    // console.log(formValues);
   }, [getValues, setValues]);
 
   const onFormSubmit = async (data) => {
@@ -48,7 +48,7 @@ const SignupPage = () => {
       });
 
       const res = await response.json();
-      console.log(res);
+      // console.log(res);
       if (res.status !== false) {
         const userData = res.user_info;
 
