@@ -8,12 +8,11 @@ import { formStyles } from '../assets/styles/styles';
 
 const Logout = () => {
   const [user, setUser] = useContext(UserContext);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const classes = formStyles();
   useEffect(() => {
     const logout = async () => {
       const { accessToken } = user;
-      setLoading(true);
       try {
         const response = await fetch('/logout', {
           method: 'POST',
@@ -23,13 +22,13 @@ const Logout = () => {
         });
         await response.json(); // later, verify logout succeeded before continuing
         localStorage.removeItem('user');
-        setLoading(false);
         setUser();
       } catch (err) {
         console.log(err);
       }
     };
     logout();
+    setLoading(false);
   }, [setUser, user]);
 
   if (loading) {

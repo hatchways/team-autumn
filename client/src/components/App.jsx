@@ -3,7 +3,8 @@ import { MuiThemeProvider } from '@material-ui/core';
 import { BrowserRouter, Switch } from 'react-router-dom';
 
 import { theme } from '../assets/themes/theme';
-import SignupPage from '../pages/Signup';
+import SignupPage from '../pages/SignupPage';
+import LoginPage from '../pages/LoginPage';
 import CampaignsPage from '../pages/CampaignsPage';
 import ProspectsPage from '../pages/ProspectsPage';
 import TemplatesPage from '../pages/TemplatesPage';
@@ -15,7 +16,6 @@ import PublicRoute from './PublicRoute';
 import Layout from './Layout';
 import UserContext from './UserContext';
 import FormContext from './FormContext';
-import LoginPage from '../pages/LoginPage';
 
 const App = () => {
   const [user, setUser] = useState();
