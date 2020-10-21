@@ -5,13 +5,14 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 
 import UserContext from '../components/UserContext';
 import FormContext from '../components/FormContext';
 import { formStyles } from '../assets/styles/styles';
-import LoadingSpinner from '../components/LoadingSpinner';
 
 const SignupPage = () => {
   const classes = formStyles();
@@ -74,7 +75,11 @@ const SignupPage = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner open={loading} />;
+    return (
+      <Backdrop className={classes.backdrop} open={loading}>
+        <CircularProgress />
+      </Backdrop>
+    );
   }
   return (
     <Container component="main" maxWidth="sm">

@@ -5,9 +5,7 @@ import UserContext from './UserContext';
 
 const PublicRoute = ({ component, ...rest }) => {
   const [user] = useContext(UserContext);
-  const userData = localStorage.getItem('user');
-  console.log(user);
-  console.log(userData);
+  // const userData = localStorage.getItem('user');
   if (!user) {
     return <Route {...rest} component={component} />;
   }
