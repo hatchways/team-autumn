@@ -1,170 +1,191 @@
 import React, { useContext } from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import { useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
-
-import formStyles from '../../assets/styles/formStyles';
-import buttonStyles from '../../assets/styles/buttonStyles';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { Container, Box, Grid, Typography, TextField, Button } from '@material-ui/core';
+import { Redirect, useHistory } from 'react-router-dom';
 
 import UserContext from '../../contexts/UserContext';
+import { formStyles } from '../../assets/styles/styles';
 
 const SignupPage = () => {
-  const formClasses = formStyles();
-  const buttonClasses = buttonStyles();
-  const [, setUser] = useContext(UserContext);
-  const history = useHistory();
+  const [user, setUser] = useContext(UserContext);
+  const classes = formStyles();
+  const history = useHistory;
 
-  const { register, errors, handleSubmit, watch } = useForm({ mode: 'onBlur' });
+  const formikHandleSubmit = async (values, setSubmitting, setFieldError) => {
+    try {
+      const response = await fetch('/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
 
-  const onFormSubmit = (data) => {
-    setUser({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      profilePicture: 'https://unsplash.com/photos/ILip77SbmOE',
-    });
-    history.push('/campaigns');
+      const res = await response.json();
+
+      if (res.user_info) {
+        const userData = res.user_info;
+
+        setUser({
+          firstName: userData.first_name,
+          lastName: userData.last_name,
+          email: userData.email,
+        });
+
+        setSubmitting(false);
+        history.push('/campaigns');
+      } else {
+        // email is already in use
+        setFieldError('email', 'Email is already in use');
+        setSubmitting(false);
+      }
+    } catch (err) {
+      console.log('Bad Request', err);
+      setSubmitting(false);
+    }
   };
 
+  if (user) {
+    return <Redirect to="/campaigns" />;
+  }
+
   return (
-    <Container component="main" maxWidth="sm">
-      <Box boxShadow={1}>
-        <div className={formClasses.paper}>
-          <Typography className={formClasses.title} component="h2" variant="h4">
-            Create an account
-          </Typography>
-          <form className={formClasses.form} onSubmit={handleSubmit((data) => onFormSubmit(data))}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  required
-                  autoFocus
-                  color="primary"
-                  error={!!errors.firstName}
-                  helperText={errors.firstName?.message}
-                  variant="outlined"
-                  id="firstName"
-                  name="firstName"
-                  label="First Name"
-                  autoComplete="firstName"
-                  inputRef={register({
-                    required: 'First name is required',
-                    minLength: {
-                      value: 2,
-                      message: 'First name must be at least two characters long',
-                    },
-                    pattern: {
-                      value: /^[A-Za-z]+$/i,
-                      message: 'Only letters allowed in first name',
-                    },
-                  })}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  required
-                  color="primary"
-                  error={!!errors.lastName}
-                  helperText={errors.lastName?.message}
-                  variant="outlined"
-                  id="lastName"
-                  name="lastName"
-                  label="Last Name"
-                  autoComplete="lastName"
-                  inputRef={register({
-                    required: 'Last name is required',
-                    minLength: {
-                      value: 2,
-                      message: 'Last name must be at least two characters long',
-                    },
-                    pattern: {
-                      value: /^[A-Za-z]+$/i,
-                      message: 'Only letters allowed in last name',
-                    },
-                  })}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  required
-                  color="primary"
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
-                  variant="outlined"
-                  id="email"
-                  name="email"
-                  label="Email Address"
-                  autoComplete="email"
-                  inputRef={register({
-                    required: 'Email address is required',
-                    pattern: {
-                      value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-                      message: 'Valid email format: xxxx@yyy.zzz',
-                    },
-                  })}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  required
-                  color="primary"
-                  error={!!errors.password}
-                  helperText={errors.password?.message}
-                  variant="outlined"
-                  id="password"
-                  name="password"
-                  label="Password"
-                  type="password"
-                  inputRef={register({
-                    required: 'Password is required',
-                    minLength: { value: 6, message: 'Password must be at least six characters' },
-                  })}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  required
-                  color="primary"
-                  error={!!errors.confirmPassword}
-                  helperText={errors.confirmPassword?.message}
-                  variant="outlined"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  label="Confirm Password"
-                  type="password"
-                  inputRef={register({
-                    validate: (val) => val === watch('password') || 'Passwords must match',
-                  })}
-                />
-              </Grid>
-            </Grid>
-            <Grid item container className={formClasses.centered} xs={12}>
-              <Grid item xs={4}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  fullWidth
-                  color="primary"
-                  className={`${buttonClasses.base} ${buttonClasses.action}`}
-                >
-                  Create
-                </Button>
-              </Grid>
-            </Grid>
-          </form>
-        </div>
-      </Box>
-    </Container>
+    <Formik
+      initialValues={{ email: '', password: '' }}
+      onSubmit={(values, { setSubmitting, setFieldError }) => {
+        formikHandleSubmit(values, setSubmitting, setFieldError);
+      }}
+      validationSchema={Yup.object().shape({
+        firstName: Yup.string().required('This field is required'),
+        lastName: Yup.string().required('This field is required'),
+        email: Yup.string().email('Invalid email').required('This field is required'),
+        password: Yup.string().required('This field is required'),
+        confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
+      })}
+      validateOnBlur={false}
+      validateOnChange={false}
+    >
+      {(props) => {
+        const { values, errors, isSubmitting, handleChange, handleBlur, handleSubmit } = props;
+
+        return (
+          <Container component="main" maxWidth="sm">
+            <Box boxShadow={1}>
+              <div className={classes.paper}>
+                <Typography className={classes.title} component="h2" variant="h4">
+                  Sign up
+                </Typography>
+                <form className={classes.form} onSubmit={handleSubmit}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        required
+                        autoFocus
+                        variant="outlined"
+                        id="firstName"
+                        name="firstName"
+                        label="Your first name"
+                        type="text"
+                        disabled={isSubmitting}
+                        error={!!errors.firstName}
+                        helperText={errors.firstName}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.firstName}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        required
+                        variant="outlined"
+                        id="lastName"
+                        name="lastName"
+                        label="Your last name"
+                        type="text"
+                        disabled={isSubmitting}
+                        error={!!errors.lastName}
+                        helperText={errors.lastName}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.lastName}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        required
+                        variant="outlined"
+                        id="email"
+                        name="email"
+                        label="Your email"
+                        type="email"
+                        disabled={isSubmitting}
+                        error={!!errors.email}
+                        helperText={errors.email}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.email}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        required
+                        variant="outlined"
+                        id="password"
+                        name="password"
+                        label="Password"
+                        type="password"
+                        disabled={isSubmitting}
+                        error={!!errors.password}
+                        helperText={errors.password}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.password}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        required
+                        variant="outlined"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        label="Confirm password"
+                        type="password"
+                        disabled={isSubmitting}
+                        error={!!errors.confirmPassword}
+                        helperText={errors.confirmPassword}
+                        onBlur={handleBlur}
+                        onChange={handleChange}
+                        value={values.confirmPassword}
+                      />
+                    </Grid>
+                  </Grid>
+                  <Grid className={classes.centered} item container xs={12}>
+                    <Grid item xs={4}>
+                      <Button
+                        fullWidth
+                        disabled={isSubmitting}
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        className={classes.action}
+                      >
+                        Create
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </form>
+              </div>
+            </Box>
+          </Container>
+        );
+      }}
+    </Formik>
   );
 };
 
