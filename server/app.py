@@ -1,4 +1,4 @@
-from flask import Flask, request, current_app
+from flask import Flask
 from api.ping_handler import ping_handler
 from api.home_handler import home_handler
 from api.register_handler import register_handler

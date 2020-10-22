@@ -2,13 +2,13 @@ import React, { useContext } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { Container, Box, Grid, Typography, TextField, Button } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 
 import UserContext from '../components/UserContext';
 import { formStyles } from '../assets/styles/styles';
 
 const SignupPage = () => {
-  const [, setUser] = useContext(UserContext);
+  const [user, setUser] = useContext(UserContext);
   const classes = formStyles();
   const history = useHistory;
 
@@ -27,13 +27,12 @@ const SignupPage = () => {
       if (res.user_info) {
         const userData = res.user_info;
 
-        localStorage.setItem('user', JSON.stringify(userData));
-
         setUser({
           firstName: userData.first_name,
           lastName: userData.last_name,
           email: userData.email,
         });
+
         setSubmitting(false);
         history.push('/campaigns');
       } else {
@@ -46,6 +45,10 @@ const SignupPage = () => {
       setSubmitting(false);
     }
   };
+
+  if (user) {
+    return <Redirect to="/campaigns" />;
+  }
 
   return (
     <Formik
@@ -71,7 +74,7 @@ const SignupPage = () => {
             <Box boxShadow={1}>
               <div className={classes.paper}>
                 <Typography className={classes.title} component="h2" variant="h4">
-                  Login to your account
+                  Sign up
                 </Typography>
                 <form className={classes.form} onSubmit={handleSubmit}>
                   <Grid container spacing={2}>
@@ -172,7 +175,7 @@ const SignupPage = () => {
                         color="primary"
                         className={classes.action}
                       >
-                        Login
+                        Create
                       </Button>
                     </Grid>
                   </Grid>
