@@ -1,14 +1,37 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+import { formStyles } from '../assets/styles/styles';
 import UserContext from '../components/UserContext';
 
 const Logout = () => {
-  const [user, setUser] = useContext(UserContext);
+  const [, setUser] = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
+  const classes = formStyles();
   useEffect(() => {
-    setUser(false);
+    setLoading(true);
+    fetch('/logout', { method: 'POST' })
+      .then((response) => response.json())
+      .then(() => {
+        setUser();
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
   }, [setUser]);
 
-  return <Redirect to="signup" />;
+  if (loading) {
+    return (
+      <Backdrop className={classes.backdrop} open={loading}>
+        <CircularProgress />
+      </Backdrop>
+    );
+  }
+  return <Redirect to="/login" />;
 };
 
 export default Logout;

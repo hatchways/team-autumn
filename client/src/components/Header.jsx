@@ -1,12 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { AppBar, Toolbar, Button, Typography, Avatar, Menu, MenuItem } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { Link, useLocation } from 'react-router-dom';
 
-import UserContext from './UserContext';
 import portrait from '../assets/images/portrait.png';
 import TabNav from './TabNav';
-import headerStyles from '../assets/styles/headerStyles';
+import { headerStyles } from '../assets/styles/styles';
+import UserContext from './UserContext';
 
 const tabs = [
   {
@@ -73,12 +73,7 @@ const LoggedInNav = () => {
     setAnchorEl(null);
   };
 
-  const renderAvatar = () =>
-    user.profilePicture ? (
-      <Avatar alt={`${user.firstName} ${user.lastName}`} src={portrait} />
-    ) : (
-      <Avatar>{`${user.firstName[0]}${user.lastName[0]}`}</Avatar>
-    );
+  const renderAvatar = () => <Avatar alt="Avatar" src={portrait} />;
   return (
     <>
       <TabNav tabs={tabs} />
@@ -90,21 +85,7 @@ const LoggedInNav = () => {
       >
         {`${user.firstName} ${user.lastName}`}
       </Button>
-      <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-        keepMounted
-        open={!!anchorEl}
-        onClose={handleClose}
-      >
+      <Menu id="user-menu" anchorEl={anchorEl} keepMounted open={!!anchorEl} onClose={handleClose}>
         <MenuItem onClick={handleClose}>
           <Link className={classes.tabLink} to="/profile">
             Profile

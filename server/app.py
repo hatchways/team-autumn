@@ -19,4 +19,3 @@ app.register_blueprint(home_handler)
 app.register_blueprint(ping_handler)
 app.register_blueprint(register_handler)
 app.register_blueprint(auth_handler)
-

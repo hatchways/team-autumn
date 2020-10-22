@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MuiThemeProvider } from '@material-ui/core';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
 import { theme } from '../assets/themes/theme';
-import SignupPage from '../pages/Signup';
-import LoginPage from '../pages/Login';
+import SignupPage from '../pages/SignupPage';
+import LoginPage from '../pages/LoginPage';
 import CampaignsPage from '../pages/CampaignsPage';
 import ProspectsPage from '../pages/ProspectsPage';
 import TemplatesPage from '../pages/TemplatesPage';
@@ -15,8 +15,26 @@ import ProtectedRoute from './ProtectedRoute';
 import Layout from './Layout';
 import UserContext from './UserContext';
 
-function App() {
-  const [user, setUser] = useState(false);
+const App = () => {
+  const [user, setUser] = useState();
+  useEffect(() => {
+    const fetchUser = async () => {
+      const response = await fetch('/refresh', {
+        method: 'POST',
+      });
+      const r = await response.json();
+      const userData = r.user_info;
+      if (userData) {
+        setUser({
+          firstName: userData.first_name,
+          lastName: userData.last_name,
+          email: userData.email,
+        });
+      }
+    };
+    fetchUser();
+  }, []);
+
   return (
     <MuiThemeProvider theme={theme}>
       <UserContext.Provider value={[user, setUser]}>
@@ -38,6 +56,6 @@ function App() {
       </UserContext.Provider>
     </MuiThemeProvider>
   );
-}
+};
 
 export default App;
