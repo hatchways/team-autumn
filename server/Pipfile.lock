@@ -1,7 +1,11 @@
 {
     "_meta": {
         "hash": {
+<<<<<<< HEAD
             "sha256": "a213303952244b1767a494c21e2f0f50ab5059b023b5553a8fb8deaf0dac78c8"
+=======
+            "sha256": "7e7ef69da7248742e869378f8421880cf8f0017f96d94d086813baa518a65489"
+>>>>>>> added dependency on react-papaparse
         },
         "pipfile-spec": 6,
         "requires": {
@@ -15,6 +19,7 @@
             }
         ]
     },
+<<<<<<< HEAD
     "default": {
         "attrs": {
             "hashes": [
@@ -551,4 +556,8 @@
             "version": "==1.12.1"
         }
     }
+=======
+    "default": {},
+    "develop": {}
+>>>>>>> added dependency on react-papaparse
 }
