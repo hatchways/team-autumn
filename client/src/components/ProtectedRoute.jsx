@@ -1,14 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import Cookies from 'js-cookie';
+import UserContext from './UserContext';
 
 const PrivateRoute = ({ component, ...rest }) => {
-  const accessToken = Cookies.get('accessToken');
-
-  if (accessToken) {
-    return <Route {...rest} component={component} />;
-  }
-  return <Redirect to="/signup" />;
+  const [user] = useContext(UserContext);
+  return user ? <Route {...rest} component={component} /> : <Redirect to="/signup" />;
 };
 
 export default PrivateRoute;

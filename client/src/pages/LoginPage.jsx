@@ -2,14 +2,13 @@ import React, { useContext } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { Container, Box, Grid, Typography, TextField, Button } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
-import Cookies from 'js-cookie';
+import { Redirect, useHistory } from 'react-router-dom';
 
 import UserContext from '../components/UserContext';
 import { formStyles } from '../assets/styles/styles';
 
 const LoginPage = () => {
-  const [, setUser] = useContext(UserContext);
+  const [user, setUser] = useContext(UserContext);
   const classes = formStyles();
   const history = useHistory();
 
@@ -27,14 +26,13 @@ const LoginPage = () => {
 
       if (res.user_info) {
         const userData = res.user_info;
-        Cookies.set('refreshToken', userData.refresh_token);
-        Cookies.set('accessToken', userData.access_token);
 
         setUser({
           firstName: userData.first_name,
           lastName: userData.last_name,
           email: userData.email,
         });
+
         setSubmitting(false);
         history.push('/campaigns');
       } else {
@@ -46,6 +44,10 @@ const LoginPage = () => {
       console.log('Bad Request', err);
     }
   };
+
+  if (user) {
+    return <Redirect to="/campaigns" />;
+  }
 
   return (
     <Formik

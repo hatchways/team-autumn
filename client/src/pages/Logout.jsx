@@ -1,34 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Cookies from 'js-cookie';
 
 import { formStyles } from '../assets/styles/styles';
+import UserContext from '../components/UserContext';
 
 const Logout = () => {
-  const [loading, setLoading] = useState(true);
+  const [, setUser] = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
   const classes = formStyles();
   useEffect(() => {
-    const logout = async () => {
-      const accessToken = Cookies.get('accessToken');
-      try {
-        const response = await fetch('/logout', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer +${accessToken}`,
-          },
-        });
-        await response.json(); // later, verify logout succeeded before continuing
-        Cookies.remove('accessToken');
-        Cookies.remove('refreshToken');
+    setLoading(true);
+    fetch('/logout', { method: 'POST' })
+      .then((response) => response.json())
+      .then(() => {
+        setUser();
         setLoading(false);
-      } catch (err) {
+      })
+      .catch((err) => {
         console.log(err);
-      }
-    };
-    logout();
-  }, []);
+        setLoading(false);
+      });
+  }, [setUser]);
 
   if (loading) {
     return (
