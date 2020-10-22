@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 
 import ProspectsContext from '../../contexts/ProspectsContext';
 import EnhancedDataTable from '../../components/EnhancedDataTable';
-import ComboButton from '../../components/ComboButton';
+// import ComboButton from '../../components/ComboButton';
 
 const useStyles = makeStyles(() => ({
   mainGrid: {
@@ -56,7 +56,7 @@ const headCells = [
   { id: 'lastContacted', numeric: false, disablePadding: false, label: 'Last Contacted' },
 ];
 
-const options = ['Upload new prospect', 'Upload prospects from file'];
+// const options = ['Upload new prospect', 'Upload prospects from file'];
 
 const ProspectsContent = () => {
   const classes = useStyles();
@@ -68,7 +68,7 @@ const ProspectsContent = () => {
         <Typography component="h3" variant="h6">
           Prospects
         </Typography>
-        <ComboButton ariaLabel="upload prospects" options={options} />
+        {/* button goes here */}
       </Grid>
       <EnhancedDataTable
         className={classes.table}
