@@ -79,13 +79,15 @@ class User(MongoModel):
         """
         if not self.is_oauthed:
             return None
-        authed_session = AuthorizedSession(Credentials.from_authorized_user_info(self.gmail_oauth_info.to_dict()))
+        authed_session = AuthorizedSession(
+            Credentials.from_authorized_user_info(self.gmail_oauth_info.to_dict()))
         return authed_session
 
     def get_gmail_profile(self):
         _token = self._session.credentials.token
 
-        res = self._session.get("https://gmail.googleapis.com/gmail/v1/users/me/profile?alt=json")
+        res = self._session.get(
+            "https://gmail.googleapis.com/gmail/v1/users/me/profile?alt=json")
         if self._session.credentials.token != _token:
             self.save_credentials(self._session.credentials)
         return res.text
@@ -105,5 +107,52 @@ class User(MongoModel):
         # This model will be used in the connection "user-db"
         connection_alias = 'user-db'
         ignore_unknown_fields = True
-        # Save all referenced object when save is called on this.
-        # cascade = True
+
+
+class Prospect(MongoModel):
+    """
+    Prospect Model
+    Example:
+      from pymodm.connection import connect
+      connect("mongodb://localhost:8000/db", alias="prospect-db")
+      new_prospect = Prospect("steven@example.com", first_name="Steven",
+                              last_name="McGrath", status="open").save()
+
+    """
+    owner_email: fields.EmailField()
+    email = fields.EmailField()
+    first_name = fields.CharField()
+    last_name = fields.CharField()
+    status = fields.CharField()
+
+    @staticmethod
+    def get_by_owner_email(owner_email):
+        """
+        This method finds all prospects which have specified owner_email
+        """
+        ret = Prospect.objects.raw({"owner_email": owner_email})
+        ret_list = list(ret)
+        return ret_list if ret_list else None
+
+    @staticmethod
+    def check_duplicate_prospect(owner_email, email):
+        """
+        This method checks whether the specified owner email is
+        already associated with the specified email
+        """
+        ret = Prospect.objects.raw(
+            {"owner_email": owner_email, "email": email})
+        ret_list = list(ret)  # might just need to  check ret
+        return True if ret_list else None
+
+    def to_dict(self):
+        ret = self.to_son().to_dict()
+        if "_cls" in ret:
+            del ret["_cls"]
+        if "_id" in ret:
+            del ret["_id"]
+        return ret
+
+    class Meta:
+        connection_alias = "prospect-db"
+        ignore_unknown_fields = True
