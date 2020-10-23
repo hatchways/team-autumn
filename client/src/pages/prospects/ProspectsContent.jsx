@@ -14,16 +14,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  buttonGrid: {
-    flexBasis: 'auto',
-    justifyContent: 'flex-end',
-    marginRight: theme.spacing(-4),
-  },
   faded: {
     color: '#9e9e9e',
-  },
-  centered: {
-    justifyContent: 'center',
   },
 }));
 
