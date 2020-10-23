@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+
+[packages]
+flask = "1.1.2"
+pymodm = "0.4.3"
+flask-bcrypt = "0.7.1"
+pymongo = {extras = ["srv"], version = "3.11.0"}
+flask-jwt-extended = "3.24.1"
+jsonschema = "3.2.0"
+python-dotenv = "0.14.0"
+
+[requires]
+python_version = "3.7"
