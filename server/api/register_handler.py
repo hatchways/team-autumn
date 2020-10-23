@@ -43,10 +43,11 @@ def register_entry():
     if not request.is_json:
         return fail_response(error_code.MIME_NOT_JSON), 400
     err, user_json = validate_json_input(request.get_json(), user_schema)
+
     if err:
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
     if user_json["password"] != user_json["confirm_password"]:
-        return fail_response(error_code.PASSWORD_MISMATCH)
+        return fail_response(error_code.PASSWORD_MISMATCH), 400
 
     # Assumption: user input is legit now
 
@@ -54,8 +55,11 @@ def register_entry():
     if User.get_by_email(user_json["email"]):
         return fail_response(error_code.USER_EXIST)
 
+    # return 'User Created'
+
     # ADD TO db
-    salted_password = bcrypt.generate_password_hash(user_json["password"]).decode()
+    salted_password = bcrypt.generate_password_hash(
+        user_json["password"]).decode()
     user_json = user_json.copy()
     del user_json["password"]
     del user_json["confirm_password"]

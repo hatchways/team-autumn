@@ -1,12 +1,12 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { AppBar, Toolbar, Button, Typography, Avatar, Menu, MenuItem } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { Link, useLocation } from 'react-router-dom';
 
-import UserContext from './UserContext';
+import UserContext from '../contexts/UserContext';
 import portrait from '../assets/images/portrait.png';
 import TabNav from './TabNav';
-import headerStyles from '../assets/styles/headerStyles';
+import { headerStyles } from '../assets/styles/styles';
 
 const tabs = [
   {
@@ -59,8 +59,17 @@ const Signup = () => {
   );
 };
 
+const tabValues = {
+  campaigns: 0,
+  prospects: 1,
+  templates: 2,
+  reporting: 3,
+};
+
 const LoggedInNav = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const location = useLocation();
+  const tabValue = location.pathname.split('/')[1];
 
   const classes = headerStyles();
   const [user] = useContext(UserContext);
@@ -73,15 +82,10 @@ const LoggedInNav = () => {
     setAnchorEl(null);
   };
 
-  const renderAvatar = () =>
-    user.profilePicture ? (
-      <Avatar alt={`${user.firstName} ${user.lastName}`} src={portrait} />
-    ) : (
-      <Avatar>{`${user.firstName[0]}${user.lastName[0]}`}</Avatar>
-    );
+  const renderAvatar = () => <Avatar alt="Avatar" src={portrait} />;
   return (
     <>
-      <TabNav tabs={tabs} />
+      <TabNav tabs={tabs} initialState={tabValues[tabValue] || 0} />
       {renderAvatar()}
       <Button
         className={classes.profileButton}
@@ -90,21 +94,7 @@ const LoggedInNav = () => {
       >
         {`${user.firstName} ${user.lastName}`}
       </Button>
-      <Menu
-        id="simple-menu"
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-        keepMounted
-        open={!!anchorEl}
-        onClose={handleClose}
-      >
+      <Menu id="user-menu" anchorEl={anchorEl} keepMounted open={!!anchorEl} onClose={handleClose}>
         <MenuItem onClick={handleClose}>
           <Link className={classes.tabLink} to="/profile">
             Profile
@@ -113,6 +103,11 @@ const LoggedInNav = () => {
         <MenuItem onClick={handleClose}>
           <Link className={classes.tabLink} to="/logout">
             Logout
+          </Link>
+        </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link className={classes.tabLink} to="/gmail_auth">
+            Link Gmail
           </Link>
         </MenuItem>
       </Menu>

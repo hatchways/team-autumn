@@ -7,7 +7,7 @@ from api.util import *
 from api import error_code
 from addon import bcrypt, jwt
 from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, jwt_required, \
-    jwt_refresh_token_required,unset_jwt_cookies
+    jwt_refresh_token_required, unset_jwt_cookies
 import time
 
 login_schema = {
@@ -100,7 +100,8 @@ def refresh():
         int: HTTP status code
     """
     new_token = create_access_token(get_jwt_identity())
-    cur_response = success_response(user_info={"access_token": new_token}, refresh=True)
+    cur_response = success_response(
+        user_info={"access_token": new_token, **get_jwt_identity()}, refresh=True)
     set_access_cookies(cur_response, new_token)
     return cur_response, 200
 
