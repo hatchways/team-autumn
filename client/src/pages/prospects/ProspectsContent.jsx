@@ -27,36 +27,32 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// const testData = [
-//   {
-//     id: 1,
-//     email: 'steven@example.com',
-//     firstName: 'Steven',
-//     lastName: 'McGrath',
-//     status: 'open',
-//   },
-//   {
-//     id: 2,
-//     email: 'carrie@example.com',
-//     firstName: 'Carrie',
-//     lastName: 'Pascale',
-//     status: 'responded',
-//   },
-//   {
-//     id: 3,
-//     email: 'patton@example.com',
-//     firstName: 'Patton',
-//     lastName: 'L',
-//     status: 'responded',
-//   },
-//   {
-//     id: 4,
-//     email: 'shums@example.com',
-//     firstName: 'Shums',
-//     lastName: 'Kassam',
-//     status: 'unsubscribed',
-//   },
-// ];
+const testData = [
+  {
+    email: 'steven@example.com',
+    firstName: 'Steven',
+    lastName: 'McGrath',
+    status: 'open',
+  },
+  {
+    email: 'carrie@example.com',
+    firstName: 'Carrie',
+    lastName: 'Pascale',
+    status: 'responded',
+  },
+  {
+    email: 'patton@example.com',
+    firstName: 'Patton',
+    lastName: 'L',
+    status: 'responded',
+  },
+  {
+    email: 'shums@example.com',
+    firstName: 'Shums',
+    lastName: 'Kassam',
+    status: 'unsubscribed',
+  },
+];
 
 const headCells = [
   // { id: 'id', numeric: false, disablePadding: false, label: 'id' },
@@ -71,7 +67,7 @@ const ProspectsContent = () => {
   const buttonClasses = buttonStyles();
   const [user] = useContext(UserContext);
   const [search] = useContext(ProspectsContext);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(testData);
   const filteredData = data.filter((d) => d.email.includes(search));
 
   useEffect(() => {
@@ -89,7 +85,9 @@ const ProspectsContent = () => {
           lastName: prospect.last_name,
           status: prospect.status,
         }));
-        setData(prospects);
+        if (prospects.length > 0) {
+          setData(prospects);
+        }
       })
       .catch((err) => console.log(err));
   }, [user.email]);

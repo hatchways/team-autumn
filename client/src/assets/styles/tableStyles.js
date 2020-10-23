@@ -37,7 +37,7 @@ const tableStyles = makeStyles((theme) => ({
     display: 'none',
   },
   container: {
-    maxHeight: 650,
+    maxHeight: 500,
     padding: theme.spacing(1),
   },
   tableRow: {

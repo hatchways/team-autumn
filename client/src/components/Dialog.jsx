@@ -58,22 +58,22 @@ export default function AlertDialog() {
           >
             <GoogleButton
               onClick={async () => {
-                console.log("Google button clicked");
+                console.log('Google button clicked');
                 try {
-                    const response =  await fetch('/gmail_oauth_url', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        }
-                    });
-                    const res = await response.json();
-                    if (res.url) {
-                        window.location.href = res.url;
-                    }else{
-                        console.log('No url returned', res);
-                    }
+                  const response = await fetch('/gmail_oauth_url', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                  });
+                  const res = await response.json();
+                  if (res.url) {
+                    window.location.href = res.url;
+                  } else {
+                    console.log('No url returned', res);
+                  }
                 } catch (err) {
-                  console.log("Bad request",err);
+                  console.log('Bad request', err);
                 }
               }}
             />
