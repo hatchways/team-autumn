@@ -8,15 +8,18 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import Container from "@material-ui/core/Container";
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
 
 // these will eventually be accessed from UserContext and passed down as props
 // e.g. AlertDialog({ emailAuth, title, bodyText, buttonText }) {
 //     ...
 // }
 const emailAuth = false;
-const title = "Connect a Gmail Account";
+const title = "Gmail Auth Info";
 const bodyText =
-  "Connect a Gmail account to access all of MailSender's features.";
+  "User connected.";
 const buttonText = "Skip";
 
 export default function AlertDialog() {
@@ -59,27 +62,25 @@ export default function AlertDialog() {
               justifyContent: "center",
             }}
           >
-            <GoogleButton
+            <button
               onClick={async () => {
-                console.log("Google button clicked");
+                console.log("Info button clicked");
                 try {
-                    const response =  await fetch('/gmail_oauth_url', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        }
+                    const response =  await fetch('/gmail_profile', {
+                        method: 'GET',
                     });
                     const res = await response.json();
-                    if (res.url) {
-                        window.location.href = res.url;
+                    if (res.gmail_info) {
+                        alert(res.gmail_info)
                     }else{
                         console.log('No url returned', res);
                     }
                 } catch (err) {
                   console.log("Bad request",err);
                 }
-              }}
-            />
+              }}>
+                Click to get user info
+            </button>
           </div>
         </DialogContent>
         <DialogActions>
