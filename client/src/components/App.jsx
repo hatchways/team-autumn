@@ -10,7 +10,7 @@ import { formStyles } from '../assets/styles/styles';
 import SignupPage from '../pages/auth/SignupPage';
 import LoginPage from '../pages/auth/LoginPage';
 import Logout from '../pages/auth/LogoutPage';
-import CampaignPage from '../pages/campaigns/CampaignPage';
+import CampaignPage from '../pages/campaign/CampaignPage';
 import ProspectsPage from '../pages/prospects/ProspectsPage';
 import TemplatesPage from '../pages/templates/TemplatesPage';
 import ReportingPage from '../pages/reporting/ReportingPage';
