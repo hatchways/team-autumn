@@ -1,16 +1,12 @@
 // this component will eventually be rendered in the Dashboard page
 
 import React from "react";
-import GoogleButton from "react-google-button";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import Container from "@material-ui/core/Container";
-import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
 
 // these will eventually be accessed from UserContext and passed down as props
 // e.g. AlertDialog({ emailAuth, title, bodyText, buttonText }) {
