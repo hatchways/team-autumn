@@ -10,7 +10,7 @@ import { formStyles } from '../assets/styles/styles';
 import SignupPage from '../pages/auth/SignupPage';
 import LoginPage from '../pages/auth/LoginPage';
 import Logout from '../pages/auth/LogoutPage';
-import CampaignsPage from '../pages/campaigns/CampaignsPage';
+import CampaignPage from '../pages/campaign/CampaignPage';
 import ProspectsPage from '../pages/prospects/ProspectsPage';
 import TemplatesPage from '../pages/templates/TemplatesPage';
 import ReportingPage from '../pages/reporting/ReportingPage';
@@ -62,8 +62,8 @@ const App = () => {
         <BrowserRouter>
           <Layout>
             <Switch>
-              <ProtectedRoute exact path="/" component={CampaignsPage} />
-              <ProtectedRoute path="/campaigns" component={CampaignsPage} />
+              <ProtectedRoute exact path="/" component={CampaignPage} />
+              <ProtectedRoute path="/campaigns" component={CampaignPage} />
               <ProtectedRoute path="/prospects" component={ProspectsPage} />
               <ProtectedRoute path="/templates" component={TemplatesPage} />
               <ProtectedRoute path="/reporting" component={ReportingPage} />
