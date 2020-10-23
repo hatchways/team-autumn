@@ -15,5 +15,5 @@ DESC = ["_",
         "The 'Content-Type' is not set as 'application/json'",
         "Unauthorized access",
         "User's gmail oauth credentials is invalid",
-        "Error occurs when auth with google oauth server"
+        "Error occurs when auth with google oauth server",
         ]

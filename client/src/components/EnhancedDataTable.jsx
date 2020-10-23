@@ -192,10 +192,10 @@ const EnhancedDataTable = ({
                     )}
 
                     <TableCell component="th" align="left" id={labelId} scope="row">
-                      {row.id}
+                      {row.email}
                     </TableCell>
                     {Object.entries(row)
-                      .filter((e) => e[0] !== 'id')
+                      .filter((e) => e[0] !== 'email')
                       .map((entry) => (
                         <TableCell key={entry[1]}>{entry[1]}</TableCell>
                       ))}

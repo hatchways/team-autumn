@@ -32,14 +32,12 @@ def upload_prospects():
     # Change this to work with one or many prospects
 
     if not request.is_json:
-        current_app.logger.debug('not json')
         return fail_response(error_code.MIME_NOT_JSON), 400
     err, prospect_json = validate_json_input(
         request.get_json(), prospect_schema)
 
     if err:
-        current_app.logger.debug(err)
-        return fail_response(error_code.BAD_FORMAT), 400
+        return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
 
     # Potentially add check whether email and owner already exist
 
@@ -63,7 +61,21 @@ def upload_prospects():
     return success_response(), 201
 
 
-@ prospect_handler.route('/prospects', methods=['GET'])
+@prospect_handler.route('/prospects', methods=['GET'])
 def get_prospects():
-    # return all prospects
-    return 200
+
+    owner_email = request.args.get('owner_email')
+
+    if not owner_email:
+        return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
+
+    prospects_list = Prospect.objects.raw({'owner_email': owner_email})
+    prospects = []
+    for prospect in prospects_list:
+        prospects.append(prospect.to_dict())
+
+    # return all prospects associated with an owner email
+    return success_response(prospects=prospects), 200
+
+
+# prospects = prospects_list
