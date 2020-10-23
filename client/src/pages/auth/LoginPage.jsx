@@ -4,17 +4,17 @@ import * as Yup from 'yup';
 import { Container, Box, Grid, Typography, TextField, Button } from '@material-ui/core';
 import { Redirect, useHistory } from 'react-router-dom';
 
-import UserContext from '../components/UserContext';
-import { formStyles } from '../assets/styles/styles';
+import UserContext from '../../contexts/UserContext';
+import { formStyles } from '../../assets/styles/styles';
 
-const SignupPage = () => {
+const LoginPage = () => {
   const [user, setUser] = useContext(UserContext);
   const classes = formStyles();
-  const history = useHistory;
+  const history = useHistory();
 
   const formikHandleSubmit = async (values, setSubmitting, setFieldError) => {
     try {
-      const response = await fetch('/register', {
+      const response = await fetch('/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,13 +36,12 @@ const SignupPage = () => {
         setSubmitting(false);
         history.push('/campaigns');
       } else {
-        // email is already in use
-        setFieldError('email', 'Email is already in use');
+        // username / password mismatch
+        setFieldError('email', 'Invalid email/password combo');
         setSubmitting(false);
       }
     } catch (err) {
       console.log('Bad Request', err);
-      setSubmitting(false);
     }
   };
 
@@ -57,11 +56,8 @@ const SignupPage = () => {
         formikHandleSubmit(values, setSubmitting, setFieldError);
       }}
       validationSchema={Yup.object().shape({
-        firstName: Yup.string().required('This field is required'),
-        lastName: Yup.string().required('This field is required'),
         email: Yup.string().email('Invalid email').required('This field is required'),
         password: Yup.string().required('This field is required'),
-        confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords must match'),
       })}
       validateOnBlur={false}
       validateOnChange={false}
@@ -74,7 +70,7 @@ const SignupPage = () => {
             <Box boxShadow={1}>
               <div className={classes.paper}>
                 <Typography className={classes.title} component="h2" variant="h4">
-                  Sign up
+                  Login to your account
                 </Typography>
                 <form className={classes.form} onSubmit={handleSubmit}>
                   <Grid container spacing={2}>
@@ -83,40 +79,6 @@ const SignupPage = () => {
                         fullWidth
                         required
                         autoFocus
-                        variant="outlined"
-                        id="firstName"
-                        name="firstName"
-                        label="Your first name"
-                        type="text"
-                        disabled={isSubmitting}
-                        error={!!errors.firstName}
-                        helperText={errors.firstName}
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.firstName}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        required
-                        variant="outlined"
-                        id="lastName"
-                        name="lastName"
-                        label="Your last name"
-                        type="text"
-                        disabled={isSubmitting}
-                        error={!!errors.lastName}
-                        helperText={errors.lastName}
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.lastName}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        required
                         variant="outlined"
                         id="email"
                         name="email"
@@ -147,23 +109,6 @@ const SignupPage = () => {
                         value={values.password}
                       />
                     </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        required
-                        variant="outlined"
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        label="Confirm password"
-                        type="password"
-                        disabled={isSubmitting}
-                        error={!!errors.confirmPassword}
-                        helperText={errors.confirmPassword}
-                        onBlur={handleBlur}
-                        onChange={handleChange}
-                        value={values.confirmPassword}
-                      />
-                    </Grid>
                   </Grid>
                   <Grid className={classes.centered} item container xs={12}>
                     <Grid item xs={4}>
@@ -175,7 +120,7 @@ const SignupPage = () => {
                         color="primary"
                         className={classes.action}
                       >
-                        Create
+                        Login
                       </Button>
                     </Grid>
                   </Grid>
@@ -189,4 +134,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default LoginPage;
