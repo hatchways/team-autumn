@@ -1,13 +1,15 @@
-from flask import Flask,session
+import os
+import datetime
+from pymodm import connect
+from addon import bcrypt, jwt
+from api.prospect_handler import prospect_handler
+from api.gmail_auth_handler import gmail_auth_handler
+from flask import Flask, session
 from api.ping_handler import ping_handler
 from api.home_handler import home_handler
 from api.register_handler import register_handler
 from api.auth_handler import auth_handler
-from api.gmail_auth_handler import gmail_auth_handler
-from addon import bcrypt, jwt
-from pymodm import connect
-import datetime
-import os
+
 
 app = Flask(__name__)
 app.config.from_object("config.Config")
@@ -28,3 +30,6 @@ app.register_blueprint(gmail_auth_handler)
 def make_session_permanent():
     session.permanent = True
     app.permanent_session_lifetime = datetime.timedelta(minutes=5)
+
+
+app.register_blueprint(prospect_handler)

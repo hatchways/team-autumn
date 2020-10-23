@@ -114,12 +114,11 @@ class Prospect(MongoModel):
     Prospect Model
     Example:
       from pymodm.connection import connect
-      connect("mongodb://localhost:8000/db", alias="prospect-db")
-      new_prospect = Prospect("steven@example.com", first_name="Steven",
-                              last_name="McGrath", status="open").save()
+      connect("mongodb://localhost:8000/db", alias="user-db")
+      new_prospect=Prospect("steven@example.com", first_name="Steven", last_name="McGrath", status="open").save()
 
     """
-    owner_email: fields.EmailField()
+    owner_email = fields.EmailField()
     email = fields.EmailField()
     first_name = fields.CharField()
     last_name = fields.CharField()
@@ -154,5 +153,5 @@ class Prospect(MongoModel):
         return ret
 
     class Meta:
-        connection_alias = "prospect-db"
+        connection_alias = "user-db"
         ignore_unknown_fields = True

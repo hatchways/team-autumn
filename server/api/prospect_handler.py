@@ -1,9 +1,10 @@
 import json
-from flask import jsonify, request, Blueprint, Response
-from db.model import Prospect
+import os
 import jsonschema
-from api.util import get_schema, validate_json_input, fail_response
+from flask import jsonify, request, Blueprint, Response, current_app
+from db.model import Prospect
 from api import error_code
+from api.util import get_schema, validate_json_input, fail_response, success_response
 
 
 prospect_handler = Blueprint('prospect_handler', __name__)
@@ -12,8 +13,7 @@ prospect_handler = Blueprint('prospect_handler', __name__)
 prospect_schema = {
     "type": "object",
     "properties": {
-        # "user_id": get_schema(),
-        # "owner_email": get_schema(),
+        "owner_email": get_schema(format="email"),
         "first_name": get_schema(),
         "last_name": get_schema(),
         "email": get_schema(format="email"),
@@ -23,7 +23,7 @@ prospect_schema = {
 
 
 @prospect_handler.route('/upload_prospects', methods=['POST'])
-def upload_prospect():
+def upload_prospects():
     """
     API to handle the upload of prospects
     Fill this out later
@@ -32,23 +32,38 @@ def upload_prospect():
     # Change this to work with one or many prospects
 
     if not request.is_json:
+        current_app.logger.debug('not json')
         return fail_response(error_code.MIME_NOT_JSON), 400
     err, prospect_json = validate_json_input(
         request.get_json(), prospect_schema)
+
     if err:
-        return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
-    if not prospect_json["email"]:
-        return fail_response(error_code.EMAIL_REQUIRED), 400
+        current_app.logger.debug(err)
+        return fail_response(error_code.BAD_FORMAT), 400
 
     # Potentially add check whether email and owner already exist
 
     # Add to db
     prospect_json = prospect_json.copy()
-    Prospect(**prospect_json).save()
-    return 201
+    prospect_list = list(prospect_json.values())
+    prospects = []
+    for prospect in prospect_list:
+
+        p = {
+            'owner_email': prospect['owner_email'],
+            'email': prospect['email'],
+            'first_name': prospect['first_name'],
+            'last_name': prospect['last_name'],
+            'status': 'open',
+        }
+        prospects.append(Prospect(**p))
+
+        # current_app.logger.debug(prospects)
+    Prospect.objects.bulk_create(prospects)
+    return success_response(), 201
 
 
-@prospect_handler.route('/prospects', methods=['GET'])
+@ prospect_handler.route('/prospects', methods=['GET'])
 def get_prospects():
     # return all prospects
     return 200
