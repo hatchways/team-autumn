@@ -14,7 +14,7 @@ def get_schema(input_type="string", **kwargs):
     return ret
 
 
-def validate_json_input(user_json: dict, user_schema):
+def validate_json_input(model_json: dict, model_schema):
     """
     Validate user input json against given schema
     Args:
@@ -26,12 +26,12 @@ def validate_json_input(user_json: dict, user_schema):
         dict: the input user json
     """
     try:
-        jsonschema.validate(user_json, user_schema)
+        jsonschema.validate(model_json, model_schema)
     except jsonschema.ValidationError as e:
-        return e, user_json
+        return e, model_json
     except jsonschema.SchemaError as e:
-        return e, user_json
-    return None, user_json
+        return e, model_json
+    return None, model_json
 
 
 def fail_response(ecode):
@@ -43,7 +43,8 @@ def fail_response(ecode):
     Returns:
         str: jsonified data dict
     """
-    ret = {"status": False, "error_code": ecode, "error_msg": error_code.DESC[abs(ecode)]}
+    ret = {"status": False, "error_code": ecode,
+           "error_msg": error_code.DESC[abs(ecode)]}
     return jsonify(ret)
 
 

@@ -1,7 +1,6 @@
 // this component will eventually be rendered in the Dashboard page
 
 import React from 'react';
-import GoogleButton from 'react-google-button';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -14,8 +13,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 //     ...
 // }
 const emailAuth = false;
-const title = 'Connect a Gmail Account';
-const bodyText = "Connect a Gmail account to access all of MailSender's features.";
+const title = 'Gmail Auth Info';
+const bodyText = 'User connected.';
 const buttonText = 'Skip';
 
 export default function AlertDialog() {
@@ -56,19 +55,17 @@ export default function AlertDialog() {
               justifyContent: 'center',
             }}
           >
-            <GoogleButton
+            <button
+              type="button"
               onClick={async () => {
-                console.log('Google button clicked');
+                console.log('Info button clicked');
                 try {
-                  const response = await fetch('/gmail_oauth_url', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
+                  const response = await fetch('/gmail_profile', {
+                    method: 'GET',
                   });
                   const res = await response.json();
-                  if (res.url) {
-                    window.location.href = res.url;
+                  if (res.gmail_info) {
+                    alert(res.gmail_info);
                   } else {
                     console.log('No url returned', res);
                   }
@@ -76,7 +73,9 @@ export default function AlertDialog() {
                   console.log('Bad request', err);
                 }
               }}
-            />
+            >
+              Click to get user info
+            </button>
           </div>
         </DialogContent>
         <DialogActions>
