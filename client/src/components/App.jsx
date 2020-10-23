@@ -25,28 +25,29 @@ const App = () => {
   const classes = formStyles();
 
   const [user, setUser] = useState();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
-    setLoading(true);
-    const fetchUser = async () => {
-      const response = await fetch('/refresh', {
-        method: 'POST',
+    fetch('/refresh', {
+      method: 'POST',
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const userData = data.user_info;
+        if (userData) {
+          setUser({
+            firstName: userData.first_name,
+            lastName: userData.last_name,
+            email: userData.email,
+          });
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
       });
-      const r = await response.json();
-      const userData = r.user_info;
-      if (userData) {
-        setUser({
-          firstName: userData.first_name,
-          lastName: userData.last_name,
-          email: userData.email,
-        });
-      }
-      setLoading(false);
-    };
-    fetchUser();
   }, []);
 
-  if (!user) {
+  if (loading) {
     return (
       <Backdrop className={classes.backdrop} open>
         <CircularProgress />

@@ -85,7 +85,7 @@ const LoggedInNav = () => {
   const renderAvatar = () => <Avatar alt="Avatar" src={portrait} />;
   return (
     <>
-      <TabNav tabs={tabs} initialState={tabValues[tabValue]} />
+      <TabNav tabs={tabs} initialState={tabValues[tabValue] || 0} />
       {renderAvatar()}
       <Button
         className={classes.profileButton}
