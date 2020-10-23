@@ -96,6 +96,11 @@ const LoggedInNav = () => {
             Logout
           </Link>
         </MenuItem>
+        <MenuItem onClick={handleClose}>
+          <Link className={classes.tabLink} to="/gmail_auth">
+            Link Gmail
+          </Link>
+        </MenuItem>
       </Menu>
     </>
   );
