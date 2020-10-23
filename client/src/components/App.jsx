@@ -15,6 +15,9 @@ import ProfilePage from '../pages/profile/ProfilePage';
 import ProtectedRoute from './ProtectedRoute';
 import Layout from './Layout';
 import UserContext from '../contexts/UserContext';
+import AlertDialog from './Dialog';
+import UserContext from './UserContext';
+import OauthCallback from "./OauthCallback";
 
 const App = () => {
   const [user, setUser] = useState();
@@ -50,6 +53,8 @@ const App = () => {
               <ProtectedRoute path="/reporting" component={ReportingPage} />
               <ProtectedRoute path="/profile" component={ProfilePage} />
               <ProtectedRoute path="/logout" component={Logout} />
+              <ProtectedRoute path="/gmail_auth" component={AlertDialog} />
+              <Route path="/gmail_oauth_callback" component={OauthCallback} />
               <Route path="/signup" component={SignupPage} />
               <Route path="/login" component={LoginPage} />
             </Switch>
