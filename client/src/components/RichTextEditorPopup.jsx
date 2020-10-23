@@ -15,7 +15,9 @@ import FormatItalicIcon from "@material-ui/icons/FormatItalic";
 import FormatUnderlinedIcon from "@material-ui/icons/FormatUnderlined";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+import TextField from "@material-ui/core/TextField";
 import { ContentState, Editor, EditorState, RichUtils } from "draft-js";
+import { useForm } from "react-hook-form";
 
 // TODO: Make sure content for long words wraps (overflow-wrap: break-word)
 const layoutStyles = {
@@ -45,7 +47,7 @@ const layoutStyles = {
     height: "10%",
   },
   actions: {
-    height: "15%",
+    height: "10%",
     display: "flex",
     alignItems: "flex-end",
   },
@@ -62,7 +64,7 @@ const rteStyles = makeStyles((theme) => ({
     color: theme.palette.grey[500],
   },
   title: {
-    marginBottom: "1em",
+    // marginBottom: "1em",
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
@@ -82,7 +84,7 @@ const DialogTitle = (props) => {
         <Divider
           orientation="vertical"
           flexItem
-          style={{ marginLeft: "2em" }}
+          style={{ marginLeft: "2em", background: "#e0e0e0" }}
         />
       </Typography>
       <Typography style={{ marginLeft: "2em" }}>Edit template</Typography>
@@ -131,6 +133,7 @@ const ToggleTextEditorOptions = ({ onFormatChange }) => {
 // use convertToRaw any time you exit the dialog/make the API request to save the step
 // save button will save the content to step object via action dispatched by a campaign context
 const RichTextEditorPopup = ({ open, onClose, title, content, classes }) => {
+  const { register, errors, handleSubmit } = useForm();
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
@@ -151,6 +154,10 @@ const RichTextEditorPopup = ({ open, onClose, title, content, classes }) => {
       return "handled";
     }
     return "not-handled";
+  };
+
+  const onFormSubmit = (data) => {
+    alert(JSON.stringify(data));
   };
 
   const onFormatChange = (value) => {
@@ -176,12 +183,38 @@ const RichTextEditorPopup = ({ open, onClose, title, content, classes }) => {
             </Grid>
             <Grid item className={classes.row}>
               <Divider className={classes.divider} />
-              <DialogContent>Type</DialogContent>
-              <Divider className={classes.divider} />
+              <DialogContent>
+                <form
+                  className={classes.root}
+                  noValidate
+                  autoComplete="off"
+                  onSubmit={handleSubmit((data) => onFormSubmit(data))}
+                >
+                  <TextField
+                    id="standard-basic"
+                    label="Type"
+                    inputRef={register}
+                    fullWidth
+                  />
+                </form>
+              </DialogContent>
             </Grid>
-            <Grid item className={classes.row}>
-              <DialogContent>Subject</DialogContent>
-              <Divider className={classes.divider} />
+            <Grid item className={classes.row} style={{ marginBottom: "2em" }}>
+              <DialogContent>
+                <form
+                  className={classes.root}
+                  noValidate
+                  autoComplete="off"
+                  onSubmit={handleSubmit((data) => onFormSubmit(data))}
+                >
+                  <TextField
+                    id="standard-basic"
+                    label="Subject"
+                    inputRef={register}
+                    fullWidth
+                  />
+                </form>
+              </DialogContent>
             </Grid>
             <Grid item className={classes.content}>
               <DialogContent style={{ height: "100%" }}>

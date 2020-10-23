@@ -20,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(10),
     width: "60vw",
-    textAlign: "center",
+    display: "flex",
+    justifyContent: "space-between",
     color: theme.palette.text.secondary,
   },
   stats: {
@@ -52,9 +53,11 @@ const campaign = {
       content: "Sample email. I am going to be edited in a rich text editor.",
       type: "New thread",
       sent: 146,
-      opened: "36%",
-      clicked: "146%",
-      replied: "2%",
+      stats: [
+        { name: "Opened", number: "36%" },
+        { name: "Clicked", number: "146%" },
+        { name: "Replied", number: "2%" },
+      ],
       thread: [
         {
           id: 0,
@@ -125,7 +128,30 @@ const ViewCampaign = () => {
         </Grid>
 
         <Grid item xs={12} className={classes.stats}>
-          <Paper className={classes.paper}>Steps info to go here</Paper>
+          <Paper className={classes.paper}>
+            <div style={{ fontWeight: "bold", fontSize: 40 }}>1</div>
+
+            <div style={{ fontSize: 22 }}>{campaign.title}</div>
+
+            <div style={{ display: "flex" }}>
+              {campaign.steps[0].stats.map((s, i) => (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginLeft: "2em",
+                  }}
+                >
+                  <Typography className={classes.title}>{s.name}</Typography>
+                  <Typography className={classes.body} color="primary">
+                    {s.number}
+                  </Typography>
+                </div>
+              ))}
+            </div>
+          </Paper>
         </Grid>
 
         <Grid item>
