@@ -1,23 +1,23 @@
-import React from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import MuiListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import MuiTypography from "@material-ui/core/Typography";
+import React from 'react';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import MuiListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import MuiTypography from '@material-ui/core/Typography';
 
 const ListItem = withStyles({
   root: {
-    "&$selected": {
+    '&$selected': {
       background: `linear-gradient(90deg, #2AA897, #4FBE75)`,
-      color: "white",
+      color: 'white',
     },
-    "&$selected:hover": {
+    '&$selected:hover': {
       background: `linear-gradient(90deg, #2AA897, #4FBE75)`,
-      color: "white",
+      color: 'white',
     },
-    "&:hover": {
+    '&:hover': {
       background: `linear-gradient(90deg, #2AA897, #4FBE75)`,
-      color: "white",
+      color: 'white',
     },
   },
   selected: {},
@@ -25,14 +25,14 @@ const ListItem = withStyles({
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    width: '100%',
     maxWidth: 360,
   },
 }));
 
 const Typography = withStyles((theme) => ({
   root: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontFamily: theme.typography.fontFamily,
   },
 }))(MuiTypography);

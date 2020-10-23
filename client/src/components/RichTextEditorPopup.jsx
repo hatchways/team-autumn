@@ -1,73 +1,73 @@
-import React, { useState } from "react";
-import { withStyles, makeStyles } from "@material-ui/core/styles";
-import Dialog from "@material-ui/core/Dialog";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
-import Grid from "@material-ui/core/Grid";
-import Divider from "@material-ui/core/Divider";
-import Button from "@material-ui/core/Button";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
-import Typography from "@material-ui/core/Typography";
-import FormatBoldIcon from "@material-ui/icons/FormatBold";
-import FormatItalicIcon from "@material-ui/icons/FormatItalic";
-import FormatUnderlinedIcon from "@material-ui/icons/FormatUnderlined";
-import ToggleButton from "@material-ui/lab/ToggleButton";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import TextField from "@material-ui/core/TextField";
-import { ContentState, Editor, EditorState, RichUtils } from "draft-js";
-import { useForm } from "react-hook-form";
+import React, { useState } from 'react';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import Grid from '@material-ui/core/Grid';
+import Divider from '@material-ui/core/Divider';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import Typography from '@material-ui/core/Typography';
+import FormatBoldIcon from '@material-ui/icons/FormatBold';
+import FormatItalicIcon from '@material-ui/icons/FormatItalic';
+import FormatUnderlinedIcon from '@material-ui/icons/FormatUnderlined';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import TextField from '@material-ui/core/TextField';
+import { ContentState, Editor, EditorState, RichUtils } from 'draft-js';
+import { useForm } from 'react-hook-form';
 
 // TODO: Make sure content for long words wraps (overflow-wrap: break-word)
 const layoutStyles = {
   dialogPaper: {
-    height: "80vh",
+    height: '80vh',
   },
   divider: {
-    background: "#e0e0e0",
+    background: '#e0e0e0',
   },
   root: {
-    height: "100%",
+    height: '100%',
   },
   dialog: {
-    height: "100%",
+    height: '100%',
   },
   title: {
-    height: "10%",
+    height: '10%',
   },
   row: {
     padding: 0,
-    height: "5%",
+    height: '5%',
   },
   content: {
-    height: "55%",
+    height: '55%',
   },
   options: {
-    height: "10%",
+    height: '10%',
   },
   actions: {
-    height: "10%",
-    display: "flex",
-    alignItems: "flex-end",
+    height: '10%',
+    display: 'flex',
+    alignItems: 'flex-end',
   },
   actionsButton: {
-    padding: "0.5em 2.5em",
+    padding: '0.5em 2.5em',
   },
 };
 
 const rteStyles = makeStyles((theme) => ({
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     right: theme.spacing(2),
     top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
   title: {
     // marginBottom: "1em",
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
 }));
 
@@ -78,22 +78,18 @@ const DialogTitle = (props) => {
     <MuiDialogTitle disableTypography className={classes.title} {...other}>
       <Typography
         variant="h5"
-        style={{ display: "flex", alignItems: "center", fontWeight: "bold" }}
+        style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold' }}
       >
         {children}
         <Divider
           orientation="vertical"
           flexItem
-          style={{ marginLeft: "2em", background: "#e0e0e0" }}
+          style={{ marginLeft: '2em', background: '#e0e0e0' }}
         />
       </Typography>
-      <Typography style={{ marginLeft: "2em" }}>Edit template</Typography>
+      <Typography style={{ marginLeft: '2em' }}>Edit template</Typography>
       {onClose ? (
-        <IconButton
-          aria-label="close"
-          className={classes.closeButton}
-          onClick={onClose}
-        >
+        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
           <CloseIcon />
         </IconButton>
       ) : null}
@@ -111,11 +107,7 @@ const ToggleTextEditorOptions = ({ onFormatChange }) => {
 
   // TODO: make onFormatChange work for the nested icon, not just <ToggleButton />
   return (
-    <ToggleButtonGroup
-      value={formats}
-      onChange={handleFormat}
-      aria-label="text formatting"
-    >
+    <ToggleButtonGroup value={formats} onChange={handleFormat} aria-label="text formatting">
       <ToggleButton value="BOLD" aria-label="bold">
         <FormatBoldIcon />
       </ToggleButton>
@@ -134,9 +126,7 @@ const ToggleTextEditorOptions = ({ onFormatChange }) => {
 // save button will save the content to step object via action dispatched by a campaign context
 const RichTextEditorPopup = ({ open, onClose, title, content, classes }) => {
   const { register, errors, handleSubmit } = useForm();
-  const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
-  );
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
 
   // TODO: this is not functional yet
   // React.useEffect(() => {
@@ -151,9 +141,9 @@ const RichTextEditorPopup = ({ open, onClose, title, content, classes }) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
       setEditorState(newState);
-      return "handled";
+      return 'handled';
     }
-    return "not-handled";
+    return 'not-handled';
   };
 
   const onFormSubmit = (data) => {
@@ -190,16 +180,11 @@ const RichTextEditorPopup = ({ open, onClose, title, content, classes }) => {
                   autoComplete="off"
                   onSubmit={handleSubmit((data) => onFormSubmit(data))}
                 >
-                  <TextField
-                    id="standard-basic"
-                    label="Type"
-                    inputRef={register}
-                    fullWidth
-                  />
+                  <TextField id="standard-basic" label="Type" inputRef={register} fullWidth />
                 </form>
               </DialogContent>
             </Grid>
-            <Grid item className={classes.row} style={{ marginBottom: "2em" }}>
+            <Grid item className={classes.row} style={{ marginBottom: '2em' }}>
               <DialogContent>
                 <form
                   className={classes.root}
@@ -207,17 +192,12 @@ const RichTextEditorPopup = ({ open, onClose, title, content, classes }) => {
                   autoComplete="off"
                   onSubmit={handleSubmit((data) => onFormSubmit(data))}
                 >
-                  <TextField
-                    id="standard-basic"
-                    label="Subject"
-                    inputRef={register}
-                    fullWidth
-                  />
+                  <TextField id="standard-basic" label="Subject" inputRef={register} fullWidth />
                 </form>
               </DialogContent>
             </Grid>
             <Grid item className={classes.content}>
-              <DialogContent style={{ height: "100%" }}>
+              <DialogContent style={{ height: '100%' }}>
                 <Editor
                   textAlignment="left"
                   handleKeyCommand={handleKeyCommand}
@@ -232,39 +212,36 @@ const RichTextEditorPopup = ({ open, onClose, title, content, classes }) => {
               className={classes.options}
               style={{
                 background: `#f5f5f5`,
-                margin: "0 1em",
-                borderRadius: "5px",
-                display: "flex",
-                alignItems: "center",
+                margin: '0 1em',
+                borderRadius: '5px',
+                display: 'flex',
+                alignItems: 'center',
               }}
             >
-              <DialogContent style={{ padding: 0, marginLeft: "1em" }}>
-                <ToggleTextEditorOptions
-                  onFormatChange={onFormatChange}
-                  gutterBottom
-                />
+              <DialogContent style={{ padding: 0, marginLeft: '1em' }}>
+                <ToggleTextEditorOptions onFormatChange={onFormatChange} gutterBottom />
               </DialogContent>
             </Grid>
             <Grid item className={classes.actions}>
               <DialogActions
                 style={{
                   background: `linear-gradient(90deg, #2AA897, #4FBE75)`,
-                  borderRadius: "5px",
-                  height: "50%",
-                  margin: "0 1em 1em",
-                  flexGrow: "1",
+                  borderRadius: '5px',
+                  height: '50%',
+                  margin: '0 1em 1em',
+                  flexGrow: '1',
                 }}
               >
                 <Button
                   onClick={onClose}
                   className={classes.actionsButton}
-                  style={{ color: "whitesmoke" }}
+                  style={{ color: 'whitesmoke' }}
                 >
                   Cancel
                 </Button>
                 <Button
                   variant="contained"
-                  style={{ fontWeight: "bold", marginRight: "1em" }}
+                  style={{ fontWeight: 'bold', marginRight: '1em' }}
                   onClick={onClose}
                   className={classes.actionsButton}
                 >
