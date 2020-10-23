@@ -56,7 +56,6 @@ def upload_prospects():
         }
         prospects.append(Prospect(**p))
 
-        # current_app.logger.debug(prospects)
     Prospect.objects.bulk_create(prospects)
     return success_response(), 201
 
@@ -69,7 +68,8 @@ def get_prospects():
     if not owner_email:
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
 
-    prospects_list = Prospect.objects.raw({'owner_email': owner_email})
+    prospects_list = Prospect.objects.raw(
+        {'owner_email': owner_email})
     prospects = []
     for prospect in prospects_list:
         prospects.append(prospect.to_dict())
