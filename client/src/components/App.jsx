@@ -16,8 +16,7 @@ import ProtectedRoute from './ProtectedRoute';
 import Layout from './Layout';
 import UserContext from '../contexts/UserContext';
 import AlertDialog from './Dialog';
-import UserContext from './UserContext';
-import OauthCallback from "./OauthCallback";
+import OauthCallback from './OauthCallback';
 
 const App = () => {
   const [user, setUser] = useState();

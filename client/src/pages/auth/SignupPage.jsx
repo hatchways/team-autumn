@@ -19,7 +19,13 @@ const SignupPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          email: values.email,
+          first_name: values.firstName,
+          last_name: values.lastName,
+          password: values.password,
+          confirm_password: values.confirmPassword,
+        }),
       });
 
       const res = await response.json();

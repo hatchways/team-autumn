@@ -23,4 +23,4 @@ htmlcov/
 .coverage.*
 *,cover
 
-*.lock
+Pipfile.lock

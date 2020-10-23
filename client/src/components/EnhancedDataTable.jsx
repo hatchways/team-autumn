@@ -70,19 +70,19 @@ const EnhancedTableHead = ({
         {headCells.map((headCell) => (
           <TableCell
             className={classes.tableCell}
-            key={headCell.id}
+            key={headCell.email}
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'default'}
-            sortDirection={orderBy === headCell.id ? order : false}
+            sortDirection={orderBy === headCell.email ? order : false}
           >
             <TableSortLabel
               className={classes.sortLabel}
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
+              active={orderBy === headCell.email}
+              direction={orderBy === headCell.email ? order : 'asc'}
+              onClick={createSortHandler(headCell.email)}
             >
               {headCell.label}
-              {orderBy === headCell.id ? (
+              {orderBy === headCell.email ? (
                 <span className={classes.visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
@@ -100,7 +100,7 @@ const EnhancedDataTable = ({
   ariaLabel,
   headCells,
   requiresCheckbox,
-  initialSortBy = 'id',
+  initialSortBy = 'email',
 }) => {
   const classes = tableStyles();
   const [order, setOrder] = useState('asc');
@@ -117,19 +117,19 @@ const EnhancedDataTable = ({
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.id);
+      const newSelecteds = rows.map((n) => n.email);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
-  const handleClick = (event, id) => {
-    const selectedIndex = selected.indexOf(id);
+  const handleClick = (event, email) => {
+    const selectedIndex = selected.indexOf(email);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
+      newSelected = newSelected.concat(selected, email);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -144,7 +144,7 @@ const EnhancedDataTable = ({
     setSelected(newSelected);
   };
 
-  const isSelected = (id) => selected.indexOf(id) !== -1;
+  const isSelected = (email) => selected.indexOf(email) !== -1;
 
   return (
     <div className={classes.root}>
@@ -170,12 +170,12 @@ const EnhancedDataTable = ({
             />
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
-                const isItemSelected = isSelected(row.id);
-                const labelId = `${ariaLabel}-table-checkbox-${index + 1}`;
+                const isItemSelected = isSelected(row.email);
+                const labelemail = `${ariaLabel}-table-checkbox-${index + 1}`;
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.id)}
+                    onClick={(event) => handleClick(event, row.email)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
@@ -186,16 +186,16 @@ const EnhancedDataTable = ({
                       <TableCell padding="checkbox">
                         <Checkbox
                           checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
+                          inputProps={{ 'aria-labelledby': labelemail }}
                         />
                       </TableCell>
                     )}
 
-                    <TableCell component="th" align="left" id={labelId} scope="row">
-                      {row.id}
+                    <TableCell component="th" align="left" email={labelemail} scope="row">
+                      {row.email}
                     </TableCell>
                     {Object.entries(row)
-                      .filter((e) => e[0] !== 'id')
+                      .filter((e) => e[0] !== 'email')
                       .map((entry) => (
                         <TableCell key={entry[1]}>{entry[1]}</TableCell>
                       ))}
