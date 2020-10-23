@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { MuiThemeProvider } from '@material-ui/core';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import { theme } from '../assets/themes/theme';
+import { formStyles } from '../assets/styles/styles';
 import SignupPage from '../pages/auth/SignupPage';
 import LoginPage from '../pages/auth/LoginPage';
 import Logout from '../pages/auth/LogoutPage';
@@ -19,8 +22,12 @@ import OauthCallback from './OauthCallback';
 import UserContext from '../contexts/UserContext';
 
 const App = () => {
+  const classes = formStyles();
+
   const [user, setUser] = useState();
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
+    setLoading(true);
     const fetchUser = async () => {
       const response = await fetch('/refresh', {
         method: 'POST',
@@ -34,9 +41,18 @@ const App = () => {
           email: userData.email,
         });
       }
+      setLoading(false);
     };
     fetchUser();
   }, []);
+
+  if (!user) {
+    return (
+      <Backdrop className={classes.backdrop} open>
+        <CircularProgress />
+      </Backdrop>
+    );
+  }
 
   return (
     <MuiThemeProvider theme={theme}>

@@ -59,8 +59,17 @@ const Signup = () => {
   );
 };
 
+const tabValues = {
+  campaigns: 0,
+  prospects: 1,
+  templates: 2,
+  reporting: 3,
+};
+
 const LoggedInNav = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const location = useLocation();
+  const tabValue = location.pathname.split('/')[1];
 
   const classes = headerStyles();
   const [user] = useContext(UserContext);
@@ -76,7 +85,7 @@ const LoggedInNav = () => {
   const renderAvatar = () => <Avatar alt="Avatar" src={portrait} />;
   return (
     <>
-      <TabNav tabs={tabs} />
+      <TabNav tabs={tabs} initialState={tabValues[tabValue]} />
       {renderAvatar()}
       <Button
         className={classes.profileButton}
