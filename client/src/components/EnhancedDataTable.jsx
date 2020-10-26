@@ -70,7 +70,7 @@ const EnhancedTableHead = ({
         {headCells.map((headCell) => (
           <TableCell
             className={classes.tableCell}
-            key={headCell.email}
+            key={`prospect-${headCell.email}`}
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.email ? order : false}
