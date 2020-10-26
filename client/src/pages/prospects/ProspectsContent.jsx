@@ -65,12 +65,12 @@ const ProspectsContent = () => {
   const classes = useStyles();
   const buttonClasses = buttonStyles();
   const [filter] = useContext(FilterContext);
+  const [message, setMessage] = useContext(ProspectUploadContext);
   const [data, setData] = useState(testData);
   const history = useHistory();
 
   const filteredData = data.filter((d) => d.email.includes(filter));
 
-  const [message, setMessage] = useContext(ProspectUploadContext);
   const [open, setOpen] = useState(false);
   useEffect(() => {
     const { text } = message;
