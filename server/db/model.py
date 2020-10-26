@@ -134,7 +134,7 @@ class Prospect(MongoModel):
         return ret_list if ret_list else None
 
     @staticmethod
-    def check_duplicate_prospect(owner_email, email):
+    def check_if_exists(owner_email, email):
         """
         This method checks whether the specified owner email is
         already associated with the specified email
