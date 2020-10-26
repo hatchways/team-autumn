@@ -6,7 +6,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import { theme } from '../assets/themes/theme';
-import { formStyles } from '../assets/styles/styles';
+import { formStyles } from '../assets/styles';
 import SignupPage from '../pages/auth/SignupPage';
 import LoginPage from '../pages/auth/LoginPage';
 import Logout from '../pages/auth/LogoutPage';

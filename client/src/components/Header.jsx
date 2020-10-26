@@ -6,7 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 import UserContext from '../contexts/UserContext';
 import portrait from '../assets/images/portrait.png';
 import TabNav from './TabNav';
-import { headerStyles } from '../assets/styles/styles';
+import { headerStyles } from '../assets/styles';
 
 const tabs = [
   {

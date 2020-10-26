@@ -34,5 +34,22 @@ export const theme = createMuiTheme({
         minHeight: '125px',
       },
     },
+    MuiTableContainer: {
+      root: {
+        width: '100%',
+      },
+    },
+    MuiTableSortLabel: {
+      root: {
+        color: 'white',
+        fontWeight: 600,
+        '&.MuiTableSortLabel-active': {
+          color: 'white',
+        },
+      },
+      active: {
+        color: 'white',
+      },
+    },
   },
 });

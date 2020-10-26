@@ -8,7 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import tableStyles from '../assets/styles/tableStyles';
+import { tableStyles } from '../assets/styles';
 
 const createData = (datum) => ({ ...datum });
 
@@ -70,19 +70,19 @@ const EnhancedTableHead = ({
         {headCells.map((headCell) => (
           <TableCell
             className={classes.tableCell}
-            key={`prospect-${headCell.email}`}
+            key={`prospect-${headCell.id}`}
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.email ? order : false}
           >
             <TableSortLabel
               className={classes.sortLabel}
-              active={orderBy === headCell.email}
-              direction={orderBy === headCell.email ? order : 'asc'}
-              onClick={createSortHandler(headCell.email)}
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
-              {orderBy === headCell.email ? (
+              {orderBy === headCell.id ? (
                 <span className={classes.visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
@@ -169,9 +169,9 @@ const EnhancedDataTable = ({
               requiresCheckbox={requiresCheckbox}
             />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
+              {stableSort(rows, getComparator(order, orderBy)).map((row) => {
                 const isItemSelected = isSelected(row.email);
-                const labelId = `${ariaLabel}-table-checkbox-${index + 1}`;
+                const labelId = row.email;
                 return (
                   <TableRow
                     hover
@@ -191,7 +191,7 @@ const EnhancedDataTable = ({
                       </TableCell>
                     )}
 
-                    <TableCell component="th" align="left" email={labelId} scope="row">
+                    <TableCell component="th" align="left" id={labelId} scope="row">
                       {row.email}
                     </TableCell>
                     {Object.entries(row)
