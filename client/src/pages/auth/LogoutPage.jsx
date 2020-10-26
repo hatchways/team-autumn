@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { formStyles } from '../../assets/styles/styles';
+import { formStyles } from '../../assets/styles';
 import UserContext from '../../contexts/UserContext';
 
 const Logout = () => {

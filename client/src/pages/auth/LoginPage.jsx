@@ -5,7 +5,7 @@ import { Container, Box, Grid, Typography, TextField, Button } from '@material-u
 import { Redirect, useHistory } from 'react-router-dom';
 
 import UserContext from '../../contexts/UserContext';
-import { formStyles } from '../../assets/styles/styles';
+import { formStyles } from '../../assets/styles';
 
 const LoginPage = () => {
   const [user, setUser] = useContext(UserContext);
