@@ -1,7 +1,5 @@
 import { makeStyles } from '@material-ui/core';
 
-// TODO: add styling to .MuiTableContainer-root - remove overflow
-
 const tableStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(8),

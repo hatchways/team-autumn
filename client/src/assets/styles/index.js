@@ -87,3 +87,62 @@ export const headerStyles = makeStyles((theme) => ({
     color: '#fff',
   },
 }));
+
+export const buttonStyles = makeStyles((theme) => ({
+  base: {
+    textTransform: 'none',
+    height: '3rem',
+    fontWeight: 600,
+    borderRadius: '5px',
+    margin: theme.spacing(3, 0, 2),
+  },
+  action: {
+    background: `linear-gradient(90deg, ${theme.palette.primary.dark} , ${theme.palette.primary.light})`,
+    color: 'white',
+  },
+}));
+
+export const tableStyles = makeStyles((theme) => ({
+  root: {
+    marginTop: theme.spacing(8),
+  },
+  paper: {
+    marginBottom: theme.spacing(2),
+  },
+  table: {
+    borderRadius: theme.shape.borderRadius,
+  },
+  head: {
+    backgroundColor: theme.palette.primary.main,
+    borderRadius: theme.shape.borderRadius,
+  },
+  headText: {
+    fontWeight: 600,
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  },
+  blank: {
+    display: 'none',
+  },
+  container: {
+    maxHeight: 500,
+    padding: theme.spacing(1),
+  },
+  tableRow: {
+    '&:hover': {
+      backgroundColor: theme.palette.primary.main,
+    },
+  },
+  tableCell: {
+    // fontWeight: 600,
+  },
+}));
