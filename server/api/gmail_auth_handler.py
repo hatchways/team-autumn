@@ -19,10 +19,10 @@ SCOPES = [
     # Add other requested scopes.
 ]
 
-CLIENTSECRETS_LOCATION = './credentials.json' # TODO: goes to config file
+CLIENTSECRETS_LOCATION = './credentials.json'  # TODO: goes to config file
 # url_for('gmail_auth_handler.gmail_oauth_callback', _external=True)
 REDIRECT_URI = 'http://localhost:5000/gmail_oauth_callback'
-REDIRECT_URI_FRONT = 'http://localhost:3000/gmail_oauth_callback'
+REDIRECT_URI_FRONT = 'http://localhost:3000/campaigns'
 
 
 @gmail_auth_handler.route('/gmail_oauth_url', methods=["GET", "POST"])
