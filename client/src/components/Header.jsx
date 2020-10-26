@@ -62,6 +62,7 @@ const Signup = () => {
 const tabValues = {
   campaigns: 0,
   prospects: 1,
+  prospect_upload: 1,
   templates: 2,
   reporting: 3,
 };
