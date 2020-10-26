@@ -12,7 +12,6 @@ import LoginPage from '../pages/auth/LoginPage';
 import Logout from '../pages/auth/LogoutPage';
 import CampaignPage from '../pages/campaign/CampaignPage';
 import ProspectsPage from '../pages/prospects/ProspectsPage';
-import ProspectUpload from '../pages/prospects/ProspectUpload';
 import TemplatesPage from '../pages/templates/TemplatesPage';
 import ReportingPage from '../pages/reporting/ReportingPage';
 import ProfilePage from '../pages/profile/ProfilePage';
@@ -66,7 +65,6 @@ const App = () => {
               <ProtectedRoute exact path="/" component={CampaignPage} />
               <ProtectedRoute path="/campaigns" component={CampaignPage} />
               <ProtectedRoute path="/prospects" component={ProspectsPage} />
-              <ProtectedRoute path="/prospect_upload" component={ProspectUpload} />
               <ProtectedRoute path="/templates" component={TemplatesPage} />
               <ProtectedRoute path="/reporting" component={ReportingPage} />
               <ProtectedRoute path="/profile" component={ProfilePage} />
