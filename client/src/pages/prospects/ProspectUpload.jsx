@@ -54,13 +54,14 @@ const ProspectUpload = () => {
             },
             body: JSON.stringify(prospectData),
           })
-            .then((response) => console.log(response))
-            .then((r) => console.log(r))
+            .then((response) => response.json())
+            .then((r) => {
+              console.log(r);
+              setResultsText(
+                `File parsed. ${r.prospects_added} prospects added. ${r.dups} duplicate record(s) found and ignored. ${repeatEmails} duplicate(s) email addresses detected and ignored.`
+              );
+            })
             .catch((err) => console.log(err));
-
-          setResultsText(
-            `File parsed. ${data.length} prospects added. ${repeatEmails} duplicate(s) detected and ignored.`
-          );
         }
         setLoading(false);
       },
