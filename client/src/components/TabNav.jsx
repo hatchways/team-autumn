@@ -42,9 +42,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const TabNav = ({ tabs }) => {
+const TabNav = ({ tabs, initialState }) => {
   const classes = useStyles();
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(initialState);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

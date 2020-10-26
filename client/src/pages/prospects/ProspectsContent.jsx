@@ -9,7 +9,7 @@ import buttonStyles from '../../assets/styles/buttonStyles';
 import CsvUploadButton from '../../components/CsvUploadButton';
 import UserContext from '../../contexts/UserContext';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   mainGrid: {
     justifyContent: 'space-between',
     alignItems: 'center',
