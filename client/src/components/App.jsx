@@ -10,7 +10,11 @@ import { formStyles } from '../assets/styles/styles';
 import SignupPage from '../pages/auth/SignupPage';
 import LoginPage from '../pages/auth/LoginPage';
 import Logout from '../pages/auth/LogoutPage';
+<<<<<<< HEAD
 import CampaignPage from '../pages/campaigns/CampaignPage';
+=======
+import CampaignPage from '../pages/campaign/CampaignPage';
+>>>>>>> 67fb994a70c1563c9c1734a580dcde1d4d17b3da
 import ProspectsPage from '../pages/prospects/ProspectsPage';
 import TemplatesPage from '../pages/templates/TemplatesPage';
 import ReportingPage from '../pages/reporting/ReportingPage';
