@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
 import Papa from 'papaparse';
 
+const EXPECTED_HEADERS = ['first_name', 'last_name', 'email'];
+
 const ProspectUpload = () => {
   const [loading, setLoading] = useState(false);
   const handleFileAdd = (newFile) => {
