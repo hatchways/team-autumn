@@ -9,21 +9,13 @@ import buttonStyles from '../../assets/styles/buttonStyles';
 import CsvUploadButton from '../../components/CsvUploadButton';
 import UserContext from '../../contexts/UserContext';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   mainGrid: {
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  buttonGrid: {
-    flexBasis: 'auto',
-    justifyContent: 'flex-end',
-    marginRight: theme.spacing(-4),
-  },
   faded: {
     color: '#9e9e9e',
-  },
-  centered: {
-    justifyContent: 'center',
   },
 }));
 

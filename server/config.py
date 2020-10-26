@@ -8,9 +8,11 @@ TEAM_NAME = os.environ.get('TEAM_NAME', "TEAM_AUTUMN")
 
 
 class Config:
-    JWT_TOKEN_LOCATION = ['cookies']  # Configure application to store JWTs in cookies
+    # Configure application to store JWTs in cookies
+    JWT_TOKEN_LOCATION = ['cookies']
     JWT_COOKIE_SECURE = False  # Only allow JWT cookies to be sent over https.
-    JWT_COOKIE_CSRF_PROTECT = False  # Enable csrf double submit protection. / False can pass the test.
+    # Enable csrf double submit protection. / False can pass the test.
+    JWT_COOKIE_CSRF_PROTECT = False
     JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(hours=5)
     JWT_ACCESS_CSRF_HEADER_NAME = "X-CSRF-TOKEN-ACCESS"
     JWT_REFRESH_CSRF_HEADER_NAME = "X-CSRF-TOKEN-REFRESH"

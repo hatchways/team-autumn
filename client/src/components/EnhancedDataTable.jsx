@@ -191,7 +191,7 @@ const EnhancedDataTable = ({
                       </TableCell>
                     )}
 
-                    <TableCell component="th" align="left" id={labelId} scope="row">
+                    <TableCell component="th" align="left" email={labelId} scope="row">
                       {row.email}
                     </TableCell>
                     {Object.entries(row)

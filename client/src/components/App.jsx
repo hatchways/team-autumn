@@ -17,9 +17,9 @@ import ReportingPage from '../pages/reporting/ReportingPage';
 import ProfilePage from '../pages/profile/ProfilePage';
 import ProtectedRoute from './ProtectedRoute';
 import Layout from './Layout';
+import UserContext from '../contexts/UserContext';
 import AlertDialog from './Dialog';
 import OauthCallback from './OauthCallback';
-import UserContext from '../contexts/UserContext';
 
 const App = () => {
   const classes = formStyles();
