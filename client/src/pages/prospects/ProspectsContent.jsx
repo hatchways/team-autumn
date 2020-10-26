@@ -6,7 +6,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 
-import SearchContext from '../../contexts/SearchContext';
+import FilterContext from '../../contexts/FilterContext';
 import EnhancedDataTable from '../../components/EnhancedDataTable';
 import buttonStyles from '../../assets/styles/buttonStyles';
 import UserContext from '../../contexts/UserContext';
@@ -65,13 +65,13 @@ const ProspectsContent = () => {
   const classes = useStyles();
   const buttonClasses = buttonStyles();
   const [user] = useContext(UserContext);
-  const [search] = useContext(SearchContext);
+  const [filter] = useContext(FilterContext);
   const [message, setMessage] = useContext(ProspectUploadContext);
   const [data, setData] = useState(testData);
   const [, setSnackbarOpen] = useState(false);
   const history = useHistory();
 
-  const filteredData = data.filter((d) => d.email.includes(search));
+  const filteredData = data.filter((d) => d.email.includes(filter));
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
