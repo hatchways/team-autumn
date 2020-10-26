@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Button, makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 
-import ProspectsContext from '../../contexts/ProspectsContext';
+import SearchContext from '../../contexts/SearchContext';
 import EnhancedDataTable from '../../components/EnhancedDataTable';
 import buttonStyles from '../../assets/styles/buttonStyles';
-// import CsvUploadButton from '../../components/CsvUploadButton';
 import UserContext from '../../contexts/UserContext';
+import ProspectUploadContext from '../../contexts/ProspectUploadContext';
 
 const useStyles = makeStyles(() => ({
   mainGrid: {
@@ -51,21 +53,34 @@ const testData = [
 ];
 
 const headCells = [
-  // { id: 'id', numeric: false, disablePadding: false, label: 'id' },
   { id: 'email', numeric: false, disablePadding: false, label: 'Email' },
   { id: 'firstName', numeric: false, disablePadding: false, label: 'First Name' },
   { id: 'lastName', numeric: false, disablePadding: false, label: 'Last Name' },
   { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
 ];
 
+const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
+
 const ProspectsContent = () => {
   const classes = useStyles();
   const buttonClasses = buttonStyles();
   const [user] = useContext(UserContext);
-  const [search] = useContext(ProspectsContext);
+  const [search] = useContext(SearchContext);
+  const [message, setMessage] = useContext(ProspectUploadContext);
   const [data, setData] = useState(testData);
-  const filteredData = data.filter((d) => d.email.includes(search));
+  const [, setSnackbarOpen] = useState(false);
   const history = useHistory();
+
+  const filteredData = data.filter((d) => d.email.includes(search));
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSnackbarOpen(false);
+    setMessage('');
+  };
 
   useEffect(() => {
     fetch(`/prospects?owner_email=${user.email}`, {
@@ -106,7 +121,7 @@ const ProspectsContent = () => {
               <Button
                 variant="contained"
                 className={`${buttonClasses.base} ${buttonClasses.action}`}
-                onClick={() => history.push('/prospect_upload')}
+                onClick={() => history.push('/prospects/upload')}
               >
                 Upload Prospects by File
               </Button>
@@ -122,6 +137,17 @@ const ProspectsContent = () => {
         requiresCheckbox
         initialSortBy="email"
       />
+      <Snackbar
+        open={message?.text}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <Alert onClose={handleClose} severity={message.type}>
+          {message.text}
+        </Alert>
+      </Snackbar>
+      ;
     </>
   );
 };

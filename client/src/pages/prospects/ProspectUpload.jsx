@@ -1,23 +1,29 @@
 import React, { useContext, useState } from 'react';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
 import DescriptionIcon from '@material-ui/icons/Description';
-import Typography from '@material-ui/core/Typography';
 import Papa from 'papaparse';
+import { useHistory } from 'react-router-dom';
 
 import UserContext from '../../contexts/UserContext';
+import ProspectUploadContext from '../../contexts/ProspectUploadContext';
 
-const EXPECTED_HEADERS = ['first_name', 'last_name', 'email'];
+/*
+  Todo: add dialog box to confirm headers to match database
+  
+  const EXPECTED_HEADERS = ['first_name', 'last_name', 'email'];
+*/
 
 const ProspectUpload = () => {
   const [user] = useContext(UserContext);
   const [loading, setLoading] = useState(false);
-  const [resultsText, setResultsText] = useState(false);
+  const [, setMessage] = useContext(ProspectUploadContext);
+  const history = useHistory();
   const handleFileAdd = (newFile) => {
     setLoading(true);
     const { file } = newFile[0];
     const emails = [];
-    const errors = [];
     const data = [];
+    const errors = [];
     let repeatEmails = 0;
     Papa.parse(file, {
       delimiter: ',',
@@ -29,6 +35,7 @@ const ProspectUpload = () => {
         const emailHeader = headers.find((header) => header.includes('email'));
         if (!emailHeader) {
           errors.push('Invalid format - email required');
+          setMessage({ type: 'error', text: 'Invalid format - email required' });
           parser.abort();
         } else if (emailHeader && emails.includes(results.data[emailHeader])) {
           repeatEmails += 1;
@@ -43,9 +50,8 @@ const ProspectUpload = () => {
       },
       complete: () => {
         const prospectData = { ...data };
-        console.log(prospectData);
         if (errors.length > 0) {
-          setResultsText(`There was a problem: ${errors[0]}`);
+          setMessage({ type: 'error', text: errors[0] });
         } else {
           fetch('/upload_prospects', {
             method: 'post',
@@ -56,35 +62,41 @@ const ProspectUpload = () => {
           })
             .then((response) => response.json())
             .then((r) => {
-              console.log(r);
-              setResultsText(
-                `File parsed. ${r.prospects_added} prospects added. ${r.dups} duplicate record(s) found and ignored. ${repeatEmails} duplicate(s) email addresses detected and ignored.`
-              );
+              if (r.prospects_added === 0) {
+                setMessage({
+                  type: 'warning',
+                  text: `${r.prospects_added} prospects added. ${r.dups} duplicate record(s) found and ignored. ${repeatEmails} duplicate(s) email addresses detected and ignored.`,
+                });
+              } else {
+                setMessage({
+                  type: 'success',
+                  text: `${r.prospects_added} prospects added. ${r.dups} duplicate record(s) found and ignored. ${repeatEmails} duplicate(s) email addresses detected and ignored.`,
+                });
+              }
+              setLoading(false);
             })
-            .catch((err) => console.log(err));
+            .then(() => history.push('/prospects'))
+            .catch((err) => {
+              setLoading(false);
+              setMessage({ type: 'error', text: err });
+            });
         }
-        setLoading(false);
       },
       error: (err) => {
-        errors.push(err);
+        setMessage({ type: 'error', text: err });
         setLoading(false);
       },
     });
   };
 
   return (
-    <>
-      <DropzoneAreaBase
-        inputProps={{ accept: 'text/csv' }}
-        dropzoneText={loading ? 'Upload in progress...' : 'Click or drag a .csv file here'}
-        showFileNames
-        onAdd={handleFileAdd}
-        Icon={DescriptionIcon}
-      />
-      <Typography align="center" variant="body2">
-        {resultsText}
-      </Typography>
-    </>
+    <DropzoneAreaBase
+      inputProps={{ accept: 'text/csv' }}
+      dropzoneText={loading ? 'Upload in progress...' : 'Click or drag a .csv file here'}
+      showFileNames
+      onAdd={handleFileAdd}
+      Icon={DescriptionIcon}
+    />
   );
 };
 export default ProspectUpload;
