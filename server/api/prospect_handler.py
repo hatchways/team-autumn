@@ -49,6 +49,7 @@ def upload_prospects():
     prospect_json = prospect_json.copy()
     prospect_list = list(prospect_json.values())
     prospects = []
+    dup_prospects = 0
     for prospect in prospect_list:
 
         p = {
@@ -58,13 +59,19 @@ def upload_prospects():
             'last_name': prospect['last_name'],
             'status': 'open',
         }
-        prospects.append(Prospect(**p))
+        exists = Prospect.check_if_exists(
+            prospect['owner_email'], prospect['email'])
+        if prospect['email'] and not exists:
+            prospects.append(Prospect(**p))
+        else:
+            dup_prospects += 1
 
-    ProspectToBeMerge.objects.bulk_create(prospects)
-    return success_response(), 201
+    if (len(prospects) > 0):
+        Prospect.objects.bulk_create(prospects)
+    return success_response(prospects_added=len(prospects), dups=dup_prospects), 201
 
 
-@prospect_handler.route('/prospects', methods=['GET'])
+@ prospect_handler.route('/prospects', methods=['GET'])
 def get_prospects():
 
     user = User.get_by_email(get_jwt_identity()['email'])
