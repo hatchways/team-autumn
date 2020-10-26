@@ -83,7 +83,7 @@ const EnhancedTableHead = ({
             >
               {headCell.label}
               {orderBy === headCell.email ? (
-                <span className={classes.visuallyHemailden}>
+                <span className={classes.visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
               ) : null}
@@ -171,7 +171,7 @@ const EnhancedDataTable = ({
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
                 const isItemSelected = isSelected(row.email);
-                const labelemail = `${ariaLabel}-table-checkbox-${index + 1}`;
+                const labelId = `${ariaLabel}-table-checkbox-${index + 1}`;
                 return (
                   <TableRow
                     hover
@@ -186,12 +186,12 @@ const EnhancedDataTable = ({
                       <TableCell padding="checkbox">
                         <Checkbox
                           checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelemail }}
+                          inputProps={{ 'aria-labelledby': labelId }}
                         />
                       </TableCell>
                     )}
 
-                    <TableCell component="th" align="left" email={labelemail} scope="row">
+                    <TableCell component="th" align="left" id={labelId} scope="row">
                       {row.email}
                     </TableCell>
                     {Object.entries(row)
