@@ -15,9 +15,8 @@ import FormatItalicIcon from "@material-ui/icons/FormatItalic";
 import FormatUnderlinedIcon from "@material-ui/icons/FormatUnderlined";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import TextField from "@material-ui/core/TextField";
+import TextInputField from "../components/TextInputField";
 import { ContentState, Editor, EditorState, RichUtils } from "draft-js";
-import { useForm } from "react-hook-form";
 
 // TODO: Make sure content for long words wraps (overflow-wrap: break-word)
 const layoutStyles = {
@@ -133,7 +132,6 @@ const ToggleTextEditorOptions = ({ onFormatChange }) => {
 // use convertToRaw any time you exit the dialog/make the API request to save the step
 // save button will save the content to step object via action dispatched by a campaign context
 const RichTextEditorPopup = ({ open, onClose, title, content, classes }) => {
-  const { register, errors, handleSubmit } = useForm();
   const [editorState, setEditorState] = useState(() =>
     EditorState.createEmpty()
   );
@@ -149,6 +147,7 @@ const RichTextEditorPopup = ({ open, onClose, title, content, classes }) => {
 
   const handleKeyCommand = (command) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
+
     if (newState) {
       setEditorState(newState);
       return "handled";
@@ -184,36 +183,12 @@ const RichTextEditorPopup = ({ open, onClose, title, content, classes }) => {
             <Grid item className={classes.row}>
               <Divider className={classes.divider} />
               <DialogContent>
-                <form
-                  className={classes.root}
-                  noValidate
-                  autoComplete="off"
-                  onSubmit={handleSubmit((data) => onFormSubmit(data))}
-                >
-                  <TextField
-                    id="standard-basic"
-                    label="Type"
-                    inputRef={register}
-                    fullWidth
-                  />
-                </form>
+                <TextInputField classes={classes.root} label="Type" />
               </DialogContent>
             </Grid>
             <Grid item className={classes.row} style={{ marginBottom: "2em" }}>
               <DialogContent>
-                <form
-                  className={classes.root}
-                  noValidate
-                  autoComplete="off"
-                  onSubmit={handleSubmit((data) => onFormSubmit(data))}
-                >
-                  <TextField
-                    id="standard-basic"
-                    label="Subject"
-                    inputRef={register}
-                    fullWidth
-                  />
-                </form>
+                <TextInputField classes={classes.root} label="Subject" />
               </DialogContent>
             </Grid>
             <Grid item className={classes.content}>
