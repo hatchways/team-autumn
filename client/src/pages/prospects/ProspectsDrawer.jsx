@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 
 import SearchInput from '../../components/SearchInput';
-import SearchContext from '../../contexts/SearchContext';
+import FilterContext from '../../contexts/FilterContext';
 
 const ProspectsDrawer = () => {
-  const [search, setSearch] = useContext(SearchContext);
+  const [filter, setFilter] = useContext(FilterContext);
   return (
     <>
-      <SearchInput search={search} setSearch={setSearch} />
+      <SearchInput search={filter} setSearch={setFilter} />
     </>
   );
 };
