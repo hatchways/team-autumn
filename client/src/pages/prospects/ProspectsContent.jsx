@@ -2,11 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Button, makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import { useHistory } from 'react-router-dom';
 
 import ProspectsContext from '../../contexts/ProspectsContext';
 import EnhancedDataTable from '../../components/EnhancedDataTable';
 import buttonStyles from '../../assets/styles/buttonStyles';
-import CsvUploadButton from '../../components/CsvUploadButton';
+// import CsvUploadButton from '../../components/CsvUploadButton';
 import UserContext from '../../contexts/UserContext';
 
 const useStyles = makeStyles(() => ({
@@ -16,6 +17,9 @@ const useStyles = makeStyles(() => ({
   },
   faded: {
     color: '#9e9e9e',
+  },
+  buttonRight: {
+    justifyContent: 'flex-end',
   },
 }));
 
@@ -61,6 +65,7 @@ const ProspectsContent = () => {
   const [search] = useContext(ProspectsContext);
   const [data, setData] = useState(testData);
   const filteredData = data.filter((d) => d.email.includes(search));
+  const history = useHistory();
 
   useEffect(() => {
     fetch(`/prospects?owner_email=${user.email}`, {
@@ -96,9 +101,15 @@ const ProspectsContent = () => {
               Add New Prospect
             </Button>
           </Grid>
-          <Grid className={classes.centered} container item xs={8}>
+          <Grid className={classes.buttonRight} container item xs={8}>
             <Grid item xs={8}>
-              <CsvUploadButton />
+              <Button
+                variant="contained"
+                className={`${buttonClasses.base} ${buttonClasses.action}`}
+                onClick={() => history.push('/prospect_upload')}
+              >
+                Upload Prospects by File
+              </Button>
             </Grid>
           </Grid>
         </Grid>

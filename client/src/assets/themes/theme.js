@@ -23,4 +23,16 @@ export const theme = createMuiTheme({
   zIndex: {
     drawer: 1099,
   },
+  overrides: {
+    MuiDropzoneArea: {
+      root: {
+        left: '50%',
+        transform: 'translateX(-50%)',
+        marginTop: '72px',
+        borderColor: '#4FBE75',
+        width: '50%',
+        minHeight: '125px',
+      },
+    },
+  },
 });
