@@ -3,6 +3,7 @@ from google.auth.transport.requests import AuthorizedSession
 from google_auth_oauthlib.flow import Flow
 from google.oauth2.credentials import Credentials
 import json
+from warnings import warn
 
 
 class GmailOauthInfo(MongoModel):
@@ -56,6 +57,7 @@ class User(MongoModel):
         Returns:
             (None|User): return user object or none.
         """
+        warn("get_by_email will be replace by get_by_id soon", DeprecationWarning)
         ret = User.objects.raw({"email": email})
         ret_list = list(ret)
         return ret_list[0] if ret_list else None
@@ -93,13 +95,15 @@ class User(MongoModel):
         return res.text
 
     def to_dict(self, remove_password=True, remove_oauth_info=True):
+        warn("to_dict will be replace by user_info soon", DeprecationWarning)
         ret = self.to_son().to_dict()
         return {"email": self.email,
                 "first_name": self.first_name,
                 "last_name": self.last_name}
 
-    def user_info_dict(self):
-        return {"email": self.email,
+    def user_info(self):
+        return {"_id": self._id,
+                "email": self.email,
                 "first_name": self.first_name,
                 "last_name": self.last_name}
 
