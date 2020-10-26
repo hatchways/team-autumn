@@ -10,11 +10,8 @@ import { formStyles } from '../assets/styles/styles';
 import SignupPage from '../pages/auth/SignupPage';
 import LoginPage from '../pages/auth/LoginPage';
 import Logout from '../pages/auth/LogoutPage';
-<<<<<<< HEAD
-import CampaignPage from '../pages/campaigns/CampaignPage';
-=======
+import CampaignsPage from '../pages/campaigns/CampaignsPage';
 import CampaignPage from '../pages/campaign/CampaignPage';
->>>>>>> 67fb994a70c1563c9c1734a580dcde1d4d17b3da
 import ProspectsPage from '../pages/prospects/ProspectsPage';
 import TemplatesPage from '../pages/templates/TemplatesPage';
 import ReportingPage from '../pages/reporting/ReportingPage';
@@ -66,8 +63,9 @@ const App = () => {
         <BrowserRouter>
           <Layout>
             <Switch>
-              <ProtectedRoute exact path="/" component={CampaignPage} />
-              <ProtectedRoute path="/campaigns" component={CampaignPage} />
+              <ProtectedRoute exact path="/" component={CampaignsPage} />
+              <ProtectedRoute path="/campaigns" component={CampaignsPage} />
+              <ProtectedRoute path="/campaigns/:id" component={CampaignPage} />
               <ProtectedRoute path="/prospects" component={ProspectsPage} />
               <ProtectedRoute path="/templates" component={TemplatesPage} />
               <ProtectedRoute path="/reporting" component={ReportingPage} />
