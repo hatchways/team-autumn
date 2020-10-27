@@ -30,7 +30,6 @@ def upload_prospects():
     """
 
     # Change this to work with one or many prospects
-
     if not request.is_json:
         return fail_response(error_code.MIME_NOT_JSON), 400
     err, prospect_json = validate_json_input(
