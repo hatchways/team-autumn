@@ -1,6 +1,7 @@
 import jsonschema
 from flask import jsonify
 from flask_jwt_extended import set_access_cookies, set_refresh_cookies
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from api import error_code
 
 
@@ -11,6 +12,25 @@ def get_schema(input_type="string", **kwargs):
     ret = {"type": input_type}
     if kwargs:
         ret.update(kwargs)
+    return ret
+
+
+def new_schema(*args, **kwargs):
+    """
+
+    Args:
+        *args: args that take the default get_schema
+        **kwargs: args that needs customize
+
+    Returns:
+        dict: a schema
+    """
+    ret = {
+        "type": "object",
+        "properties": dict(((arg, get_schema()) for arg in args), **kwargs),
+        "additionalProperties": False
+    }
+    ret["minProperties"] = len(ret["properties"])
     return ret
 
 
