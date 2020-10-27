@@ -8,12 +8,11 @@ from api.register_handler import user_schema
 from api.gmail_auth_handler import *
 import os
 from unittest.mock import patch
-used_emails = []
+
 
 
 def fake_user_json():
     test_email = "{}@test.test".format(uuid.uuid4())
-    used_emails.append(test_email)
     return {'email': test_email,
             "first_name": "John",
             "last_name": "Smith",
