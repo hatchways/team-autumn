@@ -3,8 +3,8 @@ from datetime import datetime
 import pymongo
 from bson import ObjectId
 from pymodm import MongoModel, fields
+import pymodm.errors
 from google.auth.transport.requests import AuthorizedSession
-from google_auth_oauthlib.flow import Flow
 from google.oauth2.credentials import Credentials
 import json
 from warnings import warn
@@ -41,9 +41,11 @@ class Prospect(MongoModel):
     campaigns: ...
     status: ...
     last_contacted: ...
-    steps: ...  # ?
+    steps: ...
 
-    # TODO what's that cloud?
+    # TODO Replace with true Prospect class
+    def to_dict(self):
+        return self.to_son().to_dict()
 
     class Meta:
         indexes = [pymongo.IndexModel([("owner", pymongo.HASHED)])]
@@ -73,12 +75,34 @@ class Campaign(MongoModel):
     steps = fields.EmbeddedDocumentListField(Step)
 
     def steps_add(self, content, subject):
+        """
+        Add a step to this campaign; Only first step's subject will be taken
+        Args:
+            content: email content
+            subject: email subject
+
+        Returns:
+            Step: Step instance
+        """
         self.steps.append(Step(email=content, subject=subject))
         self.save()
         return self.steps[-1]
 
     def steps_edit(self, step_index, content, subject):
-        cur_step = self.steps[step_index]
+        """
+        Edit a step in ; Only first step's subject will be taken
+        Args:
+            step_index: index of step to be edited
+            content: new email content
+            subject: new email subject
+
+        Returns:
+            Step: Step instance
+        """
+        try:
+            cur_step = self.steps[step_index]
+        except IndexError:
+            raise pymodm.errors.DoesNotExist  # Catched by error handler
         cur_step.email = content
         cur_step.subject = subject
         self.save()
@@ -113,7 +137,7 @@ class User(MongoModel):
     email = fields.EmailField()
     first_name = fields.CharField()
     last_name = fields.CharField()
-    salted_password = fields.CharField()  # TODO maybe add __ in the front
+    salted_password = fields.CharField()  # TODO add __ in the front
     gmail_oauth_info = fields.EmbeddedDocumentField(GmailOauthInfo)
     campaigns_count = fields.IntegerField(default=0)
     prospects_count = fields.IntegerField(default=0)
@@ -180,10 +204,23 @@ class User(MongoModel):
         return authed_session
 
     def campaigns_list(self):
+        """
+        Get campaign list (last added will be at first), can be empty
+        Returns:
+            list: list of Campaign instances
+        """
         with no_auto_dereference(Campaign):
             return list(Campaign.objects.raw({"creator": self._id}))[::-1]
 
     def campaigns_append(self, **campaign_info):
+        """
+        Add campaigns for the user
+        Args:
+            **campaign_info: keyword dict that Campaign need
+
+        Returns:
+            Campaign: Campaign instance
+        """
         c = Campaign(creator=self._id, creation_date=datetime.now(), **campaign_info).save()
         self.campaigns_count += 1
         self.save()
@@ -191,11 +228,12 @@ class User(MongoModel):
             return c
 
     def campaign_by_id(self, campaign_id):
-        """Call by other methods
+        """
+        Get campaign by id
         Args:
-            campaign_id:
+            campaign_id: id
         Returns:
-            Campaign: campaign object
+            Campaign: Campaign object
         Raises:
             DoesNotExist
         """
@@ -210,16 +248,16 @@ class User(MongoModel):
         """
         Append Prospect to User; Prospect is store for each user
         Args:
-            prospects_list:
-
+            prospects_list: list of keyword dict to construct Prospect
         Returns:
+            list: list of id of prospects
         """
         # TODO: handle repeat/exists prospects
         prospects_objs = Prospect.objects.bulk_create(
-            [Prospect(owner=self._id, **each_p) for each_p in prospects_list], retrieve=True)
+            [Prospect(owner=self._id, **each_p) for each_p in prospects_list], retrieve=False)
         self.prospects_count += len(prospects_objs)
         self.save()
-        return None
+        return prospects_objs
 
     @property
     def prospects(self):

@@ -21,7 +21,7 @@ def fake_user_json():
             "confirm_password": "123456"}
 
 
-class GmailAuthHandlerTest(TestBase):
+class CampaignHandlerTest(TestBase):
     def test_create_campaign(self):
         fake_json = fake_user_json()
         _ = self.api.post('/register', json=fake_json)
