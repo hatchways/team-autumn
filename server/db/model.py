@@ -46,7 +46,7 @@ class Prospect(MongoModel):
     # TODO what's that cloud?
 
     class Meta:
-        indexes = pymongo.IndexModel([("owner", pymongo.HASHED)])
+        indexes = [pymongo.IndexModel([("owner", pymongo.HASHED)])]
         connection_alias = 'user-db'
         ignore_unknown_fields = True
 
@@ -94,7 +94,7 @@ class Campaign(MongoModel):
         return None
 
     class Meta:
-        indexes = pymongo.IndexModel([("creator", pymongo.HASHED)])
+        indexes = [pymongo.IndexModel([("creator", pymongo.HASHED)])]
         connection_alias = 'user-db'
         ignore_unknown_fields = True
 
@@ -115,8 +115,8 @@ class User(MongoModel):
     last_name = fields.CharField()
     salted_password = fields.CharField()  # TODO maybe add __ in the front
     gmail_oauth_info = fields.EmbeddedDocumentField(GmailOauthInfo)
-    campaigns_count = fields.IntegerField()
-    prospects_count = fields.IntegerField()
+    campaigns_count = fields.IntegerField(default=0)
+    prospects_count = fields.IntegerField(default=0)
 
     @staticmethod
     def get_by_email(email):
@@ -228,7 +228,7 @@ class User(MongoModel):
 
     class Meta:
         # This model will be used in the connection "user-db"
-        indexes = pymongo.IndexModel([("email", pymongo.HASHED)])
+        indexes = [pymongo.IndexModel([("email", pymongo.HASHED)])]
         connection_alias = 'user-db'
         ignore_unknown_fields = True
         # Save all referenced object when save is called on this.
