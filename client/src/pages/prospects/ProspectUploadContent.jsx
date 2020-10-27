@@ -99,7 +99,7 @@ const ProspectUpload = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ owner: user.email, prospects: { ...formattedProspects } }),
+        body: JSON.stringify({ ...formattedProspects }),
       })
         .then((response) => response.json())
         .then((r) => {
