@@ -1,13 +1,8 @@
-import json
-
-import werkzeug
-from flask import jsonify, request, Blueprint, Response, current_app
+from flask import request, Blueprint
 from db.model import User
 from api import error_code
-from addon import bcrypt, jwt
 from api.util import get_schema, validate_json_input, fail_response, get_jwt_identity, jwt_required, new_schema, \
     success_response
-from api.auth_handler import login
 from pymodm.errors import DoesNotExist
 
 campaign_handler = Blueprint('campaign_handler', __name__)
