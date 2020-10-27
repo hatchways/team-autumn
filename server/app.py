@@ -1,19 +1,16 @@
-import os
-import datetime
-from pymodm import connect
-from addon import bcrypt, jwt
-from api.prospect_handler import prospect_handler
-from api.gmail_auth_handler import gmail_auth_handler
 from flask import Flask, session
 from api.ping_handler import ping_handler
 from api.home_handler import home_handler
 from api.register_handler import register_handler
 from api.auth_handler import auth_handler
-from api.gmail_auth_handler import gmail_auth_handler	
-from addon import bcrypt, jwt	
-from pymodm import connect	
-import datetime	
-
+from api.gmail_auth_handler import gmail_auth_handler
+from api.campaign_handler import campaign_handler
+from addon import bcrypt, jwt
+from pymodm import connect
+import datetime
+import json
+from pymodm import MongoModel
+from bson import ObjectId
 
 app = Flask(__name__)
 app.config.from_object("config.Config")
@@ -28,6 +25,7 @@ app.register_blueprint(ping_handler)
 app.register_blueprint(register_handler)
 app.register_blueprint(auth_handler)
 app.register_blueprint(gmail_auth_handler)
+app.register_blueprint(campaign_handler)
 
 
 @app.before_request
@@ -36,4 +34,15 @@ def make_session_permanent():
     app.permanent_session_lifetime = datetime.timedelta(minutes=5)
 
 
-app.register_blueprint(prospect_handler)
+class ModelEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, MongoModel):
+            return obj.to_dict()
+        elif isinstance(obj, ObjectId):
+            return str(obj)
+        elif isinstance(obj, (datetime.date, datetime.datetime)):
+            return obj.isoformat()
+        return json.JSONEncoder.default(self, obj)
+
+
+app.json_encoder = ModelEncoder
