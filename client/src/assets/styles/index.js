@@ -35,6 +35,15 @@ export const formStyles = makeStyles((theme) => ({
   linkText: {
     textAlign: 'right',
   },
+  uploadPaper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: '1rem 0',
+    borderRadius: '5px',
+  },
 }));
 
 export const headerStyles = makeStyles((theme) => ({
@@ -100,6 +109,9 @@ export const buttonStyles = makeStyles((theme) => ({
     background: `linear-gradient(90deg, ${theme.palette.primary.dark} , ${theme.palette.primary.light})`,
     color: 'white',
   },
+  extraWide: {
+    width: '150px',
+  },
 }));
 
 export const tableStyles = makeStyles((theme) => ({
@@ -111,6 +123,7 @@ export const tableStyles = makeStyles((theme) => ({
   },
   table: {
     borderRadius: theme.shape.borderRadius,
+    minWidth: 650,
   },
   head: {
     backgroundColor: theme.palette.primary.main,
@@ -142,7 +155,8 @@ export const tableStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.primary.main,
     },
   },
-  tableCell: {
-    // fontWeight: 600,
+  uploadContainer: {
+    maxHeight: 350,
+    padding: theme.spacing(1),
   },
 }));

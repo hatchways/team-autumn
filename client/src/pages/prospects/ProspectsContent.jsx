@@ -64,24 +64,22 @@ const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 const ProspectsContent = () => {
   const classes = useStyles();
   const buttonClasses = buttonStyles();
-  const [user] = useContext(UserContext);
   const [filter] = useContext(FilterContext);
-  const [message, setMessage] = useContext(ProspectUploadContext);
   const [data, setData] = useState(testData);
-  const [, setSnackbarOpen] = useState(false);
   const history = useHistory();
 
   const filteredData = data.filter((d) => d.email.includes(filter));
 
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
+  const [message, setMessage] = useContext(ProspectUploadContext);
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const { text } = message;
+    if (text) {
+      setOpen(true);
     }
+  }, [message, setOpen]);
 
-    setSnackbarOpen(false);
-    setMessage('');
-  };
-
+  const [user] = useContext(UserContext);
   useEffect(() => {
     fetch(`/prospects?owner_email=${user.email}`, {
       method: 'get',
@@ -103,6 +101,15 @@ const ProspectsContent = () => {
       })
       .catch((err) => console.log(err));
   }, [user.email]);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+    setMessage('');
+  };
 
   return (
     <>
@@ -138,7 +145,7 @@ const ProspectsContent = () => {
         initialSortBy="email"
       />
       <Snackbar
-        open={message?.text}
+        open={open}
         autoHideDuration={6000}
         onClose={handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
@@ -147,7 +154,6 @@ const ProspectsContent = () => {
           {message.text}
         </Alert>
       </Snackbar>
-      ;
     </>
   );
 };
