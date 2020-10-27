@@ -1,8 +1,15 @@
+from datetime import datetime
+
+import pymongo
+from bson import ObjectId
 from pymodm import MongoModel, fields
+import pymodm.errors
 from google.auth.transport.requests import AuthorizedSession
-from google_auth_oauthlib.flow import Flow
 from google.oauth2.credentials import Credentials
 import json
+from warnings import warn
+
+from pymodm.context_managers import no_auto_dereference
 
 
 class GmailOauthInfo(MongoModel):
@@ -28,6 +35,94 @@ class GmailOauthInfo(MongoModel):
         ignore_unknown_fields = True
 
 
+class Prospect(MongoModel):
+    owner = fields.ReferenceField("User")
+    email = fields.CharField()  # TODO can be primary key
+    campaigns: ...
+    status: ...
+    last_contacted: ...
+    steps: ...
+
+    # TODO Replace with true Prospect class
+    def to_dict(self):
+        return self.to_son().to_dict()
+
+    class Meta:
+        indexes = [pymongo.IndexModel([("owner", pymongo.HASHED)])]
+        connection_alias = 'user-db'
+        ignore_unknown_fields = True
+
+
+class Step(MongoModel):
+    email = fields.CharField()  # =Template
+    subject = fields.CharField()  # =Title;Subject is only there for the first step in the campaign
+    prospects = fields.ListField(fields.ReferenceField(Prospect, on_delete=fields.ReferenceField.PULL))
+
+    def to_dict(self):
+        return self.to_son().to_dict()
+
+    class Meta:
+        # This model will be used in the connection "user-db"
+        connection_alias = 'user-db'
+        ignore_unknown_fields = True
+
+
+class Campaign(MongoModel):
+    creator = fields.ReferenceField("User")
+    name = fields.CharField()
+    creation_date = fields.DateTimeField()
+    prospects = fields.ListField(fields.ReferenceField(Prospect, on_delete=fields.ReferenceField.PULL))
+    steps = fields.EmbeddedDocumentListField(Step)
+
+    def steps_add(self, content, subject):
+        """
+        Add a step to this campaign; Only first step's subject will be taken
+        Args:
+            content: email content
+            subject: email subject
+
+        Returns:
+            Step: Step instance
+        """
+        self.steps.append(Step(email=content, subject=subject))
+        self.save()
+        return self.steps[-1]
+
+    def steps_edit(self, step_index, content, subject):
+        """
+        Edit a step in ; Only first step's subject will be taken
+        Args:
+            step_index: index of step to be edited
+            content: new email content
+            subject: new email subject
+
+        Returns:
+            Step: Step instance
+        """
+        try:
+            cur_step = self.steps[step_index]
+        except IndexError:
+            raise pymodm.errors.DoesNotExist  # Catched by error handler
+        cur_step.email = content
+        cur_step.subject = subject
+        self.save()
+        return cur_step
+
+    def to_dict(self):
+        return self.to_son().to_dict()
+
+    @property
+    def subject(self):
+        if self.steps:
+            return self.steps[0].subject
+        return None
+
+    class Meta:
+        indexes = [pymongo.IndexModel([("creator", pymongo.HASHED)])]
+        connection_alias = 'user-db'
+        ignore_unknown_fields = True
+
+
 class User(MongoModel):
     """
     User model
@@ -42,8 +137,10 @@ class User(MongoModel):
     email = fields.EmailField()
     first_name = fields.CharField()
     last_name = fields.CharField()
-    salted_password = fields.CharField()
+    salted_password = fields.CharField()  # TODO add __ in the front
     gmail_oauth_info = fields.EmbeddedDocumentField(GmailOauthInfo)
+    campaigns_count = fields.IntegerField(default=0)
+    prospects_count = fields.IntegerField(default=0)
 
     @staticmethod
     def get_by_email(email):
@@ -56,22 +153,46 @@ class User(MongoModel):
         Returns:
             (None|User): return user object or none.
         """
+        warn("get_by_email will be replace by get_by_id soon", DeprecationWarning)
         ret = User.objects.raw({"email": email})
         ret_list = list(ret)
         return ret_list[0] if ret_list else None
 
-    def update_credentials(self, cred):
+    def to_dict(self, remove_password=True, remove_oauth_info=True):
+        warn("to_dict will be replace by user_info soon", DeprecationWarning)
+        ret = self.to_son().to_dict()
+        return {"email": self.email,
+                "first_name": self.first_name,
+                "last_name": self.last_name}
+
+    def user_info(self):
+        return {"_id": self._id,
+                "email": self.email,
+                "first_name": self.first_name,
+                "last_name": self.last_name}
+
+    # TODO: split by multi inheritance
+
+    def gmail_profile(self):
+        _token = self._session.credentials.token
+
+        res = self._gmail_session.get("https://gmail.googleapis.com/gmail/v1/users/me/profile?alt=json")
+        if self._gmail_session.credentials.token != _token:
+            self.save_credentials(self._session.credentials)
+        return res.text
+
+    def gmail_update_credentials(self, cred):
         if self.gmail_oauth_info and self.gmail_oauth_info.token == cred.token:
             return
         self.gmail_oauth_info = GmailOauthInfo(**json.loads(cred.to_json()))
         self.save()
 
     @property
-    def is_oauthed(self):
+    def gmail_oauthed(self):
         return self.gmail_oauth_info is not None
 
     @property
-    def _session(self):
+    def _gmail_session(self):
         """
 
         Returns:
@@ -79,37 +200,78 @@ class User(MongoModel):
         """
         if not self.is_oauthed:
             return None
-        authed_session = AuthorizedSession(
-            Credentials.from_authorized_user_info(self.gmail_oauth_info.to_dict()))
+        authed_session = AuthorizedSession(Credentials.from_authorized_user_info(self.gmail_oauth_info.to_dict()))
         return authed_session
 
-    def get_gmail_profile(self):
-        _token = self._session.credentials.token
+    def campaigns_list(self):
+        """
+        Get campaign list (last added will be at first), can be empty
+        Returns:
+            list: list of Campaign instances
+        """
+        with no_auto_dereference(Campaign):
+            return list(Campaign.objects.raw({"creator": self._id}))[::-1]
 
-        res = self._session.get(
-            "https://gmail.googleapis.com/gmail/v1/users/me/profile?alt=json")
-        if self._session.credentials.token != _token:
-            self.save_credentials(self._session.credentials)
-        return res.text
+    def campaigns_append(self, **campaign_info):
+        """
+        Add campaigns for the user
+        Args:
+            **campaign_info: keyword dict that Campaign need
 
-    def to_dict(self, remove_password=True, remove_oauth_info=True):
-        ret = self.to_son().to_dict()
-        return {"email": self.email,
-                "first_name": self.first_name,
-                "last_name": self.last_name}
+        Returns:
+            Campaign: Campaign instance
+        """
+        c = Campaign(creator=self._id, creation_date=datetime.now(), **campaign_info).save()
+        self.campaigns_count += 1
+        self.save()
+        with no_auto_dereference(Campaign):
+            return c
 
-    def user_info_dict(self):
-        return {"email": self.email,
-                "first_name": self.first_name,
-                "last_name": self.last_name}
+    def campaign_by_id(self, campaign_id):
+        """
+        Get campaign by id
+        Args:
+            campaign_id: id
+        Returns:
+            Campaign: Campaign object
+        Raises:
+            DoesNotExist
+        """
+        return Campaign.objects.get({"$and": [{"_id": ObjectId(campaign_id)}, {"creator": self._id}]})
+
+    @property
+    def campaigns(self):
+        with no_auto_dereference(Campaign):
+            return list(Campaign.objects.raw({"creator": self._id}))
+
+    def prospects_bulk_append(self, prospects_list):
+        """
+        Append Prospect to User; Prospect is store for each user
+        Args:
+            prospects_list: list of keyword dict to construct Prospect
+        Returns:
+            list: list of id of prospects
+        """
+        # TODO: handle repeat/exists prospects
+        prospects_objs = Prospect.objects.bulk_create(
+            [Prospect(owner=self._id, **each_p) for each_p in prospects_list], retrieve=False)
+        self.prospects_count += len(prospects_objs)
+        self.save()
+        return prospects_objs
+
+    @property
+    def prospects(self):
+        with no_auto_dereference(Prospect):
+            return list(Prospect.objects.raw({"owner": self._id}))
 
     class Meta:
         # This model will be used in the connection "user-db"
+        indexes = [pymongo.IndexModel([("email", pymongo.HASHED)])]
         connection_alias = 'user-db'
         ignore_unknown_fields = True
 
 
-class Prospect(MongoModel):
+class ProspectToBeMerge(MongoModel):
     """
     Prospect Model
     Example:
@@ -155,3 +317,4 @@ class Prospect(MongoModel):
     class Meta:
         connection_alias = "user-db"
         ignore_unknown_fields = True
+

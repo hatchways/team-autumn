@@ -6,6 +6,8 @@ MIME_NOT_JSON = -5  # Happens when register and login
 UNAUTHORIZED_ACCESS = -6  # Happens when login
 NO_VALID_GMAIL_OAUTH_CREDENTIALS = -7
 GMAIL_AUTH_FAILED = -8
+DOCUMENT_NOT_EXIST = -9
+METHODS_NOT_ALLOWED = -10
 
 DESC = ["_",
         "Password mismatch",
@@ -16,4 +18,6 @@ DESC = ["_",
         "Unauthorized access",
         "User's gmail oauth credentials is invalid",
         "Error occurs when auth with google oauth server",
+        "Document does not exist(or exists multiple same _id) in the database",
+        "Method is not allowed"
         ]
