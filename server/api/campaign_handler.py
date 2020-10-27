@@ -24,6 +24,10 @@ user_entry_allow_methods = {
 @jwt_required
 def user_entry(method_name):
     """
+    User api end point. The api should post to any of the following method in such format "/user/campaigns_list"
+    For methods need no args, pass empty dict {} as the body
+    All methods listed below are defined in User class in ../db/model.py
+    If accessed document is not in db, return false_response with error_code.DOCUMENT_NOT_EXIST
     Args:
         method_name:
             campaigns_list
@@ -31,7 +35,9 @@ def user_entry(method_name):
             campaign_by_id
             prospects_bulk_append
     Returns:
-        None
+        {"status":True, "error_code":0,"response":jsonified_RETURN_FROM_CORRESPONDING_METHOD}
+        if fail, the return will be in the format
+                {"status":False, "error_code":-[1-9]}
     """
     user = User.get_by_email(get_jwt_identity()["email"])
     if method_name not in user_entry_allow_methods.keys():
@@ -54,14 +60,20 @@ print(campaign_entry_allow_methods["steps_edit"])
 @jwt_required
 def campaign_entry(campaign_id, method_name):
     """
-
+    Campaign api end point. The api should post to any of the following method in such format
+        "/campaign/aabbccdd/steps_add"
+    For methods need no args, pass empty dict {} as the body
+    All methods listed below are defined in Campaign class in ../db/model.py
+    If accessed document is not in db, return false_response with error_code.DOCUMENT_NOT_EXIST
     Args:
         campaign_id: id to lookup in user's campaign list
         method_name:
             steps_add
             steps_edit
     Returns:
-
+        {"status":True, "error_code":0,"response":jsonified_RETURN_FROM_CORRESPONDING_METHOD}
+        if fail, the return will be in the format
+                {"status":False, "error_code":-[1-9]}
     """
     if method_name not in campaign_entry_allow_methods.keys():
         return fail_response(error_code.METHODS_NOT_ALLOWED), 400
