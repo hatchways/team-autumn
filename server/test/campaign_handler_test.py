@@ -41,20 +41,20 @@ class GmailAuthHandlerTest(TestBase):
     def test_add_prospects(self):
         fake_json = fake_user_json()
         _ = self.api.post('/register', json=fake_json)
-        res = self.api.post("/user/campaigns_list", json={})
 
         res = self.api.post("/user/prospects_bulk_append",
                             json={"prospects_list": [{"email": "email"}, {"email": "email2"}]})
         with no_auto_dereference(Prospect):
             print(User.get_by_email(fake_json["email"]).prospects)
 
-    def test_campaign_entry(self):
+    def test_step(self):
         fake_json = fake_user_json()
         _ = self.api.post('/register', json=fake_json)
-        res = self.api.post("/user/campaigns_list", json={})
 
         res = self.api.post("/user/campaigns_append", json={"name": "TestCamp"})
         _id = res.json["response"]["_id"]
+        res = self.api.post("/user/campaigns_list", json={})
+        print(res.json)
         res = self.api.post("/campaign/{}/steps_add".format(_id), json={"content": "TEXT", "subject": "Title"})
         self.assertTrue(res.json["response"]["email"] == "TEXT")
         res = self.api.post("/campaign/{}/steps_edit".format(_id),

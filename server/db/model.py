@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pymongo
 from bson import ObjectId
 from pymodm import MongoModel, fields
 from google.auth.transport.requests import AuthorizedSession
@@ -41,10 +42,11 @@ class Prospect(MongoModel):
     status: ...
     last_contacted: ...
     steps: ...  # ?
+
     # TODO what's that cloud?
 
     class Meta:
-        # This model will be used in the connection "user-db"
+        indexes = [pymongo.IndexModel([("owner", pymongo.HASHED)])]
         connection_alias = 'user-db'
         ignore_unknown_fields = True
 
@@ -68,7 +70,7 @@ class Campaign(MongoModel):
     name = fields.CharField()
     creation_date = fields.DateTimeField()
     prospects = fields.ListField(fields.ReferenceField(Prospect, on_delete=fields.ReferenceField.PULL))
-    steps = fields.EmbeddedDocumentListField(Step)  # TODO is it global?
+    steps = fields.EmbeddedDocumentListField(Step)
 
     def steps_add(self, content, subject):
         self.steps.append(Step(email=content, subject=subject))
@@ -92,7 +94,7 @@ class Campaign(MongoModel):
         return None
 
     class Meta:
-        # This model will be used in the connection "user-db"
+        indexes = [pymongo.IndexModel([("creator", pymongo.HASHED)])]
         connection_alias = 'user-db'
         ignore_unknown_fields = True
 
@@ -113,8 +115,8 @@ class User(MongoModel):
     last_name = fields.CharField()
     salted_password = fields.CharField()  # TODO maybe add __ in the front
     gmail_oauth_info = fields.EmbeddedDocumentField(GmailOauthInfo)
-    campaigns = fields.ListField(fields.ReferenceField(Campaign, on_delete=fields.ReferenceField.PULL))
-    prospects = fields.ListField(fields.ReferenceField(Prospect, on_delete=fields.ReferenceField.PULL))
+    campaigns_count = fields.IntegerField(default=0)
+    prospects_count = fields.IntegerField(default=0)
 
     @staticmethod
     def get_by_email(email):
@@ -145,7 +147,7 @@ class User(MongoModel):
                 "first_name": self.first_name,
                 "last_name": self.last_name}
 
-    # TODO: Maybe split by multi inheritance
+    # TODO: split by multi inheritance
 
     def gmail_profile(self):
         _token = self._session.credentials.token
@@ -179,11 +181,11 @@ class User(MongoModel):
 
     def campaigns_list(self):
         with no_auto_dereference(Campaign):
-            return self.campaigns[::-1]
+            return list(Campaign.objects.raw({"creator": self._id}))[::-1]
 
     def campaigns_append(self, **campaign_info):
         c = Campaign(creator=self._id, creation_date=datetime.now(), **campaign_info).save()
-        self.campaigns.append(c)
+        self.campaigns_count += 1
         self.save()
         with no_auto_dereference(Campaign):
             return c
@@ -199,6 +201,11 @@ class User(MongoModel):
         """
         return Campaign.objects.get({"$and": [{"_id": ObjectId(campaign_id)}, {"creator": self._id}]})
 
+    @property
+    def campaigns(self):
+        with no_auto_dereference(Campaign):
+            return list(Campaign.objects.raw({"creator": self._id}))
+
     def prospects_bulk_append(self, prospects_list):
         """
         Append Prospect to User; Prospect is store for each user
@@ -207,16 +214,21 @@ class User(MongoModel):
 
         Returns:
         """
-        # TODO prospects_list preprocess to [{k:v},{k:v}] format
         # TODO: handle repeat/exists prospects
         prospects_objs = Prospect.objects.bulk_create(
             [Prospect(owner=self._id, **each_p) for each_p in prospects_list], retrieve=True)
-        self.prospects.extend(prospects_objs)
+        self.prospects_count += len(prospects_objs)
         self.save()
         return None
 
+    @property
+    def prospects(self):
+        with no_auto_dereference(Prospect):
+            return list(Prospect.objects.raw({"owner": self._id}))
+
     class Meta:
         # This model will be used in the connection "user-db"
+        indexes = [pymongo.IndexModel([("email", pymongo.HASHED)])]
         connection_alias = 'user-db'
         ignore_unknown_fields = True
 

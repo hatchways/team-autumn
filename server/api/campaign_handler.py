@@ -19,6 +19,7 @@ user_entry_allow_methods = {
     "prospects_bulk_append": new_schema(prospects_list=get_schema("array", properties={}, additionalProperties=True))
 }
 
+
 @campaign_handler.route('/user/<method_name>', methods=['POST'])
 @jwt_required
 def user_entry(method_name):
