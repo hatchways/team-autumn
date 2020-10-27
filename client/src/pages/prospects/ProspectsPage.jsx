@@ -17,7 +17,7 @@ const ProspectsPage = () => {
         {location.pathname.includes('upload') ? (
           <DrawerAndContent drawer={<ProspectUploadDrawer />} content={<ProspectUploadContent />} />
         ) : (
-          <DrawerAndContent drawer={<ProspectsDrawer />} content={ProspectsContent} />
+          <DrawerAndContent drawer={<ProspectsDrawer />} content={<ProspectsContent />} />
         )}
       </ProspectUploadProvider>
     </FilterProvider>

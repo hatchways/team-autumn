@@ -3,13 +3,13 @@ import { DropzoneAreaBase } from 'material-ui-dropzone';
 import DescriptionIcon from '@material-ui/icons/Description';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import ToggleButton from '@material-ui/lab/ToggleButton';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import Papa from 'papaparse';
 import { useHistory } from 'react-router-dom';
 
 import UserContext from '../../contexts/UserContext';
 import ProspectUploadContext from '../../contexts/ProspectUploadContext';
-import { buttonStyles } from '../../assets/styles';
 
 /*
   Todo: add dialog box to confirm headers to match database
@@ -26,7 +26,6 @@ const ProspectUpload = () => {
   const [selected, setSelected] = useState(true);
   const [message, setMessage] = useContext(ProspectUploadContext);
 
-  const classes = buttonStyles();
   const history = useHistory();
 
   const handleClose = (event, reason) => {
@@ -49,7 +48,7 @@ const ProspectUpload = () => {
       delimiter: ',',
       transformHeader: (header) => header.trim().toLocaleLowerCase(),
       skipEmptyLines: true,
-      header: selected,
+      header: true,
       step: (results, parser) => {
         const headers = results.meta.fields;
         const emailHeader = headers.find((header) => header.includes('email'));
@@ -74,6 +73,7 @@ const ProspectUpload = () => {
           setMessage({ type: 'error', text: errors[0] });
           setLoading(false);
         } else {
+          // TODO: Upload after populating table
           fetch('/upload_prospects', {
             method: 'post',
             headers: {
@@ -120,15 +120,17 @@ const ProspectUpload = () => {
         Icon={DescriptionIcon}
         showAlerts={false}
       />
-      <ToggleButton
-        className={classes.base}
-        value={selected}
-        selected={selected}
-        onChange={() => setSelected(!selected)}
-        aria-label="headers"
-      >
-        Enable Headers in CSV
-      </ToggleButton>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={selected}
+            onChange={() => setSelected(!selected)}
+            name="headers"
+            color="primary"
+          />
+        }
+        label="There are headers in this CSV file"
+      />
       <Snackbar
         open={message?.text}
         autoHideDuration={6000}
@@ -142,4 +144,5 @@ const ProspectUpload = () => {
     </>
   );
 };
+
 export default ProspectUpload;
