@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from 'react';
 
 import SearchInput from '../../components/SearchInput';
@@ -15,6 +16,7 @@ const ProspectsDrawer = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({}),
       })
         .then((response) => response.json())
         .then((d) => setCampaigns(d))

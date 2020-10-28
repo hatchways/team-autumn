@@ -41,6 +41,8 @@ class Prospect(MongoModel):
     first_name = fields.CharField()
     last_name = fields.CharField()
     status = fields.CharField()
+    campaigns = fields.ListField(fields.ReferenceField(
+        "Campaign"))
 
     # TODO Replace with true Prospect class
     def to_dict(self):
@@ -259,7 +261,7 @@ class User(MongoModel):
         """
         # TODO: handle repeat/exists prospects
         prospects_objs = Prospect.objects.bulk_create(
-            [Prospect(owner=self._id, **each_p) for each_p in prospects_list if each_p["email"] not in self.prospects], retrieve=False)
+            [Prospect(owner=self._id, **each_p) for each_p in prospects_list], retrieve=False)
         self.prospects_count += len(prospects_objs)
         self.save()
         return prospects_objs
