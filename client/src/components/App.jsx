@@ -6,7 +6,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import { theme } from '../assets/themes/theme';
-import { formStyles } from '../assets/styles/styles';
+import { formStyles } from '../assets/styles';
 import SignupPage from '../pages/auth/SignupPage';
 import LoginPage from '../pages/auth/LoginPage';
 import Logout from '../pages/auth/LogoutPage';
@@ -17,9 +17,9 @@ import ReportingPage from '../pages/reporting/ReportingPage';
 import ProfilePage from '../pages/profile/ProfilePage';
 import ProtectedRoute from './ProtectedRoute';
 import Layout from './Layout';
-import UserContext from '../contexts/UserContext';
 import AlertDialog from './Dialog';
 import OauthCallback from './OauthCallback';
+import UserContext from '../contexts/UserContext';
 
 const App = () => {
   const classes = formStyles();

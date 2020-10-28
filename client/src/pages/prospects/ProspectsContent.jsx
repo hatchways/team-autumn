@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Button, makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
+import { useHistory } from 'react-router-dom';
 
-import ProspectsContext from '../../contexts/ProspectsContext';
+import FilterContext from '../../contexts/FilterContext';
 import EnhancedDataTable from '../../components/EnhancedDataTable';
 import buttonStyles from '../../assets/styles/buttonStyles';
-import CsvUploadButton from '../../components/CsvUploadButton';
 import UserContext from '../../contexts/UserContext';
+import ProspectUploadContext from '../../contexts/ProspectUploadContext';
 
 const useStyles = makeStyles(() => ({
   mainGrid: {
@@ -16,6 +19,9 @@ const useStyles = makeStyles(() => ({
   },
   faded: {
     color: '#9e9e9e',
+  },
+  buttonRight: {
+    justifyContent: 'flex-end',
   },
 }));
 
@@ -47,21 +53,33 @@ const testData = [
 ];
 
 const headCells = [
-  // { id: 'id', numeric: false, disablePadding: false, label: 'id' },
   { id: 'email', numeric: false, disablePadding: false, label: 'Email' },
   { id: 'firstName', numeric: false, disablePadding: false, label: 'First Name' },
   { id: 'lastName', numeric: false, disablePadding: false, label: 'Last Name' },
   { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
 ];
 
+const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
+
 const ProspectsContent = () => {
   const classes = useStyles();
   const buttonClasses = buttonStyles();
-  const [user] = useContext(UserContext);
-  const [search] = useContext(ProspectsContext);
+  const [filter] = useContext(FilterContext);
   const [data, setData] = useState(testData);
-  const filteredData = data.filter((d) => d.email.includes(search));
+  const history = useHistory();
 
+  const filteredData = data.filter((d) => d.email.includes(filter));
+
+  const [message, setMessage] = useContext(ProspectUploadContext);
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const { text } = message;
+    if (text) {
+      setOpen(true);
+    }
+  }, [message, setOpen]);
+
+  const [user] = useContext(UserContext);
   useEffect(() => {
     fetch(`/prospects?owner_email=${user.email}`, {
       method: 'get',
@@ -84,6 +102,15 @@ const ProspectsContent = () => {
       .catch((err) => console.log(err));
   }, [user.email]);
 
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+    setMessage('');
+  };
+
   return (
     <>
       <Grid className={classes.mainGrid} container>
@@ -96,9 +123,15 @@ const ProspectsContent = () => {
               Add New Prospect
             </Button>
           </Grid>
-          <Grid className={classes.centered} container item xs={8}>
+          <Grid className={classes.buttonRight} container item xs={8}>
             <Grid item xs={8}>
-              <CsvUploadButton />
+              <Button
+                variant="contained"
+                className={`${buttonClasses.base} ${buttonClasses.action}`}
+                onClick={() => history.push('/prospects/upload')}
+              >
+                Upload Prospects by File
+              </Button>
             </Grid>
           </Grid>
         </Grid>
@@ -111,6 +144,16 @@ const ProspectsContent = () => {
         requiresCheckbox
         initialSortBy="email"
       />
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <Alert onClose={handleClose} severity={message.type}>
+          {message.text}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

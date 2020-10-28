@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 import DrawerAndContent from '../../components/DrawerAndContent';
 import ProspectsDrawer from './ProspectsDrawer';
 import ProspectsContent from './ProspectsContent';
-import ProspectsContext from '../../contexts/ProspectsContext';
+import { FilterProvider } from '../../contexts/FilterContext';
+import { ProspectUploadProvider } from '../../contexts/ProspectUploadContext';
+import ProspectUploadContent from './ProspectUploadContent';
+import ProspectUploadDrawer from './ProspectUploadDrawer';
 
 const ProspectsPage = () => {
-  const [search, setSearch] = useState('');
+  const location = useLocation();
   return (
-    <ProspectsContext.Provider value={[search, setSearch]}>
-      <DrawerAndContent drawer={<ProspectsDrawer />} content={<ProspectsContent />} />
-    </ProspectsContext.Provider>
+    <FilterProvider>
+      <ProspectUploadProvider>
+        {location.pathname.includes('upload') ? (
+          <DrawerAndContent drawer={<ProspectUploadDrawer />} content={<ProspectUploadContent />} />
+        ) : (
+          <DrawerAndContent drawer={<ProspectsDrawer />} content={<ProspectsContent />} />
+        )}
+      </ProspectUploadProvider>
+    </FilterProvider>
   );
 };
 
