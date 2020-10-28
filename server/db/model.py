@@ -41,8 +41,19 @@ class Prospect(MongoModel):
     first_name = fields.CharField()
     last_name = fields.CharField()
     status = fields.CharField()
+    campaigns = fields.ListField(fields.ReferenceField(
+        "Campaign"))
+
+    @staticmethod
+    def find_by_id(id):
+        try:
+            prospect = Prospect.objects.get({'_id': id})
+            return prospect
+        except:
+            return None
 
     # TODO Replace with true Prospect class
+
     def to_dict(self):
         return self.to_son().to_dict()
 
@@ -109,6 +120,14 @@ class Campaign(MongoModel):
         cur_step.subject = subject
         self.save()
         return cur_step
+
+    def prospects_add(self, prospect_ids):
+        for pid in prospect_ids:
+            self.prospects.append(ObjectId(pid))
+        self.save()
+        if not self.prospects:
+            return None
+        return len(prospect_ids)
 
     def to_dict(self):
         return self.to_son().to_dict()
@@ -259,7 +278,7 @@ class User(MongoModel):
         """
         # TODO: handle repeat/exists prospects
         prospects_objs = Prospect.objects.bulk_create(
-            [Prospect(owner=self._id, **each_p) for each_p in prospects_list if each_p["email"] not in self.prospects], retrieve=False)
+            [Prospect(owner=self._id, **each_p) for each_p in prospects_list], retrieve=False)
         self.prospects_count += len(prospects_objs)
         self.save()
         return prospects_objs

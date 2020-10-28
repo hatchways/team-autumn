@@ -53,6 +53,7 @@ const testData = [
 ];
 
 const headCells = [
+  { id: '_id', numeric: false, disablePadding: false, label: '_id' },
   { id: 'email', numeric: false, disablePadding: false, label: 'Email' },
   { id: 'firstName', numeric: false, disablePadding: false, label: 'First Name' },
   { id: 'lastName', numeric: false, disablePadding: false, label: 'Last Name' },
@@ -64,11 +65,13 @@ const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 const ProspectsContent = () => {
   const classes = useStyles();
   const buttonClasses = buttonStyles();
-  const [filter] = useContext(FilterContext);
+  const { filterContext, itemContext, campaignContext } = useContext(FilterContext);
   const [data, setData] = useState(testData);
   const history = useHistory();
 
-  const filteredData = data.filter((d) => d.email.includes(filter));
+  const [filter] = filterContext;
+  const [selectedItems] = itemContext;
+  const [selectedCampaign] = campaignContext;
 
   const [message, setMessage] = useContext(ProspectUploadContext);
   const [open, setOpen] = useState(false);
@@ -81,26 +84,30 @@ const ProspectsContent = () => {
 
   const [user] = useContext(UserContext);
   useEffect(() => {
-    fetch(`/prospects?owner_email=${user.email}`, {
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((d) => {
-        const prospects = d.prospects.map((prospect) => ({
-          email: prospect.email,
-          firstName: prospect.first_name,
-          lastName: prospect.last_name,
-          status: prospect.status,
-        }));
-        if (prospects.length > 0) {
-          setData(prospects);
-        }
+    if (user) {
+      fetch(`/prospects`, {
+        method: 'GET',
       })
-      .catch((err) => console.log(err));
-  }, [user.email]);
+        .then((response) => response.json())
+        .then((d) => {
+          const prospects = d.prospects.map((prospect) => ({
+            _id: prospect._id,
+            email: prospect.email,
+            firstName: prospect.first_name,
+            lastName: prospect.last_name,
+            status: prospect.status,
+          }));
+          if (prospects.length > 0) {
+            setData(prospects);
+          }
+        })
+        .catch((err) =>
+          setMessage({ type: 'error', text: `There was a problem fetching prospects: ${err}` })
+        );
+    }
+  }, [user, setMessage]);
+
+  const filteredData = data.filter((d) => d.email.includes(filter));
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -109,6 +116,39 @@ const ProspectsContent = () => {
 
     setOpen(false);
     setMessage('');
+  };
+
+  const handleUploadProspects = () => {
+    if (selectedCampaign && selectedItems.length > 0) {
+      fetch(`/campaign/${selectedCampaign._id}/prospects_add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prospect_ids: selectedItems }),
+      })
+        .then((response) => response.json())
+        .then((d) => {
+          if (d.response > 0) {
+            setMessage({
+              type: 'success',
+              text: `${d.response} prospects successfully added to campaign: ${selectedCampaign.name}`,
+            });
+          } else {
+            setMessage({
+              type: 'warning',
+              text: `0 prospects added to campaign: ${selectedCampaign.name}`,
+            });
+          }
+        })
+        .catch((err) => {
+          setMessage({ type: 'error', text: `There was a problem uplading the prospects: ${err}` });
+        });
+    } else if (!selectedCampaign) {
+      setMessage({ type: 'warning', text: 'You must select a campaign first' });
+    } else if (selectedItems.length === 0) {
+      setMessage({ type: 'warning', text: 'You must select at least one prospect to upload' });
+    }
   };
 
   return (
@@ -144,6 +184,12 @@ const ProspectsContent = () => {
         requiresCheckbox
         initialSortBy="email"
       />
+      <Button
+        className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
+        onClick={handleUploadProspects}
+      >
+        Add to Campaign
+      </Button>
       <Snackbar
         open={open}
         autoHideDuration={6000}

@@ -103,16 +103,15 @@ const ProspectUpload = () => {
       })
         .then((response) => response.json())
         .then((r) => {
-          console.log(r);
           if (r.prospects_added === 0) {
             setMessage({
               type: 'warning',
-              text: `${r.prospects_added} prospects added. ${r.dups} duplicate record(s) found and ignored.`,
+              text: `${r.prospects_added} prospects added.`,
             });
           } else {
             setMessage({
               type: 'success',
-              text: `${r.prospects_added} prospects added. ${r.dups} duplicate record(s) found and ignored.`,
+              text: `${r.prospects_added} prospects added.`,
             });
           }
           setLoading(false);

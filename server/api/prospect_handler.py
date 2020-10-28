@@ -5,7 +5,7 @@ from flask import jsonify, request, Blueprint, Response, current_app
 from db.model import Prospect, User
 from api import error_code
 from api.util import get_schema, validate_json_input, fail_response, success_response, get_jwt_identity
-
+from flask_jwt_extended import jwt_required
 
 prospect_handler = Blueprint('prospect_handler', __name__)
 
@@ -23,6 +23,7 @@ prospect_schema = {
 
 
 @prospect_handler.route('/upload_prospects', methods=['POST'])
+@jwt_required
 def upload_prospects():
     """
     API to handle the upload of prospects
@@ -30,12 +31,9 @@ def upload_prospects():
     """
 
     # Change this to work with one or many prospects
-<< << << < HEAD
-   owner = User.get_by_email(get_jwt_identity()['email'])
+    owner = User.get_by_email(get_jwt_identity()['email'])
 
-== == == =
->>>>>> > fa965024db1d55fb982e228f182cbeab10aa8968
-   if not request.is_json:
+    if not request.is_json:
         return fail_response(error_code.MIME_NOT_JSON), 400
 
     err, prospect_json = validate_json_input(
@@ -52,25 +50,25 @@ def upload_prospects():
     # Add to db
     prospect_json = prospect_json.copy()
     prospect_list = list(prospect_json['prospects'].values())
-    owner_email = prospect_json['owner']
-    owner = User.get_by_email(owner_email)
-    dup_prospects = 0
+    owner = User.get_by_email(get_jwt_identity()["email"])
     owner.prospects_bulk_append(prospect_list)
-    return success_response(prospects_added=len(prospect_list), dups=dup_prospects), 201
+
+    return success_response(prospects_added=len(prospect_list)), 201
 
 
 @ prospect_handler.route('/prospects', methods=['GET'])
+@jwt_required
 def get_prospects():
 
-   owner = User.get_by_email(get_jwt_identity()['email'])
+    owner = User.get_by_email(get_jwt_identity()['email'])
 
     if not owner:
         return fail_response(error_code.USER_NOT_EXIST), 400
 
     prospects_list = owner.prospects
 
-   # return all prospects associated with an owner email
-   return success_response(prospects=prospects_list), 200
+    # return all prospects associated with an owner email
+    return success_response(prospects=prospects_list), 200
 
 
 # prospects = prospects_list

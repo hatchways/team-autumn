@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -11,6 +11,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 import { tableStyles } from '../assets/styles';
 import generateUniqueId from '../util/generateUniqueId';
+import FilterContext from '../contexts/FilterContext';
 
 const createData = (datum) => ({ ...datum });
 
@@ -71,7 +72,9 @@ const EnhancedTableHead = ({
 
         {headCells.map((headCell) => (
           <TableCell
-            className={classes.tableCell}
+            className={`${classes.tableCell} ${
+              headCell.id === '_id' ? classes.visuallyHidden : ''
+            }`}
             key={`prospect-${headCell.id}`}
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'default'}
@@ -107,7 +110,9 @@ const EnhancedDataTable = ({
   const classes = tableStyles();
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState(initialSortBy);
-  const [selected, setSelected] = useState([]);
+  const { itemContext } = useContext(FilterContext);
+
+  const [selectedItems, setSelectedItems] = itemContext;
 
   const rows = data.map((datum) => createData(datum));
 
@@ -119,34 +124,34 @@ const EnhancedDataTable = ({
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.email);
-      setSelected(newSelecteds);
+      const newSelecteds = rows.map((r) => r._id);
+      setSelectedItems(newSelecteds);
       return;
     }
-    setSelected([]);
+    setSelectedItems([]);
   };
 
-  const handleClick = (event, email) => {
-    const selectedIndex = selected.indexOf(email);
+  const handleClick = (event, _id) => {
+    const selectedIndex = selectedItems.indexOf(_id);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, email);
+      newSelected = newSelected.concat(selectedItems, _id);
     } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
+      newSelected = newSelected.concat(selectedItems.slice(1));
+    } else if (selectedIndex === selectedItems.length - 1) {
+      newSelected = newSelected.concat(selectedItems.slice(0, -1));
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
+        selectedItems.slice(0, selectedIndex),
+        selectedItems.slice(selectedIndex + 1)
       );
     }
 
-    setSelected(newSelected);
+    setSelectedItems(newSelected);
   };
 
-  const isSelected = (email) => selected.indexOf(email) !== -1;
+  const isSelected = (_id) => selectedItems.indexOf(_id) !== -1;
 
   return (
     <div className={classes.root}>
@@ -160,7 +165,7 @@ const EnhancedDataTable = ({
           >
             <EnhancedTableHead
               classes={classes}
-              numSelected={selected.length}
+              numSelected={selectedItems?.length || 0}
               order={order}
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
@@ -172,12 +177,12 @@ const EnhancedDataTable = ({
             />
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy)).map((row) => {
-                const isItemSelected = isSelected(row.email);
-                const labelId = row.email;
+                const isItemSelected = isSelected(row._id);
+                const labelId = row._id;
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.email)}
+                    onClick={(event) => handleClick(event, row._id)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
@@ -193,11 +198,17 @@ const EnhancedDataTable = ({
                       </TableCell>
                     )}
 
-                    <TableCell component="th" align="left" id={labelId} scope="row">
-                      {row.email}
+                    <TableCell
+                      className={classes.visuallyHidden}
+                      component="th"
+                      align="left"
+                      id={labelId}
+                      scope="row"
+                    >
+                      {row._id}
                     </TableCell>
                     {Object.entries(row)
-                      .filter((e) => e[0] !== 'email')
+                      .filter((e) => e[0] !== '_id')
                       .map((entry) => (
                         <TableCell key={entry[1]}>{entry[1]}</TableCell>
                       ))}

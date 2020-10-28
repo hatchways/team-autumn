@@ -3,7 +3,10 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import MuiListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import MuiTypography from '@material-ui/core/Typography';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import Typography from '@material-ui/core/Typography';
+
+import generateUniqueId from '../util/generateUniqueId';
 
 const ListItem = withStyles({
   root: {
@@ -28,40 +31,50 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     maxWidth: 360,
   },
-}));
-
-const Typography = withStyles((theme) => ({
-  root: {
-    fontWeight: 'bold',
+  text: {
     fontFamily: theme.typography.fontFamily,
   },
-}))(MuiTypography);
+  bold: {
+    fontWeight: 'bold',
+  },
+}));
 
-export default function SelectedListItem({ ariaLabel, listItemText }) {
+export default function SelectedListItem({
+  ariaLabel,
+  listItemText,
+  listType,
+  listHeader,
+  isBold,
+  selectItem,
+}) {
   const classes = useStyles();
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
+    selectItem(index - 1);
   };
 
   return (
     <div className={classes.root}>
       <List component="nav" aria-label={ariaLabel}>
-        <ListItem
-          button
-          selected={selectedIndex === 2}
-          onClick={(event) => handleListItemClick(event, 2)}
-        >
-          <ListItemText primary={<Typography>{listItemText[0]}</Typography>} />
-        </ListItem>
-        <ListItem
-          button
-          selected={selectedIndex === 3}
-          onClick={(event) => handleListItemClick(event, 3)}
-        >
-          <ListItemText primary={<Typography>{listItemText[1]}</Typography>} />
-        </ListItem>
+        <ListSubheader>{listHeader}</ListSubheader>
+        {listItemText.map((listItem, index) => (
+          <ListItem
+            key={`${generateUniqueId(listType)}`}
+            button
+            selected={selectedIndex === index + 1}
+            onClick={(event) => handleListItemClick(event, index + 1)}
+          >
+            <ListItemText
+              primary={
+                <Typography className={`${classes.text} ${isBold ? classes.bold : ''}`}>
+                  {listItem}
+                </Typography>
+              }
+            />
+          </ListItem>
+        ))}
       </List>
     </div>
   );
