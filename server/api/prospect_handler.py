@@ -48,22 +48,6 @@ def upload_prospects():
     owner = User.get_by_email(owner_email)
     prospects = []
     dup_prospects = 0
-    # for prospect in prospect_list:
-
-    #     p = {
-    #         'email': prospect['email'],
-    #         'first_name': prospect['first_name'],
-    #         'last_name': prospect['last_name'],
-    #         'status': 'open',
-    #     }
-    # exists = Prospect.check_if_exists(
-    #     prospect['owner_email'], prospect['email'])
-    # if prospect['email'] and not exists:
-    # prospects.append(Prospect(**p))
-    # else:
-    #     dup_prospects += 1
-
-    # if (len(prospects) > 0):
     owner.prospects_bulk_append(prospect_list)
     return success_response(prospects_added=len(prospect_list), dups=dup_prospects), 201
 
