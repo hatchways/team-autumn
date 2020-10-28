@@ -51,10 +51,9 @@ def upload_prospects():
     prospect_json = prospect_json.copy()
     prospect_list = list(prospect_json['prospects'].values())
     owner = User.get_by_email(get_jwt_identity()["email"])
-    dup_prospects = 0
     owner.prospects_bulk_append(prospect_list)
 
-    return success_response(prospects_added=len(prospect_list), dups=dup_prospects), 201
+    return success_response(prospects_added=len(prospect_list)), 201
 
 
 @ prospect_handler.route('/prospects', methods=['GET'])
