@@ -65,12 +65,13 @@ const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 const ProspectsContent = () => {
   const classes = useStyles();
   const buttonClasses = buttonStyles();
-  const { filterContext, itemContext } = useContext(FilterContext);
+  const { filterContext, itemContext, campaignContext } = useContext(FilterContext);
   const [data, setData] = useState(testData);
   const history = useHistory();
 
   const [filter] = filterContext;
   const [selectedItems] = itemContext;
+  const [selectedCampaign] = campaignContext;
 
   const [message, setMessage] = useContext(ProspectUploadContext);
   const [open, setOpen] = useState(false);
@@ -117,7 +118,18 @@ const ProspectsContent = () => {
 
   const handleUploadProspects = () => {
     // TODO: Upload prospects on click
-    console.log(selectedItems);
+    if (selectedCampaign) {
+      fetch(`/campaign/${selectedCampaign._id}/prospects_add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prospect_ids: selectedItems }),
+      })
+        .then((response) => response.json())
+        .then((d) => console.log(d))
+        .catch((err) => console.log(err));
+    }
   };
 
   return (

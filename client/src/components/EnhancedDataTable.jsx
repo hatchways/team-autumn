@@ -149,7 +149,6 @@ const EnhancedDataTable = ({
     }
 
     setSelectedItems(newSelected);
-    console.log(selectedItems);
   };
 
   const isSelected = (_id) => selectedItems.indexOf(_id) !== -1;

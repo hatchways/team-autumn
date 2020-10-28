@@ -44,7 +44,15 @@ class Prospect(MongoModel):
     campaigns = fields.ListField(fields.ReferenceField(
         "Campaign"))
 
+    @staticmethod
+    def find_by_id(id):
+        prospect = Prospect.objects.raw({'_id': id})
+        if not prospect:
+            return None
+        return prospect
+
     # TODO Replace with true Prospect class
+
     def to_dict(self):
         return self.to_son().to_dict()
 
@@ -111,6 +119,14 @@ class Campaign(MongoModel):
         cur_step.subject = subject
         self.save()
         return cur_step
+
+    def prospects_add(self, prospect_ids):
+        for pid in prospect_ids:
+            self.prospects.append(ObjectId(pid))
+        self.save()
+        if not self.prospects:
+            return None
+        return self.prospects
 
     def to_dict(self):
         return self.to_son().to_dict()
