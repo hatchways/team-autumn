@@ -1,4 +1,4 @@
-from flask import request, Blueprint
+from flask import request, Blueprint, current_app
 from db.model import User
 from api import error_code
 from api.util import get_schema, validate_json_input, fail_response, get_jwt_identity, jwt_required, new_schema, \
@@ -37,8 +37,10 @@ def user_entry(method_name):
     user = User.get_by_email(get_jwt_identity()["email"])
     if method_name not in user_entry_allow_methods.keys():
         return fail_response(error_code.METHODS_NOT_ALLOWED), 400
-    err, user_json = validate_json_input(request.get_json(), user_entry_allow_methods[method_name])
+    err, user_json = validate_json_input(
+        request.get_json(), user_entry_allow_methods[method_name])
     if err:
+        current_app.logger.debug(err)
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
     res = user.__getattribute__(method_name)(**user_json)
     return success_response(response=res), 200
@@ -72,7 +74,8 @@ def campaign_entry(campaign_id, method_name):
     """
     if method_name not in campaign_entry_allow_methods.keys():
         return fail_response(error_code.METHODS_NOT_ALLOWED), 400
-    err, user_json = validate_json_input(request.get_json(), campaign_entry_allow_methods[method_name])
+    err, user_json = validate_json_input(
+        request.get_json(), campaign_entry_allow_methods[method_name])
     if err:
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
 
@@ -85,4 +88,3 @@ def campaign_entry(campaign_id, method_name):
 @campaign_handler.app_errorhandler(DoesNotExist)
 def item_not_exist(e):
     return fail_response(error_code.DOCUMENT_NOT_EXIST), 404
-

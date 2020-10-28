@@ -1,16 +1,9 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import {
-  Button,
-  Grid,
-  Paper,
-  Card,
-  CardContent,
-  Container,
-  Typography,
-} from "@material-ui/core";
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Button, Grid, Paper, Card, CardContent, Container, Typography } from '@material-ui/core';
 
-import RichTextEditorPopup from "../../components/RichTextEditorPopup";
+import RichTextEditorPopup from '../../components/RichTextEditorPopup';
+import UserContext from '../../contexts/UserContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,9 +12,9 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(10),
-    width: "60vw",
-    display: "flex",
-    justifyContent: "space-between",
+    width: '60vw',
+    display: 'flex',
+    justifyContent: 'space-between',
     color: theme.palette.text.secondary,
   },
   stats: {
@@ -34,9 +27,9 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 40,
   },
   secondaryButton: {
-    padding: "1em",
-    color: "black",
-    fontWeight: "bold",
+    padding: '1em',
+    color: 'black',
+    fontWeight: 'bold',
   },
   cardContainer: {
     marginBottom: theme.spacing(12),
@@ -45,39 +38,39 @@ const useStyles = makeStyles((theme) => ({
 
 const campaign = {
   id: 0,
-  title: "Nature interesteds prospects",
+  title: 'Nature interested prospects',
   steps: [
     {
       id: 0,
-      subject: "Showing you around",
-      content: "Sample email. I am going to be edited in a rich text editor.",
-      type: "New thread",
+      subject: 'Showing you around',
+      content: 'Sample email. I am going to be edited in a rich text editor.',
+      type: 'New thread',
       sent: 146,
       stats: [
-        { name: "Opened", number: "36%" },
-        { name: "Clicked", number: "146%" },
-        { name: "Replied", number: "2%" },
+        { name: 'Opened', number: '36%' },
+        { name: 'Clicked', number: '146%' },
+        { name: 'Replied', number: '2%' },
       ],
       thread: [
         {
           id: 0,
           subject: "You didn't respond to my first email",
-          content: "I am just checking in...",
-          type: "Follow up",
+          content: 'I am just checking in...',
+          type: 'Follow up',
           sent: 34,
-          opened: "35%",
-          clicked: "16%",
-          replied: "6%",
+          opened: '35%',
+          clicked: '16%',
+          replied: '6%',
           thread: [],
         },
       ],
     },
   ],
   stats: [
-    { id: 0, name: "Contacted", number: 146 },
-    { id: 1, name: "Reached", number: 145 },
-    { id: 2, name: "Opened", number: 52 },
-    { id: 3, name: "Replied", number: 3 },
+    { id: 0, name: 'Contacted', number: 146 },
+    { id: 1, name: 'Reached', number: 145 },
+    { id: 2, name: 'Opened', number: 52 },
+    { id: 3, name: 'Replied', number: 3 },
   ],
 };
 
@@ -88,10 +81,10 @@ const StatsCard = ({ ...stat }) => {
     <Card>
       <CardContent
         style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
         <Typography className={classes.title}>{stat.name}</Typography>
@@ -129,19 +122,19 @@ const ViewCampaign = () => {
 
         <Grid item xs={12} className={classes.stats}>
           <Paper className={classes.paper}>
-            <div style={{ fontWeight: "bold", fontSize: 40 }}>1</div>
+            <div style={{ fontWeight: 'bold', fontSize: 40 }}>1</div>
 
             <div style={{ fontSize: 22 }}>{campaign.title}</div>
 
-            <div style={{ display: "flex" }}>
+            <div style={{ display: 'flex' }}>
               {campaign.steps[0].stats.map((s, i) => (
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginLeft: "2em",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginLeft: '2em',
                   }}
                 >
                   <Typography className={classes.title}>{s.name}</Typography>
@@ -155,7 +148,7 @@ const ViewCampaign = () => {
         </Grid>
 
         <Grid item>
-          <div style={{ width: "25%", margin: "1em" }}>
+          <div style={{ width: '25%', margin: '1em' }}>
             <Button
               fullWidth
               className={classes.secondaryButton}
@@ -168,7 +161,7 @@ const ViewCampaign = () => {
           </div>
         </Grid>
         <RichTextEditorPopup
-          title={"Step 1"}
+          title="Step 1"
           content={campaign.steps[0].content}
           setOpen={setOpen}
           open={open}

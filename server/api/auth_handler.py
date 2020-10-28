@@ -1,5 +1,5 @@
 import json
-from flask import jsonify, request, Blueprint, Response
+from flask import jsonify, request, Blueprint, Response, current_app
 from db.model import User
 # Ref: https://medium.com/@riken.mehta/full-stack-tutorial-3-flask-jwt-e759d2ee5727
 import jsonschema
