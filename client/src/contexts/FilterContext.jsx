@@ -4,7 +4,7 @@ const FilterContext = React.createContext();
 
 export const FilterProvider = ({ children }) => {
   const [filter, setFilter] = useState('');
-  const [selectedCampaign, setSelectedCampaign] = useState([]);
+  const [selectedCampaign, setSelectedCampaign] = useState();
   const [selectedItems, setSelectedItems] = useState([]);
   return (
     <FilterContext.Provider

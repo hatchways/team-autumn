@@ -118,7 +118,7 @@ const ProspectsContent = () => {
 
   const handleUploadProspects = () => {
     // TODO: Upload prospects on click
-    if (selectedCampaign) {
+    if (selectedCampaign && selectedItems.length > 0) {
       fetch(`/campaign/${selectedCampaign._id}/prospects_add`, {
         method: 'POST',
         headers: {
@@ -127,8 +127,27 @@ const ProspectsContent = () => {
         body: JSON.stringify({ prospect_ids: selectedItems }),
       })
         .then((response) => response.json())
-        .then((d) => console.log(d))
-        .catch((err) => console.log(err));
+        .then((d) => {
+          console.log(d);
+          if (d.response.length > 0) {
+            setMessage({
+              type: 'success',
+              text: `${d.response.length} prospects successfully added to campaign: ${selectedCampaign.name}`,
+            });
+          } else {
+            setMessage({
+              type: 'warning',
+              text: `0 prospects added to campaign: ${selectedCampaign.name}`,
+            });
+          }
+        })
+        .catch((err) => {
+          setMessage({ type: 'error', text: `There was a problem uplading the prospects: ${err}` });
+        });
+    } else if (!selectedCampaign) {
+      setMessage({ type: 'warning', text: 'You must select a campaign first' });
+    } else if (selectedItems.length === 0) {
+      setMessage({ type: 'warning', text: 'You must select at least one prospect to upload' });
     }
   };
 
