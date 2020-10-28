@@ -90,7 +90,6 @@ const ProspectUpload = () => {
           [first]: d[0],
           [second]: d[1],
           [third]: d[2],
-          owner_email: d.owner_email,
           status: 'open',
         };
         return formattedProspect;
@@ -100,7 +99,7 @@ const ProspectUpload = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...formattedProspects }),
+        body: JSON.stringify({ owner: user.email, prospects: { ...formattedProspects } }),
       })
         .then((response) => response.json())
         .then((r) => {

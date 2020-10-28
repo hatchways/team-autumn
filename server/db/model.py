@@ -38,8 +38,10 @@ class GmailOauthInfo(MongoModel):
 class Prospect(MongoModel):
     owner = fields.ReferenceField("User")
     email = fields.CharField()  # TODO can be primary key
+    first_name = fields.CharField()
+    last_name = fields.CharField()
+    status = fields.CharField()
     campaigns: ...
-    status: ...
     last_contacted: ...
     steps: ...
 
@@ -55,8 +57,10 @@ class Prospect(MongoModel):
 
 class Step(MongoModel):
     email = fields.CharField()  # =Template
-    subject = fields.CharField()  # =Title;Subject is only there for the first step in the campaign
-    prospects = fields.ListField(fields.ReferenceField(Prospect, on_delete=fields.ReferenceField.PULL))
+    # =Title;Subject is only there for the first step in the campaign
+    subject = fields.CharField()
+    prospects = fields.ListField(fields.ReferenceField(
+        Prospect, on_delete=fields.ReferenceField.PULL))
 
     def to_dict(self):
         return self.to_son().to_dict()
@@ -71,7 +75,8 @@ class Campaign(MongoModel):
     creator = fields.ReferenceField("User")
     name = fields.CharField()
     creation_date = fields.DateTimeField()
-    prospects = fields.ListField(fields.ReferenceField(Prospect, on_delete=fields.ReferenceField.PULL))
+    prospects = fields.ListField(fields.ReferenceField(
+        Prospect, on_delete=fields.ReferenceField.PULL))
     steps = fields.EmbeddedDocumentListField(Step)
 
     def steps_add(self, content, subject):
@@ -176,7 +181,8 @@ class User(MongoModel):
     def gmail_profile(self):
         _token = self._session.credentials.token
 
-        res = self._gmail_session.get("https://gmail.googleapis.com/gmail/v1/users/me/profile?alt=json")
+        res = self._gmail_session.get(
+            "https://gmail.googleapis.com/gmail/v1/users/me/profile?alt=json")
         if self._gmail_session.credentials.token != _token:
             self.save_credentials(self._session.credentials)
         return res.text
@@ -200,7 +206,8 @@ class User(MongoModel):
         """
         if not self.is_oauthed:
             return None
-        authed_session = AuthorizedSession(Credentials.from_authorized_user_info(self.gmail_oauth_info.to_dict()))
+        authed_session = AuthorizedSession(
+            Credentials.from_authorized_user_info(self.gmail_oauth_info.to_dict()))
         return authed_session
 
     def campaigns_list(self):
@@ -221,7 +228,8 @@ class User(MongoModel):
         Returns:
             Campaign: Campaign instance
         """
-        c = Campaign(creator=self._id, creation_date=datetime.now(), **campaign_info).save()
+        c = Campaign(creator=self._id, creation_date=datetime.now(),
+                     **campaign_info).save()
         self.campaigns_count += 1
         self.save()
         with no_auto_dereference(Campaign):
@@ -254,7 +262,7 @@ class User(MongoModel):
         """
         # TODO: handle repeat/exists prospects
         prospects_objs = Prospect.objects.bulk_create(
-            [Prospect(owner=self._id, **each_p) for each_p in prospects_list], retrieve=False)
+            [Prospect(owner=self._id, **each_p) for each_p in prospects_list if each_p["email"] not in self.prospects], retrieve=False)
         self.prospects_count += len(prospects_objs)
         self.save()
         return prospects_objs
@@ -317,4 +325,3 @@ class ProspectToBeMerge(MongoModel):
     class Meta:
         connection_alias = "user-db"
         ignore_unknown_fields = True
-
