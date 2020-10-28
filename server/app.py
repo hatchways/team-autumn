@@ -5,6 +5,7 @@ from api.register_handler import register_handler
 from api.auth_handler import auth_handler
 from api.gmail_auth_handler import gmail_auth_handler
 from api.campaign_handler import campaign_handler
+from api.prospect_handler import prospect_handler
 from addon import bcrypt, jwt
 from pymodm import connect
 import datetime
@@ -26,6 +27,7 @@ app.register_blueprint(register_handler)
 app.register_blueprint(auth_handler)
 app.register_blueprint(gmail_auth_handler)
 app.register_blueprint(campaign_handler)
+app.register_blueprint(prospect_handler)
 
 
 @app.before_request
