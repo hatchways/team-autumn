@@ -41,9 +41,6 @@ class Prospect(MongoModel):
     first_name = fields.CharField()
     last_name = fields.CharField()
     status = fields.CharField()
-    campaigns: ...
-    last_contacted: ...
-    steps: ...
 
     # TODO Replace with true Prospect class
     def to_dict(self):
