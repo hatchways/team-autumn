@@ -2,9 +2,9 @@ import json
 import os
 import jsonschema
 from flask import jsonify, request, Blueprint, Response
-from db.model import Prospect
+from db.model import ProspectToBeMerge, User
 from api import error_code
-from api.util import get_schema, validate_json_input, fail_response, success_response
+from api.util import get_schema, validate_json_input, fail_response, success_response, get_jwt_identity
 
 
 prospect_handler = Blueprint('prospect_handler', __name__)
@@ -13,7 +13,7 @@ prospect_handler = Blueprint('prospect_handler', __name__)
 prospect_schema = {
     "type": "object",
     "properties": {
-        "owner_email": get_schema(format="email"),
+        "user_email": get_schema(format="email"),
         "first_name": get_schema(),
         "last_name": get_schema(),
         "email": get_schema(format="email"),
@@ -30,6 +30,7 @@ def upload_prospects():
     """
 
     # Change this to work with one or many prospects
+    owner = User.get_by_email(get_jwt_identity()['email'])
 
     if not request.is_json:
         return fail_response(error_code.MIME_NOT_JSON), 400
@@ -38,6 +39,9 @@ def upload_prospects():
 
     if err:
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
+
+    if not owner:
+        return fail_response(error_code.USER_NOT_EXIST), 400
 
     # Potentially add check whether email and owner already exist
 
@@ -56,20 +60,20 @@ def upload_prospects():
         }
         prospects.append(Prospect(**p))
 
-    Prospect.objects.bulk_create(prospects)
+    ProspectToBeMerge.objects.bulk_create(prospects)
     return success_response(), 201
 
 
 @prospect_handler.route('/prospects', methods=['GET'])
 def get_prospects():
 
-    owner_email = request.args.get('owner_email')
+    user = User.get_by_email(get_jwt_identity()['email'])
 
-    if not owner_email:
-        return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
+    if not user:
+        return fail_response(error_code.USER_NOT_EXIST), 400
 
-    prospects_list = Prospect.objects.raw(
-        {'owner_email': owner_email})
+    prospects_list = ProspectToBeMerge.objects.raw(
+        {'owner_email': owner['email']})
     prospects = []
     for prospect in prospects_list:
         prospects.append(prospect.to_dict())
