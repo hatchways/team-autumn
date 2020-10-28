@@ -31,7 +31,9 @@ const ProspectsDrawer = () => {
           });
           setCampaigns(returnedCampaigns);
         })
-        .catch((err) => console.log(err));
+        .catch((err) =>
+          setMessage({ type: 'error', text: `There was a problem fetching the campaigns: ${err}` })
+        );
     }
   }, [user]);
   return (

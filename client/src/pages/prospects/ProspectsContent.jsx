@@ -101,9 +101,11 @@ const ProspectsContent = () => {
             setData(prospects);
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) =>
+          setMessage({ type: 'error', text: `There was a problem fetching prospects: ${err}` })
+        );
     }
-  }, [user]);
+  }, [user, setMessage]);
 
   const filteredData = data.filter((d) => d.email.includes(filter));
 
@@ -127,7 +129,6 @@ const ProspectsContent = () => {
       })
         .then((response) => response.json())
         .then((d) => {
-          console.log(d);
           if (d.response.length > 0) {
             setMessage({
               type: 'success',

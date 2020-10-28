@@ -103,7 +103,6 @@ const ProspectUpload = () => {
       })
         .then((response) => response.json())
         .then((r) => {
-          console.log(r);
           if (r.prospects_added === 0) {
             setMessage({
               type: 'warning',
