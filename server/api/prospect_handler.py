@@ -52,7 +52,6 @@ def upload_prospects():
     owner_email = prospect_json['owner']
     owner = User.get_by_email(owner_email)
     dup_prospects = 0
-
     owner.prospects_bulk_append(prospect_list)
     return success_response(prospects_added=len(prospect_list), dups=dup_prospects), 201
 
