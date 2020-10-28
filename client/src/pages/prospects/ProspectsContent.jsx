@@ -81,26 +81,25 @@ const ProspectsContent = () => {
 
   const [user] = useContext(UserContext);
   useEffect(() => {
-    fetch(`/prospects?owner_email=${user.email}`, {
-      method: 'get',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((d) => {
-        const prospects = d.prospects.map((prospect) => ({
-          email: prospect.email,
-          firstName: prospect.first_name,
-          lastName: prospect.last_name,
-          status: prospect.status,
-        }));
-        if (prospects.length > 0) {
-          setData(prospects);
-        }
+    if (user) {
+      fetch(`/prospects`, {
+        method: 'GET',
       })
-      .catch((err) => console.log(err));
-  }, [user.email]);
+        .then((response) => response.json())
+        .then((d) => {
+          const prospects = d.prospects.map((prospect) => ({
+            email: prospect.email,
+            firstName: prospect.first_name,
+            lastName: prospect.last_name,
+            status: prospect.status,
+          }));
+          if (prospects.length > 0) {
+            setData(prospects);
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [user]);
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {

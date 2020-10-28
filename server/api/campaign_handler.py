@@ -40,7 +40,6 @@ def user_entry(method_name):
     err, user_json = validate_json_input(
         request.get_json(), user_entry_allow_methods[method_name])
     if err:
-        current_app.logger.debug(err)
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
     res = user.__getattribute__(method_name)(**user_json)
     return success_response(response=res), 200

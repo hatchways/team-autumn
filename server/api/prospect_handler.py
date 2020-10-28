@@ -5,7 +5,7 @@ from flask import jsonify, request, Blueprint, Response, current_app
 from db.model import Prospect, User
 from api import error_code
 from api.util import get_schema, validate_json_input, fail_response, success_response, get_jwt_identity
-
+from flask_jwt_extended import jwt_required
 
 prospect_handler = Blueprint('prospect_handler', __name__)
 
@@ -23,6 +23,7 @@ prospect_schema = {
 
 
 @prospect_handler.route('/upload_prospects', methods=['POST'])
+@jwt_required
 def upload_prospects():
     """
     API to handle the upload of prospects
@@ -57,6 +58,7 @@ def upload_prospects():
 
 
 @ prospect_handler.route('/prospects', methods=['GET'])
+@jwt_required
 def get_prospects():
 
     owner = User.get_by_email(get_jwt_identity()['email'])
