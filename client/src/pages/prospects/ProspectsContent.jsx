@@ -129,10 +129,10 @@ const ProspectsContent = () => {
       })
         .then((response) => response.json())
         .then((d) => {
-          if (d.response.length > 0) {
+          if (d.response > 0) {
             setMessage({
               type: 'success',
-              text: `${d.response.length} prospects successfully added to campaign: ${selectedCampaign.name}`,
+              text: `${d.response} prospects successfully added to campaign: ${selectedCampaign.name}`,
             });
           } else {
             setMessage({

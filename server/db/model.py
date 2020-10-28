@@ -46,10 +46,11 @@ class Prospect(MongoModel):
 
     @staticmethod
     def find_by_id(id):
-        prospect = Prospect.objects.raw({'_id': id})
-        if not prospect:
+        try:
+            prospect = Prospect.objects.get({'_id': id})
+            return prospect
+        except:
             return None
-        return prospect
 
     # TODO Replace with true Prospect class
 
@@ -126,7 +127,7 @@ class Campaign(MongoModel):
         self.save()
         if not self.prospects:
             return None
-        return self.prospects
+        return len(prospect_ids)
 
     def to_dict(self):
         return self.to_son().to_dict()
