@@ -53,6 +53,7 @@ const testData = [
 ];
 
 const headCells = [
+  { id: '_id', numeric: false, disablePadding: false, label: '_id' },
   { id: 'email', numeric: false, disablePadding: false, label: 'Email' },
   { id: 'firstName', numeric: false, disablePadding: false, label: 'First Name' },
   { id: 'lastName', numeric: false, disablePadding: false, label: 'Last Name' },
@@ -64,13 +65,12 @@ const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 const ProspectsContent = () => {
   const classes = useStyles();
   const buttonClasses = buttonStyles();
-  const { filterContext } = useContext(FilterContext);
+  const { filterContext, itemContext } = useContext(FilterContext);
   const [data, setData] = useState(testData);
   const history = useHistory();
 
-  const { filter } = filterContext;
-
-  const filteredData = data.filter((d) => d.email.includes(filter));
+  const [filter] = filterContext;
+  const [selectedItems] = itemContext;
 
   const [message, setMessage] = useContext(ProspectUploadContext);
   const [open, setOpen] = useState(false);
@@ -90,6 +90,7 @@ const ProspectsContent = () => {
         .then((response) => response.json())
         .then((d) => {
           const prospects = d.prospects.map((prospect) => ({
+            _id: prospect._id,
             email: prospect.email,
             firstName: prospect.first_name,
             lastName: prospect.last_name,
@@ -103,6 +104,8 @@ const ProspectsContent = () => {
     }
   }, [user]);
 
+  const filteredData = data.filter((d) => d.email.includes(filter));
+
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -110,6 +113,11 @@ const ProspectsContent = () => {
 
     setOpen(false);
     setMessage('');
+  };
+
+  const handleUploadProspects = () => {
+    // TODO: Upload prospects on click
+    console.log(selectedItems);
   };
 
   return (
@@ -145,6 +153,12 @@ const ProspectsContent = () => {
         requiresCheckbox
         initialSortBy="email"
       />
+      <Button
+        className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
+        onClick={handleUploadProspects}
+      >
+        Add to Campaign
+      </Button>
       <Snackbar
         open={open}
         autoHideDuration={6000}
