@@ -64,9 +64,11 @@ const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 const ProspectsContent = () => {
   const classes = useStyles();
   const buttonClasses = buttonStyles();
-  const [filter] = useContext(FilterContext);
+  const { filterContext } = useContext(FilterContext);
   const [data, setData] = useState(testData);
   const history = useHistory();
+
+  const { filter } = filterContext;
 
   const filteredData = data.filter((d) => d.email.includes(filter));
 
