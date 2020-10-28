@@ -117,7 +117,6 @@ const ProspectsContent = () => {
   };
 
   const handleUploadProspects = () => {
-    // TODO: Upload prospects on click
     if (selectedCampaign && selectedItems.length > 0) {
       fetch(`/campaign/${selectedCampaign._id}/prospects_add`, {
         method: 'POST',

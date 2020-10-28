@@ -39,13 +39,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// const Typography = withStyles((theme) => ({
-//   root: {
-//     fontWeight: 'bold',
-//     fontFamily: theme.typography.fontFamily,
-//   },
-// }))(MuiTypography);
-
 export default function SelectedListItem({
   ariaLabel,
   listItemText,

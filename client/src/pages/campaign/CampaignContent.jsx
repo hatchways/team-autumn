@@ -96,7 +96,6 @@ const StatsCard = ({ ...stat }) => {
   );
 };
 
-// props: { id }
 const ViewCampaign = () => {
   const [open, setOpen] = React.useState(false);
 
