@@ -125,8 +125,9 @@ class Campaign(MongoModel):
         # TODO check whether user owns prospects
 
         own_prospect_ids = set()
-        for prospect in self.prospects:
-            own_prospect_ids.add(str(prospect._id))
+        if len(self.prospects) > 0:
+            for prospect in self.prospects:
+                own_prospect_ids.add(str(prospect._id))
 
         new = [ObjectId(val)
                for val in prospect_ids if val not in own_prospect_ids]
