@@ -285,9 +285,9 @@ class User(MongoModel):
         Args:
             prospects_list: list of keyword dict to construct Prospect
         Returns:
-            list: list of id of prospects
+            dict: length of both duplicate prospects as well as new prospects
         """
-        # TODO: handle repeat/exists prospects
+
         own_prospect_emails = [prospect.to_dict()['email']
                                for prospect in self.prospects]
 
