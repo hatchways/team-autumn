@@ -129,15 +129,20 @@ const ProspectsContent = () => {
       })
         .then((response) => response.json())
         .then((d) => {
-          if (d.response > 0) {
+          if (d.response.new > 0 && d.response.dups === 0) {
             setMessage({
               type: 'success',
-              text: `${d.response} prospects successfully added to campaign: ${selectedCampaign.name}`,
+              text: `${d.response.new} prospects successfully added to campaign: ${selectedCampaign.name}`,
+            });
+          } else if (d.response.new > 0 && d.response.dups > 0) {
+            setMessage({
+              type: 'success',
+              text: `${d.response.new} prospects successfully added to campaign: ${selectedCampaign.name}. Ignored ${d.response.dups} duplicate prospects`,
             });
           } else {
             setMessage({
               type: 'warning',
-              text: `0 prospects added to campaign: ${selectedCampaign.name}`,
+              text: `No new prospects added to campaign: ${selectedCampaign.name}`,
             });
           }
         })

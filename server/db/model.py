@@ -122,12 +122,23 @@ class Campaign(MongoModel):
         return cur_step
 
     def prospects_add(self, prospect_ids):
+        new_prospect_ids = []
         for pid in prospect_ids:
-            self.prospects.append(ObjectId(pid))
+            new_prospect_ids.append(ObjectId(pid))
+
+        own_prospect_ids = []
+        for prospect in self.prospects:
+            own_prospect_ids.append(prospect.to_dict()['_id'])
+
+        new = [val for val in new_prospect_ids if val not in own_prospect_ids]
+        dups = [val for val in new_prospect_ids if val in own_prospect_ids]
+
+        for obj_id in new:
+            self.prospects.append(Prospect.objects.get({'_id': obj_id}))
+
         self.save()
-        if not self.prospects:
-            return None
-        return len(prospect_ids)
+
+        return {'new': len(new), 'dups': len(dups)}
 
     def to_dict(self):
         return self.to_son().to_dict()
