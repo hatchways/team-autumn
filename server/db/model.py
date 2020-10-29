@@ -169,8 +169,6 @@ class User(MongoModel):
     salted_password = fields.CharField()  # TODO add __ in the front
     gmail_oauth_info = fields.EmbeddedDocumentField(GmailOauthInfo)
     campaigns_count = fields.IntegerField(default=0)
-    prospects = fields.ListField(fields.ReferenceField(
-        Prospect, on_delete=fields.ReferenceField.PULL))
     prospects_count = fields.IntegerField(default=0)
 
     @staticmethod
