@@ -288,11 +288,23 @@ class User(MongoModel):
             list: list of id of prospects
         """
         # TODO: handle repeat/exists prospects
-        prospects_objs = Prospect.objects.bulk_create(
-            [Prospect(owner=self._id, **each_p) for each_p in prospects_list], retrieve=False)
-        self.prospects_count += len(prospects_objs)
-        self.save()
-        return prospects_objs
+        own_prospect_emails = [prospect.to_dict()['email']
+                               for prospect in self.prospects]
+
+        new_prospects_list = [
+            prospect_obj for prospect_obj in prospects_list if prospect_obj['email'] not in own_prospect_emails]
+
+        dup_prospects_list = [p for p in prospects_list +
+                              new_prospects_list if p not in prospects_list or p not in new_prospects_list]
+
+        if len(new_prospects_list) > 0:
+            prospect_objs = Prospect.objects.bulk_create(
+                [Prospect(owner=self._id, **each_p) for each_p in new_prospects_list], retrieve=False)
+
+            self.prospects_count += len(prospect_objs)
+            self.save()
+
+        return {'new_prospects': len(new_prospects_list), 'dup_prospects': len(dup_prospects_list)}
 
     @property
     def prospects(self):

@@ -70,7 +70,7 @@ const ProspectsContent = () => {
   const history = useHistory();
 
   const [filter] = filterContext;
-  const [selectedItems] = itemContext;
+  const [selectedItems, setSelectedItems] = itemContext;
   const [selectedCampaign] = campaignContext;
 
   const [message, setMessage] = useContext(ProspectUploadContext);
@@ -145,6 +145,7 @@ const ProspectsContent = () => {
               text: `No new prospects added to campaign: ${selectedCampaign.name}`,
             });
           }
+          setSelectedItems([]);
         })
         .catch((err) => {
           setMessage({ type: 'error', text: `There was a problem uplading the prospects: ${err}` });

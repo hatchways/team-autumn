@@ -48,16 +48,13 @@ def upload_prospects():
     # Potentially add check whether email and owner already exist
 
     # Add to db
-    prospect_json = prospect_json.copy()
-    prospect_list = list(prospect_json['prospects'].values())
-    owner = User.get_by_email(get_jwt_identity()["email"])
-    owner.prospects_bulk_append(prospect_list)
+    result = owner.prospects_bulk_append(list(prospect_json.values()))
 
-    return success_response(prospects_added=len(prospect_list)), 201
+    return success_response(**result), 201
 
 
 @ prospect_handler.route('/prospects', methods=['GET'])
-@jwt_required
+@ jwt_required
 def get_prospects():
 
     owner = User.get_by_email(get_jwt_identity()['email'])

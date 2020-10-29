@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core';
 
 const tableStyles = makeStyles((theme) => ({
   root: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(6),
     '&.MuiTableContainer-root': {
       width: '100%',
     },
