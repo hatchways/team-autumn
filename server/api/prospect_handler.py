@@ -1,7 +1,7 @@
 import json
 import os
 import jsonschema
-from flask import jsonify, request, Blueprint, Response, current_app
+from flask import jsonify, request, Blueprint, Response
 from db.model import Prospect, User
 from api import error_code
 from api.util import get_schema, validate_json_input, fail_response, success_response, get_jwt_identity
