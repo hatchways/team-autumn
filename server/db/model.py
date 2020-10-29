@@ -169,6 +169,8 @@ class User(MongoModel):
     salted_password = fields.CharField()  # TODO add __ in the front
     gmail_oauth_info = fields.EmbeddedDocumentField(GmailOauthInfo)
     campaigns_count = fields.IntegerField(default=0)
+    prospects = fields.ListField(fields.ReferenceField(
+        Prospect, on_delete=fields.ReferenceField.PULL))
     prospects_count = fields.IntegerField(default=0)
 
     @staticmethod
@@ -284,26 +286,26 @@ class User(MongoModel):
         Returns:
             dict: length of both duplicate prospects as well as new prospects
         """
+        own_prospect_emails_set = set()
+        if len(self.get_prospects()) > 0:
+            for prospect in self.get_prospects():
+                own_prospect_emails_set.add(prospect.email)
 
-        own_prospect_emails = [prospect.email for prospect in self.prospects]
+        new_prospects_set = set()
+        for prospect_obj in prospects_list:
+            if prospect_obj['email'] not in own_prospect_emails_set:
+                new_prospects_set.add(tuple(prospect_obj.items()))
 
-        new_prospects_list = [
-            prospect_obj for prospect_obj in prospects_list if prospect_obj['email'] not in own_prospect_emails]
-
-        dup_prospects_list = [p for p in prospects_list +
-                              new_prospects_list if p not in prospects_list or p not in new_prospects_list]
-
-        if len(new_prospects_list) > 0:
+        if len(new_prospects_set) > 0:
             prospect_objs = Prospect.objects.bulk_create(
-                [Prospect(owner=self._id, **each_p) for each_p in new_prospects_list], retrieve=False)
+                [Prospect(owner=self._id, **dict(prospect_tup)) for prospect_tup in new_prospects_set], retrieve=False)
 
             self.prospects_count += len(prospect_objs)
             self.save()
 
-        return {'new_prospects': len(new_prospects_list), 'dup_prospects': len(dup_prospects_list)}
+        return {'new_prospects': len(new_prospects_set), 'dup_prospects':  len(prospects_list) - len(new_prospects_set)}
 
-    @property
-    def prospects(self):
+    def get_prospects(self):
         with no_auto_dereference(Prospect):
             return list(Prospect.objects.raw({"owner": self._id}))
 

@@ -62,7 +62,7 @@ def get_prospects():
     if not owner:
         return fail_response(error_code.USER_NOT_EXIST), 400
 
-    prospects_list = owner.prospects
+    prospects_list = owner.get_prospects()
 
     # return all prospects associated with an owner email
     return success_response(prospects=prospects_list), 200

@@ -106,12 +106,12 @@ const ProspectUpload = () => {
           if (r.new_prospects > 0 && r.dup_prospects === 0) {
             setMessage({
               type: 'success',
-              text: `${r.prospects_added} prospects added.`,
+              text: `${r.new_prospects} prospects added.`,
             });
           } else if (r.new_prospects > 0 && r.dup_prospects > 0) {
             setMessage({
               type: 'success',
-              text: `${r.prospects_added} prospects added. ${r.dup_prospects} ignored`,
+              text: `${r.new_prospects} prospects added. ${r.dup_prospects} ignored`,
             });
           } else {
             setMessage({
