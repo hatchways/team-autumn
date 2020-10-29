@@ -122,23 +122,19 @@ class Campaign(MongoModel):
         return cur_step
 
     def prospects_add(self, prospect_ids):
-        new_prospect_ids = []
-        for pid in prospect_ids:
-            new_prospect_ids.append(ObjectId(pid))
+        # TODO check whether user owns prospects
 
-        own_prospect_ids = []
+        own_prospect_ids = set()
         for prospect in self.prospects:
-            own_prospect_ids.append(prospect.to_dict()['_id'])
+            own_prospect_ids.add(str(prospect._id))
 
-        new = [val for val in new_prospect_ids if val not in own_prospect_ids]
-        dups = [val for val in new_prospect_ids if val in own_prospect_ids]
+        new = [ObjectId(val)
+               for val in prospect_ids if val not in own_prospect_ids]
 
-        for obj_id in new:
-            self.prospects.append(Prospect.objects.get({'_id': obj_id}))
-
+        self.prospects.extend(new)
         self.save()
 
-        return {'new': len(new), 'dups': len(dups)}
+        return {'new': len(new), 'dups': len(prospect_ids) - len(new)}
 
     def to_dict(self):
         return self.to_son().to_dict()
@@ -288,8 +284,7 @@ class User(MongoModel):
             dict: length of both duplicate prospects as well as new prospects
         """
 
-        own_prospect_emails = [prospect.to_dict()['email']
-                               for prospect in self.prospects]
+        own_prospect_emails = [prospect.email for prospect in self.prospects]
 
         new_prospects_list = [
             prospect_obj for prospect_obj in prospects_list if prospect_obj['email'] not in own_prospect_emails]
