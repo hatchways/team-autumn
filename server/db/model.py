@@ -43,7 +43,8 @@ class Prospect(MongoModel):
     status = fields.CharField()
     campaigns = fields.ListField(fields.ReferenceField(
         "Campaign"))
-
+    thread_id = fields.DictField()
+    last_contacted = fields.DateTimeField()
     @staticmethod
     def find_by_id(id):
         try:
@@ -121,6 +122,13 @@ class Campaign(MongoModel):
         self.save()
         return cur_step
 
+    def steps_get(self, step_index):
+        try:
+            cur_step = self.steps[step_index]
+        except IndexError:
+            raise pymodm.errors.DoesNotExist  # Catched by error handler
+        return cur_step
+
     def prospects_add(self, prospect_ids):
         for pid in prospect_ids:
             self.prospects.append(ObjectId(pid))
@@ -176,6 +184,19 @@ class User(MongoModel):
         """
         warn("get_by_email will be replace by get_by_id soon", DeprecationWarning)
         ret = User.objects.raw({"email": email})
+        ret_list = list(ret)
+        return ret_list[0] if ret_list else None
+
+    @staticmethod
+    def get_by_id(_id):
+        """
+        Get user by email.
+        Args:
+            _id: The expected id field, can be in mongodb query set grammar.
+        Returns:
+            (None|User): return user object or none.
+        """
+        ret = User.objects.raw({"_id": _id})
         ret_list = list(ret)
         return ret_list[0] if ret_list else None
 
