@@ -228,7 +228,7 @@ class User(MongoModel):
         Returns:
             AuthorizedSession
         """
-        if not self.is_oauthed:
+        if not self.gmail_oauthed:
             return None
         authed_session = AuthorizedSession(
             Credentials.from_authorized_user_info(self.gmail_oauth_info.to_dict()))

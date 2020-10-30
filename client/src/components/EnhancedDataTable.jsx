@@ -10,7 +10,6 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 
 import { tableStyles } from '../assets/styles';
-import generateUniqueId from '../util/generateUniqueId';
 import FilterContext from '../contexts/FilterContext';
 
 const createData = (datum) => ({ ...datum });
@@ -186,7 +185,7 @@ const EnhancedDataTable = ({
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={generateUniqueId('prospect')}
+                    key={row._id}
                     selected={isItemSelected}
                   >
                     {requiresCheckbox && (

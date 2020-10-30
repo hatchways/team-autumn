@@ -68,7 +68,7 @@ def gmail_oauth_callback():
         return fail_response(error_code.GMAIL_AUTH_FAILED), 401
 
     u = User.get_by_email(get_jwt_identity()["email"])
-    u.update_credentials(flow.credentials)
+    u.gmail_update_credentials(flow.credentials)
     return redirect(REDIRECT_URI_FRONT)
 
 
