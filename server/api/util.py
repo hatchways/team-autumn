@@ -5,6 +5,10 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from api import error_code
 
 
+class SafeDict(dict):
+    def __missing__(self, key):
+        return "{"+str(key)+"}"
+
 def get_schema(input_type="string", **kwargs):
     """
     Define schema for keywords in user json

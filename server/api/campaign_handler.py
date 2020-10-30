@@ -48,6 +48,7 @@ def user_entry(method_name):
 campaign_entry_allow_methods = {
     "steps_add": new_schema("content", "subject"),
     "steps_edit": new_schema("content", "subject", step_index=get_schema("integer")),
+    "steps_send": new_schema(step_index=get_schema("integer")),
     "prospects_add": new_schema(prospect_ids=get_schema("array"))
 }
 
@@ -66,6 +67,8 @@ def campaign_entry(campaign_id, method_name):
         method_name:
             steps_add
             steps_edit
+            steps_send
+            prospects_add
     Returns:
         {"status":True, "error_code":0,"response":jsonified_RETURN_FROM_CORRESPONDING_METHOD}
         if fail, the return will be in the format

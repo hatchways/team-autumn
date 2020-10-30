@@ -69,6 +69,9 @@ def gmail_oauth_callback():
 
     u = User.get_by_email(get_jwt_identity()["email"])
     u.update_credentials(flow.credentials)
+
+
+
     return redirect(REDIRECT_URI_FRONT)
 
 

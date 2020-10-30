@@ -22,7 +22,6 @@ def create_message(to, subject, message_text):
   """
     message = MIMEText(message_text)
     message['to'] = to
-    # message['from'] = sender
     message['subject'] = subject
     return {'raw': base64.urlsafe_b64encode(message.as_bytes())}
 
@@ -38,7 +37,8 @@ def send_email_worker(user_id, campaign_id, step_index):
     step = campaign.steps_get(step_index)
 
     for each in step.prospects:
-        msg = create_message(each.email, campaign.subject, step.email)
+        email_text = campaign.steps_email_replace_keyword(step.email, each)
+        msg = create_message(each.email, campaign.subject, email_text)
         # Set threadId to keep the email in a conversation in the same campagin
         if campaign.name in each.thread_id:
             msg["threadId"] = each.thread_id[campaign.name]
@@ -48,9 +48,11 @@ def send_email_worker(user_id, campaign_id, step_index):
         res_json = res.json()
         each.thread_id[campaign.name] = res_json["threadId"]
         each.last_contacted = datetime.now()
+        # Replace
         # TODO: Other status update
         # TODO: notify front end
         each.save()
+
 
 
 if __name__ == '__main__':

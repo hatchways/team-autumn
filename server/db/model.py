@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 
 import pymongo
@@ -10,6 +11,15 @@ import json
 from warnings import warn
 
 from pymodm.context_managers import no_auto_dereference
+
+# TODO: move these to a better place
+from redis import Redis
+from rq import Queue
+
+from api.util import SafeDict
+
+rq_q = Queue(connection=Redis())
+from worker.send_gmail import send_email_worker
 
 
 class GmailOauthInfo(MongoModel):
@@ -45,6 +55,8 @@ class Prospect(MongoModel):
         "Campaign"))
     thread_id = fields.DictField()
     last_contacted = fields.DateTimeField()
+    keyword_dict = fields.DictField()
+
     @staticmethod
     def find_by_id(id):
         try:
@@ -87,6 +99,7 @@ class Campaign(MongoModel):
     prospects = fields.ListField(fields.ReferenceField(
         Prospect, on_delete=fields.ReferenceField.PULL))
     steps = fields.EmbeddedDocumentListField(Step)
+    keyword_dict = fields.DictField()
 
     def steps_add(self, content, subject):
         """
@@ -137,6 +150,17 @@ class Campaign(MongoModel):
             return None
         return len(prospect_ids)
 
+    def steps_send(self, step_index):
+        result = rq_q.enqueue(send_email_worker, str(self.creator), str(self._id), step_index)
+        return
+
+    def steps_email_replace_keyword(self, email_text, prospect):
+        keyword_dict = SafeDict()
+        keyword_dict.update(self.creator.keyword_dict)
+        keyword_dict.update(self.keyword_dict)
+        keyword_dict.update(prospect.keyword_dict)
+        return email_text.format_map(keyword_dict)
+
     def to_dict(self):
         return self.to_son().to_dict()
 
@@ -170,6 +194,7 @@ class User(MongoModel):
     gmail_oauth_info = fields.EmbeddedDocumentField(GmailOauthInfo)
     campaigns_count = fields.IntegerField(default=0)
     prospects_count = fields.IntegerField(default=0)
+    keyword_dict = fields.DictField()
 
     @staticmethod
     def get_by_email(email):
