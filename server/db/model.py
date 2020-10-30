@@ -122,12 +122,20 @@ class Campaign(MongoModel):
         return cur_step
 
     def prospects_add(self, prospect_ids):
-        for pid in prospect_ids:
-            self.prospects.append(ObjectId(pid))
+        # TODO check whether user owns prospects
+
+        own_prospect_ids = set()
+        if len(self.prospects) > 0:
+            for prospect in self.prospects:
+                own_prospect_ids.add(str(prospect._id))
+
+        new = [ObjectId(val)
+               for val in prospect_ids if val not in own_prospect_ids]
+
+        self.prospects.extend(new)
         self.save()
-        if not self.prospects:
-            return None
-        return len(prospect_ids)
+
+        return {'new': len(new), 'dups': len(prospect_ids) - len(new)}
 
     def to_dict(self):
         return self.to_son().to_dict()
@@ -220,7 +228,7 @@ class User(MongoModel):
         Returns:
             AuthorizedSession
         """
-        if not self.is_oauthed:
+        if not self.gmail_oauthed:
             return None
         authed_session = AuthorizedSession(
             Credentials.from_authorized_user_info(self.gmail_oauth_info.to_dict()))
@@ -274,17 +282,28 @@ class User(MongoModel):
         Args:
             prospects_list: list of keyword dict to construct Prospect
         Returns:
-            list: list of id of prospects
+            dict: length of both duplicate prospects as well as new prospects
         """
-        # TODO: handle repeat/exists prospects
-        prospects_objs = Prospect.objects.bulk_create(
-            [Prospect(owner=self._id, **each_p) for each_p in prospects_list], retrieve=False)
-        self.prospects_count += len(prospects_objs)
-        self.save()
-        return prospects_objs
+        own_prospect_emails_set = set()
+        if len(self.get_prospects()) > 0:
+            for prospect in self.get_prospects():
+                own_prospect_emails_set.add(prospect.email)
 
-    @property
-    def prospects(self):
+        new_prospects_set = set()
+        for prospect_obj in prospects_list:
+            if prospect_obj['email'] not in own_prospect_emails_set:
+                new_prospects_set.add(tuple(prospect_obj.items()))
+
+        if len(new_prospects_set) > 0:
+            prospect_objs = Prospect.objects.bulk_create(
+                [Prospect(owner=self._id, **dict(prospect_tup)) for prospect_tup in new_prospects_set], retrieve=False)
+
+            self.prospects_count += len(prospect_objs)
+            self.save()
+
+        return {'new_prospects': len(new_prospects_set), 'dup_prospects':  len(prospects_list) - len(new_prospects_set)}
+
+    def get_prospects(self):
         with no_auto_dereference(Prospect):
             return list(Prospect.objects.raw({"owner": self._id}))
 

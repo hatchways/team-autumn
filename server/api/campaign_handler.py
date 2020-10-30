@@ -1,4 +1,4 @@
-from flask import request, Blueprint, current_app
+from flask import request, Blueprint
 from db.model import User
 from api import error_code
 from api.util import get_schema, validate_json_input, fail_response, get_jwt_identity, jwt_required, new_schema, \
@@ -76,7 +76,6 @@ def campaign_entry(campaign_id, method_name):
     err, user_json = validate_json_input(
         request.get_json(), campaign_entry_allow_methods[method_name])
     if err:
-        current_app.logger.debug(err)
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
 
     user = User.get_by_email(get_jwt_identity()["email"])

@@ -103,15 +103,20 @@ const ProspectUpload = () => {
       })
         .then((response) => response.json())
         .then((r) => {
-          if (r.prospects_added === 0) {
+          if (r.new_prospects > 0 && r.dup_prospects === 0) {
             setMessage({
-              type: 'warning',
-              text: `${r.prospects_added} prospects added.`,
+              type: 'success',
+              text: `${r.new_prospects} prospects added.`,
+            });
+          } else if (r.new_prospects > 0 && r.dup_prospects > 0) {
+            setMessage({
+              type: 'success',
+              text: `${r.new_prospects} prospects added. ${r.dup_prospects} ignored`,
             });
           } else {
             setMessage({
-              type: 'success',
-              text: `${r.prospects_added} prospects added.`,
+              type: 'warning',
+              text: `No new prospects uploaded. ${r.dup_prospects} ignored`,
             });
           }
           setLoading(false);

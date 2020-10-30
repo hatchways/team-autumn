@@ -1,4 +1,4 @@
-from flask import jsonify, request, Blueprint, Response, session, url_for, redirect, current_app
+from flask import jsonify, request, Blueprint, Response, session, url_for, redirect
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from db.model import User
 from api.util import *
@@ -68,7 +68,7 @@ def gmail_oauth_callback():
         return fail_response(error_code.GMAIL_AUTH_FAILED), 401
 
     u = User.get_by_email(get_jwt_identity()["email"])
-    u.update_credentials(flow.credentials)
+    u.gmail_update_credentials(flow.credentials)
     return redirect(REDIRECT_URI_FRONT)
 
 

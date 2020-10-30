@@ -1,7 +1,7 @@
 import json
 import os
 import jsonschema
-from flask import jsonify, request, Blueprint, Response, current_app
+from flask import jsonify, request, Blueprint, Response
 from db.model import Prospect, User
 from api import error_code
 from api.util import get_schema, validate_json_input, fail_response, success_response, get_jwt_identity
@@ -48,16 +48,13 @@ def upload_prospects():
     # Potentially add check whether email and owner already exist
 
     # Add to db
-    prospect_json = prospect_json.copy()
-    prospect_list = list(prospect_json['prospects'].values())
-    owner = User.get_by_email(get_jwt_identity()["email"])
-    owner.prospects_bulk_append(prospect_list)
+    result = owner.prospects_bulk_append(list(prospect_json.values()))
 
-    return success_response(prospects_added=len(prospect_list)), 201
+    return success_response(**result), 201
 
 
 @ prospect_handler.route('/prospects', methods=['GET'])
-@jwt_required
+@ jwt_required
 def get_prospects():
 
     owner = User.get_by_email(get_jwt_identity()['email'])
@@ -65,7 +62,7 @@ def get_prospects():
     if not owner:
         return fail_response(error_code.USER_NOT_EXIST), 400
 
-    prospects_list = owner.prospects
+    prospects_list = owner.get_prospects()
 
     # return all prospects associated with an owner email
     return success_response(prospects=prospects_list), 200
