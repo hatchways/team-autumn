@@ -16,10 +16,9 @@ from pymodm.context_managers import no_auto_dereference
 from redis import Redis
 from rq import Queue
 
-from api.util import SafeDict
+from api.util import SafeDict, create_message
 
 rq_q = Queue(connection=Redis())
-from worker.send_gmail import send_email_worker
 
 
 class GmailOauthInfo(MongoModel):
@@ -150,8 +149,14 @@ class Campaign(MongoModel):
             return None
         return len(prospect_ids)
 
+    def prospects_add_to_step(self, prospect_ids=None, step_index=0):
+        if not prospect_ids:
+            prospect_ids = [str(each._id) for each in self.prospects]
+        for pid in prospect_ids:
+            self.steps[step_index].prospects.append(ObjectId(pid))
+        self.save()
     def steps_send(self, step_index):
-        result = rq_q.enqueue(send_email_worker, str(self.creator), str(self._id), step_index)
+        result = rq_q.enqueue(Campaign._send_email_worker, str(self.creator), str(self._id), step_index)
         return
 
     def steps_email_replace_keyword(self, email_text, prospect):
@@ -160,6 +165,38 @@ class Campaign(MongoModel):
         keyword_dict.update(self.keyword_dict)
         keyword_dict.update(prospect.keyword_dict)
         return email_text.format_map(keyword_dict)
+
+    @staticmethod
+    def _send_email_worker(user_id, campaign_id, step_index):
+        MEDIA_UPLOAD_URL = "https://gmail.googleapis.com/upload/gmail/v1/users/me/messages/send"
+        METAONLY_URL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send"
+        user = User.get_by_id(ObjectId(user_id))
+        if not user:
+            raise AssertionError("User not exist")
+        if not user.gmail_oauthed:
+            raise AssertionError("User didn't link the gmail account")
+        session = user._gmail_session
+        campaign = user.campaign_by_id(ObjectId(campaign_id))
+        step = campaign.steps_get(step_index)
+
+        for each in step.prospects:
+            email_text = campaign.steps_email_replace_keyword(step.email, each)
+            msg = create_message(each.email, campaign.subject, email_text)
+            # Set threadId to keep the email in a conversation in the same campagin
+            if campaign.name in each.thread_id:
+                msg["threadId"] = each.thread_id[campaign.name]
+            print(msg)
+            res = session.post(METAONLY_URL, json=msg)
+            if res.status_code != 200:
+                continue
+            res_json = res.json()
+            print(res)
+            each.thread_id[campaign.name] = res_json["threadId"]
+            each.last_contacted = datetime.now()
+            # Replace
+            # TODO: Other status update
+            # TODO: notify front end
+            each.save()
 
     def to_dict(self):
         return self.to_son().to_dict()
@@ -266,7 +303,7 @@ class User(MongoModel):
         Returns:
             AuthorizedSession
         """
-        if not self.is_oauthed:
+        if not self.gmail_oauthed:
             return None
         authed_session = AuthorizedSession(
             Credentials.from_authorized_user_info(self.gmail_oauth_info.to_dict()))
