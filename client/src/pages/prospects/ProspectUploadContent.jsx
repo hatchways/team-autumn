@@ -111,12 +111,12 @@ const ProspectUpload = () => {
           } else if (r.new_prospects > 0 && r.dup_prospects > 0) {
             setMessage({
               type: 'success',
-              text: `${r.new_prospects} prospects added. ${r.dup_prospects} ignored`,
+              text: `${r.new_prospects} prospects added. ${r.dup_prospects} prospects with duplicate emails ignored`,
             });
           } else {
             setMessage({
               type: 'warning',
-              text: `No new prospects uploaded. ${r.dup_prospects} ignored`,
+              text: `No new prospects uploaded. ${r.dup_prospects} prospects with duplicate emails ignored`,
             });
           }
           setLoading(false);

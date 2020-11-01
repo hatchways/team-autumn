@@ -25,32 +25,32 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const testData = [
-  {
-    email: 'steven@example.com',
-    firstName: 'Steven',
-    lastName: 'McGrath',
-    status: 'open',
-  },
-  {
-    email: 'carrie@example.com',
-    firstName: 'Carrie',
-    lastName: 'Pascale',
-    status: 'responded',
-  },
-  {
-    email: 'patton@example.com',
-    firstName: 'Patton',
-    lastName: 'L',
-    status: 'responded',
-  },
-  {
-    email: 'shums@example.com',
-    firstName: 'Shums',
-    lastName: 'Kassam',
-    status: 'unsubscribed',
-  },
-];
+// const testData = [
+//   {
+//     email: 'steven@example.com',
+//     firstName: 'Steven',
+//     lastName: 'McGrath',
+//     status: 'open',
+//   },
+//   {
+//     email: 'carrie@example.com',
+//     firstName: 'Carrie',
+//     lastName: 'Pascale',
+//     status: 'responded',
+//   },
+//   {
+//     email: 'patton@example.com',
+//     firstName: 'Patton',
+//     lastName: 'L',
+//     status: 'responded',
+//   },
+//   {
+//     email: 'shums@example.com',
+//     firstName: 'Shums',
+//     lastName: 'Kassam',
+//     status: 'unsubscribed',
+//   },
+// ];
 
 const headCells = [
   { id: '_id', numeric: false, disablePadding: false, label: '_id' },
@@ -66,7 +66,7 @@ const ProspectsContent = () => {
   const classes = useStyles();
   const buttonClasses = buttonStyles();
   const { filterContext, itemContext, campaignContext } = useContext(FilterContext);
-  const [data, setData] = useState(testData);
+  const [data, setData] = useState([]);
   const history = useHistory();
 
   const [filter] = filterContext;
@@ -165,9 +165,14 @@ const ProspectsContent = () => {
         </Typography>
         <Grid className={classes.buttonGrid} item container xs={6}>
           <Grid item xs={4}>
-            <Button variant="contained" className={`${buttonClasses.base} ${buttonClasses.action}`}>
-              Add New Prospect
-            </Button>
+            {selectedItems.length > 0 && (
+              <Button
+                className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
+                onClick={handleUploadProspects}
+              >
+                Add to Campaign
+              </Button>
+            )}
           </Grid>
           <Grid className={classes.buttonRight} container item xs={8}>
             <Grid item xs={8}>
@@ -182,20 +187,16 @@ const ProspectsContent = () => {
           </Grid>
         </Grid>
       </Grid>
-      <EnhancedDataTable
-        className={classes.table}
-        data={filteredData}
-        ariaLabel="prospects"
-        headCells={headCells}
-        requiresCheckbox
-        initialSortBy="email"
-      />
-      <Button
-        className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
-        onClick={handleUploadProspects}
-      >
-        Add to Campaign
-      </Button>
+      {data.length > 0 && (
+        <EnhancedDataTable
+          className={classes.table}
+          data={filteredData}
+          ariaLabel="prospects"
+          headCells={headCells}
+          requiresCheckbox
+          initialSortBy="email"
+        />
+      )}
       <Snackbar
         open={open}
         autoHideDuration={6000}
