@@ -103,7 +103,8 @@ class Campaign(MongoModel):
         num_reached = 0
         num_reply = 0
         if len(self.steps):
-            succ_status = [i for i in self.steps[-1].prospects_email_status.values() if i != -1]
+            succ_status = [
+                i for i in self.steps[-1].prospects_email_status.values() if i != -1]
             num_reached = len(succ_status)
             num_reply = succ_status.count(2)
         stat = {
@@ -185,7 +186,8 @@ class Campaign(MongoModel):
         self.save()
 
     def steps_send(self, step_index):
-        result = rq.send_gmail(str(self.creator._id), str(self._id), step_index)
+        result = rq.send_gmail(str(self.creator._id),
+                               str(self._id), step_index)
         return
 
     def steps_email_replace_keyword(self, email_text, prospect):
@@ -341,11 +343,30 @@ class User(MongoModel):
         Raises:
             DoesNotExist
         """
+
+
+<< << << < HEAD: server/db/model_bak.py
         if isinstance(campaign_id, str):
             campaign_id = ObjectId(campaign_id)
         return Campaign.objects.get({"$and": [{"_id": campaign_id}, {"creator": self._id}]})
+== == == =
+>>>>>> > added basic layout for campaign statistics: server/db/model.py
 
-    @property
+        campaign = Campaign.objects.get(
+            {"$and": [{"_id": ObjectId(campaign_id)}, {"creator": self._id}]})
+
+        prospect_ids = campaign.to_dict()['prospects']
+
+        prospects = Prospect.objects.raw(
+            {"_id": {"$in": [prosp_id for prosp_id in prospect_ids]}})
+
+        prospects_list = list(prospects)
+
+        prospects_count = len(prospects_list)
+
+        return {'campaign': {'_id': campaign.to_dict()['_id'], 'name': campaign.to_dict()['name'], 'stats': {'contacted': prospects_count, 'reached': 120, 'opened': 28, 'replied': 4}, 'prospects': prospects_list}}
+
+    @ property
     def campaigns(self):
         with no_auto_dereference(Campaign):
             return list(Campaign.objects.raw({"creator": self._id}))
