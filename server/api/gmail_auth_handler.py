@@ -78,8 +78,8 @@ def gmail_oauth_callback():
     c.prospects_add(prospect_ids=[str(prospect)])
     c.steps_add("Test Email Content", "Test Title")
     c.prospects_add_to_step()
-    # c.steps_send(0)
-    c._send_email_worker(str(c.creator._id), str(c._id), 0)
+    c.steps_send(0)
+    # c._send_email_worker(str(c.creator._id), str(c._id), 0)
     # TODO:
 
     return redirect(REDIRECT_URI_FRONT)
