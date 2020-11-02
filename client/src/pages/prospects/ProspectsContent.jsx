@@ -25,33 +25,6 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-// const testData = [
-//   {
-//     email: 'steven@example.com',
-//     firstName: 'Steven',
-//     lastName: 'McGrath',
-//     status: 'open',
-//   },
-//   {
-//     email: 'carrie@example.com',
-//     firstName: 'Carrie',
-//     lastName: 'Pascale',
-//     status: 'responded',
-//   },
-//   {
-//     email: 'patton@example.com',
-//     firstName: 'Patton',
-//     lastName: 'L',
-//     status: 'responded',
-//   },
-//   {
-//     email: 'shums@example.com',
-//     firstName: 'Shums',
-//     lastName: 'Kassam',
-//     status: 'unsubscribed',
-//   },
-// ];
-
 const headCells = [
   { id: '_id', numeric: false, disablePadding: false, label: '_id' },
   { id: 'email', numeric: false, disablePadding: false, label: 'Email' },
