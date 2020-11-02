@@ -46,7 +46,7 @@ def user_entry(method_name):
 
 
 campaign_entry_allow_methods = {
-    "steps_add": new_schema("content", "subject"),
+    "steps_add": new_schema("content", "subject", prospect_ids=get_schema("array")),
     "steps_edit": new_schema("content", "subject", step_index=get_schema("integer")),
     "steps_send": new_schema(step_index=get_schema("integer")),
     "prospects_add": new_schema(prospect_ids=get_schema("array")),
@@ -85,7 +85,7 @@ def campaign_entry(campaign_id, method_name):
 
     user = User.get_by_id(get_jwt_identity()["_id"])
     cur_campaign = user.campaign_by_id(campaign_id)
-    res = cur_campaign.__getattribute__(method_name)(**user_json)
+    res = cur_campaign['campaign'].__getattribute__(method_name)(**user_json)
     return success_response(response=res), 200
 
 

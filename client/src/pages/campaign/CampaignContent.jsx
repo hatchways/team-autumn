@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -11,6 +11,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import RichTextEditorPopup from '../../components/RichTextEditorPopup';
 import { buttonStyles, cardStyles, campaignStyles } from '../../assets/styles';
+import StepContext from '../../contexts/StepContext';
 
 const StatCard = ({ stat }) => {
   const classes = cardStyles();
@@ -36,13 +37,17 @@ const CampaignContent = () => {
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const [currentCampaign, setCurrentCampaign] = useState();
+  // const { prospectsContext } = useContext(StepContext);
+
+  // const [prospects, setProspects] = prospectsContext;
+
+  const pathSegments = location.pathname.split('/');
+  const campaignId = pathSegments[pathSegments.length - 1];
 
   const campaignClasses = campaignStyles();
   const buttonClasses = buttonStyles();
 
   useEffect(() => {
-    const pathSegments = location.pathname.split('/');
-    const campaignId = pathSegments[pathSegments.length - 1];
     fetch('/user/campaign_by_id', {
       method: 'post',
       headers: {
@@ -52,14 +57,14 @@ const CampaignContent = () => {
     })
       .then((response) => response.json())
       .then((d) => {
-        setCurrentCampaign(d.response.campaign);
+        setCurrentCampaign(d.response);
         setLoading(false);
       })
       .catch((err) => {
         console.log(err);
         setLoading(false);
       });
-  }, [location.pathname]);
+  }, [location.pathname, campaignId]);
 
   const transformStats = (stats) =>
     Object.entries(stats).map((stat) => ({
@@ -108,7 +113,12 @@ const CampaignContent = () => {
             </Button>
           </Grid>
         </Grid>
-        <RichTextEditorPopup open={open} onClose={() => setOpen(false)} />
+        <RichTextEditorPopup
+          open={open}
+          onClose={() => setOpen(false)}
+          prospects={currentCampaign?.campaign.prospects}
+          campaignId={campaignId}
+        />
       </div>
     </Container>
   );

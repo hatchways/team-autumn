@@ -127,11 +127,14 @@ class Campaign(MongoModel):
         Args:
             content: email content
             subject: email subject
+            prospects: reference to prospects who have received previous step
 
         Returns:
             Step: Step instance
         """
-        self.steps.append(Step(email=content, subject=subject))
+        prospect_refs = [ObjectId(prospect_id) for prospect_id in prospect_ids]
+        self.steps.append(
+            Step(email=content, subject=subject, prospects=prospect_refs))
         self.save()
         return self.steps[-1]
 
@@ -344,13 +347,9 @@ class User(MongoModel):
             DoesNotExist
         """
 
-
-<< << << < HEAD: server/db/model_bak.py
         if isinstance(campaign_id, str):
             campaign_id = ObjectId(campaign_id)
         return Campaign.objects.get({"$and": [{"_id": campaign_id}, {"creator": self._id}]})
-== == == =
->>>>>> > added basic layout for campaign statistics: server/db/model.py
 
         campaign = Campaign.objects.get(
             {"$and": [{"_id": ObjectId(campaign_id)}, {"creator": self._id}]})
@@ -364,7 +363,7 @@ class User(MongoModel):
 
         prospects_count = len(prospects_list)
 
-        return {'campaign': {'_id': campaign.to_dict()['_id'], 'name': campaign.to_dict()['name'], 'stats': {'contacted': prospects_count, 'reached': 120, 'opened': 28, 'replied': 4}, 'prospects': prospects_list}}
+        return {'campaign': campaign, 'stats': {'contacted': prospects_count, 'reached': 120, 'opened': 28, 'replied': 4}}
 
     @ property
     def campaigns(self):
