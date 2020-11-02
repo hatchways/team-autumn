@@ -20,19 +20,19 @@ const headCells = [
 const ProspectsContent = () => {
   const buttonClasses = buttonStyles();
   const tableClasses = tableStyles();
+  const history = useHistory();
 
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const { filterContext, itemContext, campaignContext } = useContext(FilterContext);
-  const [message, setMessage] = useContext(MessageContext);
 
   const [filter] = filterContext;
   const [selectedItems, setSelectedItems] = itemContext;
   const [selectedCampaign] = campaignContext;
 
-  const history = useHistory();
+  const [message, setMessage] = useContext(MessageContext);
 
   useEffect(() => {
     const { text } = message;
