@@ -4,7 +4,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import { theme } from '../assets/themes/theme';
-import { formStyles } from '../assets/styles';
 import SignupPage from '../pages/auth/SignupPage';
 import LoginPage from '../pages/auth/LoginPage';
 import Logout from '../pages/auth/LogoutPage';
@@ -23,8 +22,6 @@ import UserContext from '../contexts/UserContext';
 import SocketTest from './SocketTest';
 
 const App = () => {
-  const classes = formStyles();
-
   const [user, setUser] = useState();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -57,22 +54,22 @@ const App = () => {
       <CssBaseline />
       <UserContext.Provider value={[user, setUser]}>
         <BrowserRouter>
-          <Layout>
-            <Switch>
-              <ProtectedRoute exact path="/" component={CampaignsPage} />
-              <ProtectedRoute path="/campaigns" component={CampaignsPage} />
-              <ProtectedRoute path="/prospects" component={ProspectsPage} />
-              <ProtectedRoute path="/templates" component={TemplatesPage} />
-              <ProtectedRoute path="/reporting" component={ReportingPage} />
-              <ProtectedRoute path="/profile" component={ProfilePage} />
-              <ProtectedRoute path="/logout" component={Logout} />
-              <ProtectedRoute path="/gmail_auth" component={AlertDialog} />
-              <ProtectedRoute path="/socket_test" component={SocketTest} />
-              <Route path="/gmail_oauth_callback" component={OauthCallback} />
-              <Route path="/signup" component={SignupPage} />
-              <Route path="/login" component={LoginPage} />
-            </Switch>
-          </Layout>
+            <Layout>
+              <Switch>
+                <ProtectedRoute exact path="/" component={CampaignsPage} />
+                <ProtectedRoute path="/campaigns" component={CampaignsPage} />
+                <ProtectedRoute path="/prospects" component={ProspectsPage} />
+                <ProtectedRoute path="/templates" component={TemplatesPage} />
+                <ProtectedRoute path="/reporting" component={ReportingPage} />
+                <ProtectedRoute path="/profile" component={ProfilePage} />
+                <ProtectedRoute path="/logout" component={Logout} />
+                <ProtectedRoute path="/gmail_auth" component={AlertDialog} />
+                <ProtectedRoute path="/socket_test" component={SocketTest} />
+                <Route path="/gmail_oauth_callback" component={OauthCallback} />
+                <Route path="/signup" component={SignupPage} />
+                <Route path="/login" component={LoginPage} />
+              </Switch>
+            </Layout>
         </BrowserRouter>
       </UserContext.Provider>
     </MuiThemeProvider>

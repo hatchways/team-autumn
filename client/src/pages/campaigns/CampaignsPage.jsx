@@ -12,7 +12,6 @@ import { MessageProvider } from '../../contexts/MessageContext';
 const CampaignsPage = () => {
   const location = useLocation();
   const pathSegments = location.pathname.split('/');
-  console.log(pathSegments);
   return (
     <FilterProvider>
       <MessageProvider>

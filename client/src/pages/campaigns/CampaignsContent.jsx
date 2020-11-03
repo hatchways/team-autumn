@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
+import Button from '@material-ui/core/Button';
 
-import { Button } from '@material-ui/core';
-import LoadingSpinner from '../../components/LoadingSpinner';
-import transformDate from '../../util/transformDate';
 import ContentTemplate from '../../components/ContentTemplate';
-import buttonStyles from '../../assets/styles/buttonStyles';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import MessageContext from '../../contexts/MessageContext';
+import FilterContext from '../../contexts/FilterContext';
+import { buttonStyles } from '../../assets/styles';
+import transformDate from '../../util/transformDate';
 
 const headCells = [
   { id: '_id', numeric: false, disablePadding: false, label: 'id' },
@@ -21,9 +22,9 @@ const transformCampaigns = (campaignList) =>
     _id: campaign._id,
     campaignName: campaign.name,
     createdAt: transformDate(campaign.creation_date),
-    numProspects: campaign.prospects.length,
+    numProspects: campaign.prospects?.length || 0,
     numReplies: 0,
-    numSteps: campaign.steps.length,
+    numSteps: campaign.steps?.length || 0,
   }));
 
 const CampaignsContent = () => {
@@ -31,10 +32,12 @@ const CampaignsContent = () => {
 
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [formDialogOpen, setFormDialogOpen] = useState(false);
+  const [, setFormDialogOpen] = useState(false);
   const [campaigns, setCampaigns] = useState();
 
   const [message, setMessage] = useContext(MessageContext);
+  const { filterContext } = useContext(FilterContext);
+  const [filter] = filterContext;
 
   useEffect(() => {
     fetch('/user/campaigns_list', {
@@ -64,9 +67,11 @@ const CampaignsContent = () => {
     setMessage('');
   };
 
+  const filteredCampaigns = campaigns?.filter((c) => c.campaignName.includes(filter));
+
   const tableProps = {
     headCells,
-    data: campaigns,
+    data: filteredCampaigns,
     requiresCheckbox: false,
     ariaLabel: 'campaigns',
     initialSortBy: 'createdAt',
