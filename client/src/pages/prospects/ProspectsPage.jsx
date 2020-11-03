@@ -11,14 +11,15 @@ import ProspectUploadDrawer from './ProspectUploadDrawer';
 
 const ProspectsPage = () => {
   const location = useLocation();
+  const path = location.pathname;
+
   return (
     <FilterProvider>
       <MessageProvider>
-        {location.pathname.includes('upload') ? (
-          <DrawerAndContent drawer={<ProspectUploadDrawer />} content={<ProspectUploadContent />} />
-        ) : (
-          <DrawerAndContent drawer={<ProspectsDrawer />} content={<ProspectsContent />} />
-        )}
+        <DrawerAndContent
+          drawer={path.includes('upload') ? <ProspectUploadDrawer /> : <ProspectsDrawer />}
+          content={path.includes('upload') ? <ProspectUploadContent /> : <ProspectsContent />}
+        />
       </MessageProvider>
     </FilterProvider>
   );

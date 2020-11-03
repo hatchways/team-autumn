@@ -143,21 +143,21 @@ const ProspectsContent = () => {
     </Button>,
   ];
 
-  if (!loading) {
-    return (
-      <ContentTemplate
-        pageTitle="Prospects"
-        data={data}
-        tableProps={tableProps}
-        actionSlots={actionSlots}
-        snackbarOpen={open}
-        handleClose={handleClose}
-        message={message}
-      />
-    );
+  if (loading) {
+    return <LoadingSpinner />;
   }
 
-  return <LoadingSpinner />;
+  return (
+    <ContentTemplate
+      pageTitle="Prospects"
+      data={data}
+      tableProps={tableProps}
+      actionSlots={actionSlots}
+      snackbarOpen={open}
+      handleClose={handleClose}
+      message={message}
+    />
+  );
 };
 
 export default ProspectsContent;
