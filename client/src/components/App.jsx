@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { MuiThemeProvider } from '@material-ui/core';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
@@ -10,7 +8,7 @@ import { formStyles } from '../assets/styles';
 import SignupPage from '../pages/auth/SignupPage';
 import LoginPage from '../pages/auth/LoginPage';
 import Logout from '../pages/auth/LogoutPage';
-import CampaignPage from '../pages/campaign/CampaignPage';
+import CampaignsPage from '../pages/campaigns/CampaignsPage';
 import ProspectsPage from '../pages/prospects/ProspectsPage';
 import TemplatesPage from '../pages/templates/TemplatesPage';
 import ReportingPage from '../pages/reporting/ReportingPage';
@@ -19,6 +17,7 @@ import ProtectedRoute from './ProtectedRoute';
 import Layout from './Layout';
 import AlertDialog from './Dialog';
 import OauthCallback from './OauthCallback';
+import LoadingSpinner from './LoadingSpinner';
 import UserContext from '../contexts/UserContext';
 import SocketTest from "./SocketTest";
 
@@ -49,11 +48,7 @@ const App = () => {
   }, []);
 
   if (loading) {
-    return (
-      <Backdrop className={classes.backdrop} open>
-        <CircularProgress />
-      </Backdrop>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -63,8 +58,8 @@ const App = () => {
         <BrowserRouter>
           <Layout>
             <Switch>
-              <ProtectedRoute exact path="/" component={CampaignPage} />
-              <ProtectedRoute path="/campaigns" component={CampaignPage} />
+              <ProtectedRoute exact path="/" component={CampaignsPage} />
+              <ProtectedRoute path="/campaigns" component={CampaignsPage} />
               <ProtectedRoute path="/prospects" component={ProspectsPage} />
               <ProtectedRoute path="/templates" component={TemplatesPage} />
               <ProtectedRoute path="/reporting" component={ReportingPage} />

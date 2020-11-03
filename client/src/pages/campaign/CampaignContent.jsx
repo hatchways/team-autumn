@@ -96,7 +96,7 @@ const StatsCard = ({ ...stat }) => {
   );
 };
 
-const ViewCampaign = () => {
+const CampaignContent = () => {
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
@@ -159,16 +159,16 @@ const ViewCampaign = () => {
             </Button>
           </div>
         </Grid>
-        <RichTextEditorPopup
+        {/* <RichTextEditorPopup
           title="Step 1"
           content={campaign.steps[0].content}
           setOpen={setOpen}
           open={open}
           onClose={handleClose}
-        />
+        /> */}
       </Grid>
     </Container>
   );
 };
 
-export default ViewCampaign;
+export default CampaignContent;
