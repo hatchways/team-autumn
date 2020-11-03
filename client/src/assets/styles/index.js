@@ -31,6 +31,7 @@ export const formStyles = makeStyles((theme) => ({
   },
   centered: {
     justifyContent: 'center',
+    alignContent: 'center',
   },
   linkText: {
     textAlign: 'right',

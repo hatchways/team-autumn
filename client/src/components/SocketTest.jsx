@@ -8,6 +8,7 @@ const SocketTest = () => {
   const [connected, setConnected] = useState(false);
   useEffect(() => {
     const socket = socketIOClient('/');
+
     socket.on('connect', () => setConnected(true));
     socket.on('sent_email_status', (data) => {
       setResponse(data);
@@ -15,7 +16,7 @@ const SocketTest = () => {
     return () => {
       setConnected(false);
     };
-  });
+  }, []);
 
   if (!connected) {
     return <LoadingSpinner />;

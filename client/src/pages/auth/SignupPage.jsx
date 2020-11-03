@@ -58,7 +58,7 @@ const SignupPage = () => {
 
   return (
     <Formik
-      initialValues={{ email: '', password: '' }}
+      initialValues={{ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' }}
       onSubmit={(values, { setSubmitting, setFieldError }) => {
         formikHandleSubmit(values, setSubmitting, setFieldError);
       }}

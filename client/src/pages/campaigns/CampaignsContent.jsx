@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 
 import ContentTemplate from '../../components/ContentTemplate';
+import CampaignsAdd from './CampaignsAdd';
+import DialogPopup from '../../components/DialogPopup';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import MessageContext from '../../contexts/MessageContext';
 import FilterContext from '../../contexts/FilterContext';
@@ -31,8 +33,8 @@ const CampaignsContent = () => {
   const buttonClasses = buttonStyles();
 
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [, setFormDialogOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [campaigns, setCampaigns] = useState();
 
   const [message, setMessage] = useContext(MessageContext);
@@ -40,30 +42,32 @@ const CampaignsContent = () => {
   const [filter] = filterContext;
 
   useEffect(() => {
-    fetch('/user/campaigns_list', {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({}),
-    })
-      .then((response) => response.json())
-      .then((d) => {
-        setCampaigns(transformCampaigns(d.response));
-        setLoading(false);
+    if (!formDialogOpen) {
+      fetch('/user/campaigns_list', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
       })
-      .catch((err) => {
-        setMessage('There was a problem fetching your campaigns');
-        setLoading(false);
-      });
-  }, [setMessage]);
+        .then((response) => response.json())
+        .then((d) => {
+          setCampaigns(transformCampaigns(d.response));
+          setLoading(false);
+        })
+        .catch(() => {
+          setMessage('There was a problem fetching your campaigns');
+          setLoading(false);
+        });
+    }
+  }, [setMessage, formDialogOpen]);
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
 
-    setOpen(false);
+    setSnackbarOpen(false);
     setMessage('');
   };
 
@@ -91,15 +95,27 @@ const CampaignsContent = () => {
 
   if (!loading) {
     return (
-      <ContentTemplate
-        pageTitle="Campaigns"
-        data={campaigns}
-        actionSlots={actionSlots}
-        tableProps={tableProps}
-        snackbarOpen={open}
-        handleClose={handleClose}
-        message={message}
-      />
+      <>
+        <ContentTemplate
+          pageTitle="Campaigns"
+          data={campaigns}
+          actionSlots={actionSlots}
+          tableProps={tableProps}
+          snackbarOpen={snackbarOpen}
+          handleClose={handleClose}
+          message={message}
+        />
+        <DialogPopup
+          actionItem={<CampaignsAdd setOpen={setFormDialogOpen} />}
+          title="New Campaign"
+          bodyText="Name your campaign"
+          buttonText="Cancel"
+          ariaLabeledBy="campaign-add-dialog"
+          ariaDescribedBy="new campaign form"
+          open={formDialogOpen}
+          setOpen={setFormDialogOpen}
+        />
+      </>
     );
   }
 
