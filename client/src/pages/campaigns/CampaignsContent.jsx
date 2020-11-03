@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
+import { Button } from '@material-ui/core';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import EnhancedDataTable from '../../components/EnhancedDataTable';
 import transformDate from '../../util/transformDate';
+import ContentTemplate from '../../components/ContentTemplate';
+import buttonStyles from '../../assets/styles/buttonStyles';
+import MessageContext from '../../contexts/MessageContext';
 
 const headCells = [
   { id: '_id', numeric: false, disablePadding: false, label: 'id' },
@@ -24,8 +27,14 @@ const transformCampaigns = (campaignList) =>
   }));
 
 const CampaignsContent = () => {
+  const buttonClasses = buttonStyles();
+
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [campaigns, setCampaigns] = useState();
+
+  const [message, setMessage] = useContext(MessageContext);
 
   useEffect(() => {
     fetch('/user/campaigns_list', {
@@ -41,19 +50,50 @@ const CampaignsContent = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        setMessage('There was a problem fetching your campaigns');
         setLoading(false);
       });
-  }, []);
+  }, [setMessage]);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+    setMessage('');
+  };
+
+  const tableProps = {
+    headCells,
+    data: campaigns,
+    requiresCheckbox: false,
+    ariaLabel: 'campaigns',
+    initialSortBy: 'createdAt',
+    rowsAsLinks: true,
+  };
+
+  const actionSlots = [
+    <div />,
+    <Button
+      variant="contained"
+      className={`${buttonClasses.base} ${buttonClasses.action}`}
+      onClick={() => setFormDialogOpen(true)}
+    >
+      Add New Campaign
+    </Button>,
+  ];
 
   if (!loading) {
     return (
-      <EnhancedDataTable
-        headCells={headCells}
+      <ContentTemplate
+        pageTitle="Campaigns"
         data={campaigns}
-        requiresCheckbox={false}
-        initialSortBy="createdAt"
-        rowsAsLinks
+        actionSlots={actionSlots}
+        tableProps={tableProps}
+        snackbarOpen={open}
+        handleClose={handleClose}
+        message={message}
       />
     );
   }

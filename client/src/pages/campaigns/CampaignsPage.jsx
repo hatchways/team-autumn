@@ -7,6 +7,7 @@ import CampaignsContent from './CampaignsContent';
 import CampaignDrawer from '../campaign/CampaignDrawer';
 import CampaignContent from '../campaign/CampaignContent';
 import { FilterProvider } from '../../contexts/FilterContext';
+import { MessageProvider } from '../../contexts/MessageContext';
 
 const CampaignsPage = () => {
   const location = useLocation();
@@ -14,10 +15,12 @@ const CampaignsPage = () => {
   console.log(pathSegments);
   return (
     <FilterProvider>
-      <DrawerAndContent
-        drawer={pathSegments.length > 2 ? <CampaignDrawer /> : <CampaignsDrawer />}
-        content={pathSegments.length > 2 ? <CampaignContent /> : <CampaignsContent />}
-      />
+      <MessageProvider>
+        <DrawerAndContent
+          drawer={pathSegments.length > 2 ? <CampaignDrawer /> : <CampaignsDrawer />}
+          content={pathSegments.length > 2 ? <CampaignContent /> : <CampaignsContent />}
+        />
+      </MessageProvider>
     </FilterProvider>
   );
 };
