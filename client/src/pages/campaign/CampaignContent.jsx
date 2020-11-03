@@ -73,54 +73,54 @@ const CampaignContent = () => {
       percent: ((100 * stat[1]) / stats.contacted).toFixed(2),
     }));
 
-  if (loading) {
+  if (!loading) {
     return (
-      <Backdrop className={campaignClasses.backdrop} open={loading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Container maxWidth="lg" component="main">
+        <div className={campaignClasses.paper}>
+          <Grid direction="column" spacing={2} container>
+            <Grid item>
+              <Typography className={campaignClasses.sectionHeading} variant="h5" component="h2">
+                Campaign Summary
+              </Typography>
+            </Grid>
+            <Grid item container spacing={1}>
+              <Grid container item xs={12}>
+                {transformStats(currentCampaign?.stats).map((stat) => (
+                  <Grid key={stat.name} item xs={3}>
+                    <StatCard stat={stat} />
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+            <Grid item>
+              <Typography className={campaignClasses.sectionHeading} variant="h5" component="h2">
+                Steps List
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Button
+                className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
+                onClick={() => setOpen(true)}
+              >
+                Add Step
+              </Button>
+            </Grid>
+          </Grid>
+          <RichTextEditorPopup
+            open={open}
+            onClose={() => setOpen(false)}
+            prospects={currentCampaign?.campaign.prospects}
+            campaignId={campaignId}
+          />
+        </div>
+      </Container>
     );
   }
 
   return (
-    <Container maxWidth="lg" component="main">
-      <div className={campaignClasses.paper}>
-        <Grid direction="column" spacing={2} container>
-          <Grid item>
-            <Typography className={campaignClasses.sectionHeading} variant="h5" component="h2">
-              Campaign Summary
-            </Typography>
-          </Grid>
-          <Grid item container spacing={1}>
-            <Grid container item xs={12}>
-              {transformStats(currentCampaign?.stats).map((stat) => (
-                <Grid key={stat.name} item xs={3}>
-                  <StatCard stat={stat} />
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Typography className={campaignClasses.sectionHeading} variant="h5" component="h2">
-              Steps List
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Button
-              className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
-              onClick={() => setOpen(true)}
-            >
-              Add Step
-            </Button>
-          </Grid>
-        </Grid>
-        <RichTextEditorPopup
-          open={open}
-          onClose={() => setOpen(false)}
-          prospects={currentCampaign?.campaign.prospects}
-          campaignId={campaignId}
-        />
-      </div>
-    </Container>
+    <Backdrop className={campaignClasses.backdrop} open={loading}>
+      <CircularProgress color="inherit" />
+    </Backdrop>
   );
 };
 
