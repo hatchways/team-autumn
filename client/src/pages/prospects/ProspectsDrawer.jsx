@@ -4,13 +4,13 @@ import React, { useContext, useEffect, useState } from 'react';
 import SearchInput from '../../components/SearchInput';
 import FilterContext from '../../contexts/FilterContext';
 import UserContext from '../../contexts/UserContext';
-import ProspectUploadContext from '../../contexts/ProspectUploadContext';
+import MessageContext from '../../contexts/MessageContext';
 import ListSelect from '../../components/ListSelect';
 
 const ProspectsDrawer = () => {
   const [campaigns, setCampaigns] = useState([]);
   const { filterContext, campaignContext } = useContext(FilterContext);
-  const [, setMessage] = useContext(ProspectUploadContext);
+  const [, setMessage] = useContext(MessageContext);
 
   const [filter, setFilter] = filterContext;
   const [, setSelectedCampaign] = campaignContext;

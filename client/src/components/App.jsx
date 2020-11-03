@@ -19,11 +19,9 @@ import AlertDialog from './Dialog';
 import OauthCallback from './OauthCallback';
 import LoadingSpinner from './LoadingSpinner';
 import UserContext from '../contexts/UserContext';
-import SocketTest from "./SocketTest";
+import SocketTest from './SocketTest';
 
 const App = () => {
-  const classes = formStyles();
-
   const [user, setUser] = useState();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
