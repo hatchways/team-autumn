@@ -13,8 +13,10 @@ const DialogPopup = ({
   buttonText,
   ariaLabeledBy,
   ariaDescribedBy,
+  open,
+  setOpen,
 }) => {
-  const [open, setOpen] = useState(true);
+  // const [open, setOpen] = useState(true);
 
   const handleClose = () => {
     setOpen(!open);
@@ -22,6 +24,8 @@ const DialogPopup = ({
 
   return (
     <Dialog
+      maxWidth="sm"
+      fullWidth
       open={open}
       onClose={handleClose}
       aria-labelledby={ariaLabeledBy}

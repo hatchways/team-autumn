@@ -27,13 +27,6 @@ const GoogleButtonDetail = (
   />
 );
 
-// actionItem,
-// title,
-// bodyText,
-// buttonText,
-// ariaLabeledBy,
-// ariaDescribedBy,
-
 const GoogleAuthPopup = () => (
   <DialogPopup
     actionItem={GoogleButtonDetail}

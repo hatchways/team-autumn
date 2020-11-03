@@ -112,8 +112,8 @@ const CampaignContent = () => {
     <Container maxWidth="lg" className={classes.root}>
       <Grid container direction="column" spacing={3}>
         <Grid container spacing={0} className={classes.stats}>
-          {campaign.stats.map((s) => (
-            <Grid item xs={3}>
+          {campaign.stats.map((s, i) => (
+            <Grid key={`stat-card-${i}`} item xs={3}>
               <StatsCard key={s.id} {...s} />
             </Grid>
           ))}
@@ -128,6 +128,7 @@ const CampaignContent = () => {
             <div style={{ display: 'flex' }}>
               {campaign.steps[0].stats.map((s, i) => (
                 <div
+                  key={`stat-${i}`}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
