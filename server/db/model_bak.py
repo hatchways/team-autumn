@@ -68,6 +68,20 @@ class Prospect(MongoModel):
         ignore_unknown_fields = True
 
 
+class StepProspect(Prospect):
+    prospect = fields.ReferenceField('Prospect')
+    step = fields.ReferenceField('Step')
+    status = fields.CharField()
+
+    def to_dict(self):
+        return self.to_son().to_dict()
+
+    class Meta:
+        # This model will be used in the connection "user-db"
+        connection_alias = 'user-db'
+        ignore_unknown_fields = True
+
+
 class Step(MongoModel):
     email = fields.CharField()  # =Template
     # =Title;Subject is only there for the first step in the campaign
@@ -133,9 +147,17 @@ class Campaign(MongoModel):
             Step: Step instance
         """
         prospect_refs = [ObjectId(prospect_id) for prospect_id in prospect_ids]
-        self.steps.append(
-            Step(email=content, subject=subject, prospects=prospect_refs))
+        step = Step(email=content, subject=subject)
+        step.save()
+        self.steps.append(step)
         self.save()
+
+        step_prospects = []
+        for ref in prospect_refs:
+            step_prospects.append(StepProspect(
+                prospect=ref, step=self.steps[-1], status="contacted"))
+        # StepProspect.objects.bulk_create([StepProspect()])
+
         return self.steps[-1]
 
     def steps_edit(self, step_index, content, subject):
