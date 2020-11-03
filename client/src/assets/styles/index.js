@@ -160,3 +160,19 @@ export const tableStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
 }));
+
+export const contentTemplateStyles = makeStyles(() => ({
+  mainGrid: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  faded: {
+    color: '#9e9e9e',
+  },
+  buttonRight: {
+    justifyContent: 'flex-end',
+  },
+  flexEnd: {
+    flexBasis: 'auto',
+  },
+}));

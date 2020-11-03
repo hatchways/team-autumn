@@ -1,24 +1,11 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
 
 import EnhancedDataTable from './EnhancedDataTable';
-
-const useStyles = makeStyles(() => ({
-  mainGrid: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  faded: {
-    color: '#9e9e9e',
-  },
-  buttonRight: {
-    justifyContent: 'flex-end',
-  },
-}));
+import { contentTemplateStyles } from '../assets/styles';
 
 const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 
@@ -31,7 +18,7 @@ const ContentTemplate = ({
   handleClose,
   message,
 }) => {
-  const classes = useStyles();
+  const classes = contentTemplateStyles();
   return (
     <>
       <Grid className={classes.mainGrid} container>
@@ -43,7 +30,7 @@ const ContentTemplate = ({
             {actionSlots[0]}
           </Grid>
           <Grid className={classes.buttonRight} container item xs={8}>
-            <Grid item xs={8}>
+            <Grid className={classes.flexEnd} item xs={8}>
               {actionSlots[1]}
             </Grid>
           </Grid>

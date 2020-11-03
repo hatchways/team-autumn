@@ -1,27 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { makeStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 
 import FilterContext from '../../contexts/FilterContext';
 import ContentTemplate from '../../components/ContentTemplate';
-import buttonStyles from '../../assets/styles/buttonStyles';
+import { buttonStyles, tableStyles } from '../../assets/styles';
 import UserContext from '../../contexts/UserContext';
 import MessageContext from '../../contexts/MessageContext';
 import LoadingSpinner from '../../components/LoadingSpinner';
-
-const useStyles = makeStyles(() => ({
-  mainGrid: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  faded: {
-    color: '#9e9e9e',
-  },
-  buttonRight: {
-    justifyContent: 'flex-end',
-  },
-}));
 
 const headCells = [
   { id: '_id', numeric: false, disablePadding: false, label: '_id' },
@@ -32,8 +18,8 @@ const headCells = [
 ];
 
 const ProspectsContent = () => {
-  const classes = useStyles();
   const buttonClasses = buttonStyles();
+  const tableClasses = tableStyles();
 
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
@@ -133,7 +119,7 @@ const ProspectsContent = () => {
   };
 
   const tableProps = {
-    className: classes.table,
+    className: tableClasses.table,
     data: filteredData,
     ariaLabel: 'prospects',
     headCells,
