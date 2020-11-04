@@ -72,7 +72,7 @@ class Step(MongoModel):
     subject = fields.CharField()
     prospects = fields.ListField(fields.ReferenceField(
         Prospect, on_delete=fields.ReferenceField.PULL))
-
+    prospects_email_status = fields.DictField()
     def to_dict(self):
         return self.to_son().to_dict()
 
@@ -238,12 +238,12 @@ class User(MongoModel):
     # TODO: split by multi inheritance
 
     def gmail_profile(self):
-        _token = self._session.credentials.token
+        _token = self._gmail_session.credentials.token
 
         res = self._gmail_session.get(
             "https://gmail.googleapis.com/gmail/v1/users/me/profile?alt=json")
         if self._gmail_session.credentials.token != _token:
-            self.save_credentials(self._session.credentials)
+            self.save_credentials(self._gmail_session.credentials)
         return res.text
     # update_credentials
     def gmail_update_credentials(self, cred):
