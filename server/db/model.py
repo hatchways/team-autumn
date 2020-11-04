@@ -1,5 +1,4 @@
 from datetime import datetime
-
 import pymongo
 from bson import ObjectId
 from pymodm import MongoModel, fields
@@ -8,8 +7,9 @@ from google.auth.transport.requests import AuthorizedSession
 from google.oauth2.credentials import Credentials
 import json
 from warnings import warn
-
+from api.util import SafeDict
 from pymodm.context_managers import no_auto_dereference
+from addon import rq
 
 
 class GmailOauthInfo(MongoModel):
@@ -43,6 +43,9 @@ class Prospect(MongoModel):
     status = fields.CharField()
     campaigns = fields.ListField(fields.ReferenceField(
         "Campaign"))
+    thread_id = fields.DictField()
+    last_contacted = fields.DateTimeField()
+    keyword_dict = fields.DictField()
 
     @staticmethod
     def find_by_id(id):
@@ -69,7 +72,7 @@ class Step(MongoModel):
     subject = fields.CharField()
     prospects = fields.ListField(fields.ReferenceField(
         Prospect, on_delete=fields.ReferenceField.PULL))
-
+    prospects_email_status = fields.DictField()
     def to_dict(self):
         return self.to_son().to_dict()
 
@@ -86,6 +89,7 @@ class Campaign(MongoModel):
     prospects = fields.ListField(fields.ReferenceField(
         Prospect, on_delete=fields.ReferenceField.PULL))
     steps = fields.EmbeddedDocumentListField(Step)
+    keyword_dict = fields.DictField()
 
     def steps_add(self, content, subject):
         """
@@ -121,6 +125,13 @@ class Campaign(MongoModel):
         self.save()
         return cur_step
 
+    def steps_get(self, step_index):
+        try:
+            cur_step = self.steps[step_index]
+        except IndexError:
+            raise pymodm.errors.DoesNotExist  # Catched by error handler
+        return cur_step
+
     def prospects_add(self, prospect_ids):
         # TODO check whether user owns prospects
 
@@ -136,6 +147,24 @@ class Campaign(MongoModel):
         self.save()
 
         return {'new': len(new), 'dups': len(prospect_ids) - len(new)}
+
+    def prospects_add_to_step(self, prospect_ids=None, step_index=0):
+        if not prospect_ids:
+            prospect_ids = [str(each._id) for each in self.prospects]
+        for pid in prospect_ids:
+            self.steps[step_index].prospects.append(ObjectId(pid))
+        self.save()
+
+    def steps_send(self, step_index):
+        result = rq.send_gmail(str(self.creator._id), str(self._id), step_index)
+        return
+
+    def steps_email_replace_keyword(self, email_text, prospect):
+        keyword_dict = SafeDict()
+        keyword_dict.update(self.creator.keyword_dict)
+        keyword_dict.update(self.keyword_dict)
+        keyword_dict.update(prospect.keyword_dict)
+        return email_text.format_map(keyword_dict)
 
     def to_dict(self):
         return self.to_son().to_dict()
@@ -170,6 +199,7 @@ class User(MongoModel):
     gmail_oauth_info = fields.EmbeddedDocumentField(GmailOauthInfo)
     campaigns_count = fields.IntegerField(default=0)
     prospects_count = fields.IntegerField(default=0)
+    keyword_dict = fields.DictField()
 
     @staticmethod
     def get_by_email(email):
@@ -184,6 +214,19 @@ class User(MongoModel):
         """
         warn("get_by_email will be replace by get_by_id soon", DeprecationWarning)
         ret = User.objects.raw({"email": email})
+        ret_list = list(ret)
+        return ret_list[0] if ret_list else None
+
+    @staticmethod
+    def get_by_id(_id):
+        """
+        Get user by email.
+        Args:
+            _id: The expected id field, can be in mongodb query set grammar.
+        Returns:
+            (None|User): return user object or none.
+        """
+        ret = User.objects.raw({"_id": _id})
         ret_list = list(ret)
         return ret_list[0] if ret_list else None
 
@@ -203,14 +246,14 @@ class User(MongoModel):
     # TODO: split by multi inheritance
 
     def gmail_profile(self):
-        _token = self._session.credentials.token
+        _token = self._gmail_session.credentials.token
 
         res = self._gmail_session.get(
             "https://gmail.googleapis.com/gmail/v1/users/me/profile?alt=json")
         if self._gmail_session.credentials.token != _token:
-            self.save_credentials(self._session.credentials)
+            self.save_credentials(self._gmail_session.credentials)
         return res.text
-
+    # update_credentials
     def gmail_update_credentials(self, cred):
         if self.gmail_oauth_info and self.gmail_oauth_info.token == cred.token:
             return
@@ -218,6 +261,7 @@ class User(MongoModel):
         self.save()
 
     @property
+    # is_oauthed
     def gmail_oauthed(self):
         return self.gmail_oauth_info is not None
 

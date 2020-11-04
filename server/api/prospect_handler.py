@@ -53,8 +53,9 @@ def upload_prospects():
     return success_response(**result), 201
 
 
-@ prospect_handler.route('/prospects', methods=['GET'])
-@ jwt_required
+
+@prospect_handler.route('/prospects', methods=['GET'])
+@jwt_required
 def get_prospects():
 
     owner = User.get_by_email(get_jwt_identity()['email'])

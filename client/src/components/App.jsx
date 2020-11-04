@@ -20,6 +20,7 @@ import Layout from './Layout';
 import AlertDialog from './Dialog';
 import OauthCallback from './OauthCallback';
 import UserContext from '../contexts/UserContext';
+import SocketTest from "./SocketTest";
 
 const App = () => {
   const classes = formStyles();
@@ -70,6 +71,7 @@ const App = () => {
               <ProtectedRoute path="/profile" component={ProfilePage} />
               <ProtectedRoute path="/logout" component={Logout} />
               <ProtectedRoute path="/gmail_auth" component={AlertDialog} />
+              <ProtectedRoute path="/ws_test" component={SocketTest} />
               <Route path="/gmail_oauth_callback" component={OauthCallback} />
               <Route path="/signup" component={SignupPage} />
               <Route path="/login" component={LoginPage} />
