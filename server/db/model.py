@@ -72,7 +72,12 @@ class Step(MongoModel):
     subject = fields.CharField()
     prospects = fields.ListField(fields.ReferenceField(
         Prospect, on_delete=fields.ReferenceField.PULL))
+    # prospects = fields.EmbeddedDocumentListField(ProspectWithStatus)
+    # -1 fail
+    # 1 sent
+    # 2 replied
     prospects_email_status = fields.DictField()
+
     def to_dict(self):
         return self.to_son().to_dict()
 
@@ -90,6 +95,28 @@ class Campaign(MongoModel):
         Prospect, on_delete=fields.ReferenceField.PULL))
     steps = fields.EmbeddedDocumentListField(Step)
     keyword_dict = fields.DictField()
+
+    @property
+    def stats(self):
+        num_reached = 0
+        num_reply = 0
+        if len(self.steps):
+            succ_status = [i for i in self.steps[-1].prospects_email_status.values() if i != -1]
+            num_reached = len(succ_status)
+            num_reply = succ_status.count(2)
+        stat = {
+            "_id": self._id,
+            "name": self.name,
+            "num_prospects": len(self.prospects),
+            "num_reached": num_reached,
+            "num_reply": num_reply
+        }
+        return stat
+
+    def to_dict(self):
+        ret = self.to_son().to_dict()
+        ret.update(self.stats)
+        return ret
 
     def steps_add(self, content, subject):
         """
@@ -165,9 +192,6 @@ class Campaign(MongoModel):
         keyword_dict.update(self.keyword_dict)
         keyword_dict.update(prospect.keyword_dict)
         return email_text.format_map(keyword_dict)
-
-    def to_dict(self):
-        return self.to_son().to_dict()
 
     @property
     def subject(self):
@@ -253,6 +277,7 @@ class User(MongoModel):
         if self._gmail_session.credentials.token != _token:
             self.save_credentials(self._gmail_session.credentials)
         return res.text
+
     # update_credentials
     def gmail_update_credentials(self, cred):
         if self.gmail_oauth_info and self.gmail_oauth_info.token == cred.token:
@@ -345,7 +370,7 @@ class User(MongoModel):
             self.prospects_count += len(prospect_objs)
             self.save()
 
-        return {'new_prospects': len(new_prospects_set), 'dup_prospects':  len(prospects_list) - len(new_prospects_set)}
+        return {'new_prospects': len(new_prospects_set), 'dup_prospects': len(prospects_list) - len(new_prospects_set)}
 
     def get_prospects(self):
         with no_auto_dereference(Prospect):
