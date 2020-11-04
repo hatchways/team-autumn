@@ -1,10 +1,11 @@
 # Flask extension goes in here
+import socketio
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 
 from redis import Redis
 from rq import Queue
-
+import flask_socketio
 # from worker.send_gmail import send_gmail_worker
 
 
@@ -27,4 +28,9 @@ class FlaskRQ(Queue):
 
 bcrypt = Bcrypt()
 jwt = JWTManager()
-rq = FlaskRQ(connection=Redis())
+redis = Redis()
+rq = FlaskRQ(connection=redis)
+
+sio = flask_socketio.SocketIO()
+import ws
+ws.init()
