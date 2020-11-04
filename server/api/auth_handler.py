@@ -51,7 +51,7 @@ def login():
     if not bcrypt.check_password_hash(user_password_input, user_json["password"]):
         return fail_response(error_code.PASSWORD_MISMATCH), 400
 
-    ret_user = user_in_db.to_dict(remove_password=True)
+    ret_user = user_in_db.user_info()
     access_token = create_access_token(ret_user)
     refresh_token = create_refresh_token(ret_user)
     ret_user["access_token"] = access_token

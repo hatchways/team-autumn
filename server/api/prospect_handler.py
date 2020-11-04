@@ -56,7 +56,7 @@ def upload_prospects():
     return success_response(prospects_added=len(prospect_list)), 201
 
 
-@ prospect_handler.route('/prospects', methods=['GET'])
+@prospect_handler.route('/prospects', methods=['GET'])
 @jwt_required
 def get_prospects():
 
