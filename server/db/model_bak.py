@@ -48,9 +48,11 @@ class Prospect(MongoModel):
     keyword_dict = fields.DictField()
 
     @staticmethod
-    def find_by_id(id):
+    def find_by_id(_id):
+        if isinstance(_id, str):
+            _id = ObjectId(_id)
         try:
-            prospect = Prospect.objects.get({'_id': id})
+            prospect = Prospect.objects.get({'_id': _id})
             return prospect
         except:
             return None
@@ -219,7 +221,7 @@ class User(MongoModel):
     email = fields.EmailField()
     first_name = fields.CharField()
     last_name = fields.CharField()
-    salted_password = fields.CharField()  # TODO add __ in the front
+    salted_password = fields.CharField()
     gmail_oauth_info = fields.EmbeddedDocumentField(GmailOauthInfo)
     campaigns_count = fields.IntegerField(default=0)
     prospects_count = fields.IntegerField(default=0)
@@ -250,6 +252,8 @@ class User(MongoModel):
         Returns:
             (None|User): return user object or none.
         """
+        if isinstance(_id, str):
+            _id = ObjectId(_id)
         ret = User.objects.raw({"_id": _id})
         ret_list = list(ret)
         return ret_list[0] if ret_list else None
@@ -257,9 +261,8 @@ class User(MongoModel):
     def to_dict(self, remove_password=True, remove_oauth_info=True):
         warn("to_dict will be replace by user_info soon", DeprecationWarning)
         ret = self.to_son().to_dict()
-        return {"email": self.email,
-                "first_name": self.first_name,
-                "last_name": self.last_name}
+        del ret["salted_password"]
+        return ret
 
     def user_info(self):
         return {"_id": self._id,
@@ -317,7 +320,7 @@ class User(MongoModel):
         Add campaigns for the user
         Args:
             **campaign_info: keyword dict that Campaign need
-
+            The call should be in the format: campaigns_append(name="Test")
         Returns:
             Campaign: Campaign instance
         """
@@ -338,7 +341,9 @@ class User(MongoModel):
         Raises:
             DoesNotExist
         """
-        return Campaign.objects.get({"$and": [{"_id": ObjectId(campaign_id)}, {"creator": self._id}]})
+        if isinstance(campaign_id, str):
+            campaign_id = ObjectId(campaign_id)
+        return Campaign.objects.get({"$and": [{"_id": campaign_id}, {"creator": self._id}]})
 
     @property
     def campaigns(self):
