@@ -1,6 +1,5 @@
-from pymodm.context_managers import no_auto_dereference
-
 from test.test_base import TestBase
+from pymodm.context_managers import no_auto_dereference
 import json
 import uuid
 from api import error_code
@@ -45,7 +44,7 @@ class CampaignHandlerTest(TestBase):
         res = self.api.post("/user/prospects_bulk_append",
                             json={"prospects_list": [{"email": "email"}, {"email": "email2"}]})
         with no_auto_dereference(Prospect):
-            print(User.get_by_email(fake_json["email"]).prospects)
+            print(User.get_by_email(fake_json["email"]).prospects_count)
 
     def test_step(self):
         fake_json = fake_user_json()

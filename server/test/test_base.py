@@ -1,4 +1,5 @@
-
+import eventlet
+eventlet.monkey_patch()
 import unittest
 from app import app
 

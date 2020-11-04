@@ -15,6 +15,8 @@ load_dotenv()
 DB_ADDR = os.environ.get("DB_ADDR", None)
 DB_ALIAS = "user-db"
 
+BATCH_SIZE = 1
+
 
 def send_gmail_worker(user_id, campaign_id, step_index):
     connect(DB_ADDR, DB_ALIAS)
@@ -35,10 +37,22 @@ def send_gmail_worker(user_id, campaign_id, step_index):
     room_id = r.get(user_id)
     room_id = room_id.decode() if room_id else None
 
-    def status_update(prospect, status):
-        if room_id:
-            sio.emit("sent_email_status", {str(prospect._id): status}, room=room_id)
+    status_dict = {}
 
+    def status_update(each_p, status, value):
+        step.prospects_email_status[str(each._id)] = value
+        status_dict[str(each_p._id)] = status
+
+    def status_send():
+        if not room_id:
+            return
+        if len(status_dict) == 0:
+            return
+        campaign.save()
+        sio.emit("sent_email_status", status_dict, room=room_id)
+        status_dict.clear()
+
+    count = 0
     for each in step.prospects:
         email_text = campaign.steps_email_replace_keyword(step.email, each)
         msg = create_message(each.email, campaign.subject, email_text)
@@ -49,16 +63,18 @@ def send_gmail_worker(user_id, campaign_id, step_index):
         res = session.post(METAONLY_URL, json=msg)
         if res.status_code != 200:
             fail_text = "Failed " + res.text
-            step.prospects_email_status[str(each._id)] = fail_text
-            status_update(each, fail_text)
-            continue
-        res_json = res.json()
+            status_update(each, fail_text, -1)
+        else:
+            res_json = res.json()
+            each.thread_id[campaign.name] = res_json["threadId"]
+            # TODO: watch this thread_id
+            each.last_contacted = datetime.now()
+            each.save()
 
-        each.thread_id[campaign.name] = res_json["threadId"]
-        # TODO: watch this thread_id
-        each.last_contacted = datetime.now()
-        each.save()
-        step.prospects_email_status[str(each._id)] = "Success"
-        status_update(each, "Success")
+            status_update(each, "Success", 1)
+        # batch update status & campaign
+        if count % BATCH_SIZE == 0:
+            status_send()
+        count += 1
 
-    campaign.save()
+    status_send()

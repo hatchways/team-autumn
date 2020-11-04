@@ -26,6 +26,7 @@ class AuthHandlerTest(TestBase):
         _ = self.api.post('/register', json=fake_json)
         response = self.api.post('/login', json=fake_json)
         print(response.json)
+        print(User.get_by_id(response.json["user_info"]["_id"]))
         self.assertTrue("user_info" in response.json)
         # TODO cookie test
         self.assertTrue("access_token" in response.json["user_info"])
