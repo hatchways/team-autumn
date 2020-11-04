@@ -1,4 +1,4 @@
-from flask import jsonify, request, Blueprint, Response, session, url_for, redirect, current_app
+from flask import jsonify, request, Blueprint, Response, session, url_for, redirect
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from db.model import User
 from api.util import *
