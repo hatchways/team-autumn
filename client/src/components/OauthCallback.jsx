@@ -1,13 +1,14 @@
 // this component will eventually be rendered in the Dashboard page
 
-import React from 'react';
+import React, {useState} from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
+// For socket testing
+import socketIOClient from 'socket.io-client';
 // these will eventually be accessed from UserContext and passed down as props
 // e.g. AlertDialog({ emailAuth, title, bodyText, buttonText }) {
 //     ...
@@ -19,7 +20,8 @@ const buttonText = 'Skip';
 
 export default function AlertDialog() {
   const [open, setOpen] = React.useState(false);
-
+  const [connected, setConnected] = useState(false);
+  const [response, setResponse] = useState("Waiting Response");
   const handleOpen = () => {
     setOpen(true);
   };
@@ -37,6 +39,21 @@ export default function AlertDialog() {
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  React.useEffect(()=> {
+    const socket = socketIOClient('/');
+    socket.on('connect', () => {
+      setConnected(true);
+      console.log("Connected");
+    });
+    socket.on('sent_email_status', (data) => {
+      console.log(data);
+      setResponse(JSON.stringify(data));
+    });
+    return () => {
+      setConnected(false);
+    };
+  },[]);
 
   return (
     <div>
@@ -76,6 +93,9 @@ export default function AlertDialog() {
             >
               Click to get user info
             </button>
+          </div>
+          <div>
+            {response}
           </div>
         </DialogContent>
         <DialogActions>
