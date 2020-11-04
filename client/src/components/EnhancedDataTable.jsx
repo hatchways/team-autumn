@@ -211,7 +211,7 @@ const EnhancedDataTable = ({
 
                     <TableCell
                       className={classes.visuallyHidden}
-                      component="th"
+                      component="td"
                       align="left"
                       id={labelId}
                       scope="row"
