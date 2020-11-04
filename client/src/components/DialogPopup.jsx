@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Grid from '@material-ui/core/Grid';
+
+import { utilStyles } from '../assets/styles';
 
 const DialogPopup = ({
   actionItem,
@@ -16,7 +19,7 @@ const DialogPopup = ({
   open,
   setOpen,
 }) => {
-  // const [open, setOpen] = useState(true);
+  const classes = utilStyles();
 
   const handleClose = () => {
     setOpen(!open);
@@ -34,14 +37,16 @@ const DialogPopup = ({
       <DialogTitle id={`${title}-dialog`}>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText id={`${title}-dialog-description`}>{bodyText}</DialogContentText>
-        <div
+        {/* <div
           style={{
             display: 'flex',
             justifyContent: 'center',
           }}
-        >
+        > */}
+        <Grid className={classes.centered} container>
           {actionItem}
-        </div>
+        </Grid>
+        {/* </div> */}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="primary">

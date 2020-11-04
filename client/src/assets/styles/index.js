@@ -177,3 +177,9 @@ export const contentTemplateStyles = makeStyles(() => ({
     flexBasis: 'auto',
   },
 }));
+
+export const utilStyles = makeStyles(() => ({
+  centered: {
+    justifyContent: 'center',
+  },
+}));

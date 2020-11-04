@@ -67,7 +67,7 @@ const CampaignsAdd = ({ setOpen }) => {
                   value={values.campaignName}
                 />
               </Grid>
-              <Grid className={classes.centered} item xs={12}>
+              <Grid className={classes.centered} item xs={6}>
                 <Button
                   fullWidth
                   disabled={isSubmitting}
