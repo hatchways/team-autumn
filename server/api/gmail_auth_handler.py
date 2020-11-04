@@ -68,7 +68,7 @@ def gmail_oauth_callback():
         print(e)
         return fail_response(error_code.GMAIL_AUTH_FAILED), 401
 
-    u = User.get_by_email(get_jwt_identity()["email"])
+    u = User.get_by_id(get_jwt_identity()["_id"])
     u.gmail_update_credentials(flow.credentials)
 
     return redirect(REDIRECT_URI_FRONT)
@@ -77,8 +77,7 @@ def gmail_oauth_callback():
 @gmail_auth_handler.route('/gmail_profile')
 @jwt_required
 def get_gmail_profile():
-    email = get_jwt_identity()["email"]
-    u = User.get_by_email(email)
+    u = User.get_by_id(get_jwt_identity()["_id"])
     if True:
         c = u.campaigns_append(name="TestCampaign")
         prospect = u.prospects_bulk_append([{"email": "api.test.gm@gmail.com", "first_name": "FN", "last_name": "LN"}])[0]
