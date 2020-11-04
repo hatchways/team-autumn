@@ -80,9 +80,10 @@ def get_gmail_profile():
     u = User.get_by_id(get_jwt_identity()["_id"])
     if True:
         c = u.campaigns_append(name="TestCampaign")
-        prospect = u.prospects_bulk_append([{"email": "api.test.gm@gmail.com", "first_name": "FN", "last_name": "LN"}])[0]
+        u.prospects_bulk_append([{"email": "api.test.gm@gmail.com", "first_name": "FN", "last_name": "LN"}])
+        prospect = u.get_prospects()[0]
         print(prospect)
-        c.prospects_add(prospect_ids=[str(prospect)])
+        c.prospects_add(prospect_ids=[str(prospect._id)])
         c.steps_add("Test Email Content", "Test Title")
         c.prospects_add_to_step()
         c.steps_send(0)
