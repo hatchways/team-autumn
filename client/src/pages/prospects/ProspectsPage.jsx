@@ -5,21 +5,22 @@ import DrawerAndContent from '../../components/DrawerAndContent';
 import ProspectsDrawer from './ProspectsDrawer';
 import ProspectsContent from './ProspectsContent';
 import { FilterProvider } from '../../contexts/FilterContext';
-import { ProspectUploadProvider } from '../../contexts/ProspectUploadContext';
+import { MessageProvider } from '../../contexts/MessageContext';
 import ProspectUploadContent from './ProspectUploadContent';
 import ProspectUploadDrawer from './ProspectUploadDrawer';
 
 const ProspectsPage = () => {
   const location = useLocation();
+  const path = location.pathname;
+
   return (
     <FilterProvider>
-      <ProspectUploadProvider>
-        {location.pathname.includes('upload') ? (
-          <DrawerAndContent drawer={<ProspectUploadDrawer />} content={<ProspectUploadContent />} />
-        ) : (
-          <DrawerAndContent drawer={<ProspectsDrawer />} content={<ProspectsContent />} />
-        )}
-      </ProspectUploadProvider>
+      <MessageProvider>
+        <DrawerAndContent
+          drawer={path.includes('upload') ? <ProspectUploadDrawer /> : <ProspectsDrawer />}
+          content={path.includes('upload') ? <ProspectUploadContent /> : <ProspectsContent />}
+        />
+      </MessageProvider>
     </FilterProvider>
   );
 };

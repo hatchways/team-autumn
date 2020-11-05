@@ -31,6 +31,7 @@ export const formStyles = makeStyles((theme) => ({
   },
   centered: {
     justifyContent: 'center',
+    alignContent: 'center',
   },
   linkText: {
     textAlign: 'right',
@@ -158,5 +159,27 @@ export const tableStyles = makeStyles((theme) => ({
   uploadContainer: {
     maxHeight: 350,
     padding: theme.spacing(1),
+  },
+}));
+
+export const contentTemplateStyles = makeStyles(() => ({
+  mainGrid: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  faded: {
+    color: '#9e9e9e',
+  },
+  buttonRight: {
+    justifyContent: 'flex-end',
+  },
+  flexEnd: {
+    flexBasis: 'auto',
+  },
+}));
+
+export const utilStyles = makeStyles(() => ({
+  centered: {
+    justifyContent: 'center',
   },
 }));

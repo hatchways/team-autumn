@@ -16,7 +16,7 @@ import Papa from 'papaparse';
 import { useHistory } from 'react-router-dom';
 
 import UserContext from '../../contexts/UserContext';
-import ProspectUploadContext from '../../contexts/ProspectUploadContext';
+import MessageContext from '../../contexts/MessageContext';
 import BasicTable from '../../components/BasicTable';
 import validateEmail from '../../util/validateEmail';
 import { buttonStyles, formStyles } from '../../assets/styles';
@@ -50,7 +50,7 @@ const ProspectUpload = () => {
   const [second, setSecond] = useState('');
   const [third, setThird] = useState('');
 
-  const [message, setMessage] = useContext(ProspectUploadContext);
+  const [message, setMessage] = useContext(MessageContext);
 
   const history = useHistory();
 

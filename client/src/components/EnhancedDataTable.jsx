@@ -8,6 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
+import { useHistory } from 'react-router-dom';
 
 import { tableStyles } from '../assets/styles';
 import FilterContext from '../contexts/FilterContext';
@@ -105,6 +106,7 @@ const EnhancedDataTable = ({
   headCells,
   requiresCheckbox,
   initialSortBy = 'email',
+  rowsAsLinks = false,
 }) => {
   const classes = tableStyles();
   const [order, setOrder] = useState('asc');
@@ -112,6 +114,8 @@ const EnhancedDataTable = ({
   const { itemContext } = useContext(FilterContext);
 
   const [selectedItems, setSelectedItems] = itemContext;
+
+  const history = useHistory();
 
   const rows = data.map((datum) => createData(datum));
 
@@ -150,6 +154,10 @@ const EnhancedDataTable = ({
     setSelectedItems(newSelected);
   };
 
+  const handleClickableRowClick = (event, _id) => {
+    history.push(`/campaigns/${_id}`);
+  };
+
   const isSelected = (_id) => selectedItems.indexOf(_id) !== -1;
 
   return (
@@ -181,7 +189,11 @@ const EnhancedDataTable = ({
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row._id)}
+                    onClick={(event) =>
+                      rowsAsLinks
+                        ? handleClickableRowClick(event, row._id)
+                        : handleClick(event, row._id)
+                    }
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
@@ -199,7 +211,7 @@ const EnhancedDataTable = ({
 
                     <TableCell
                       className={classes.visuallyHidden}
-                      component="th"
+                      component="td"
                       align="left"
                       id={labelId}
                       scope="row"

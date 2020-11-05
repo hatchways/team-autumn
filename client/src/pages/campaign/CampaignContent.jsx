@@ -96,7 +96,7 @@ const StatsCard = ({ ...stat }) => {
   );
 };
 
-const ViewCampaign = () => {
+const CampaignContent = () => {
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
@@ -112,8 +112,8 @@ const ViewCampaign = () => {
     <Container maxWidth="lg" className={classes.root}>
       <Grid container direction="column" spacing={3}>
         <Grid container spacing={0} className={classes.stats}>
-          {campaign.stats.map((s) => (
-            <Grid item xs={3}>
+          {campaign.stats.map((s, i) => (
+            <Grid key={`stat-card-${i}`} item xs={3}>
               <StatsCard key={s.id} {...s} />
             </Grid>
           ))}
@@ -128,6 +128,7 @@ const ViewCampaign = () => {
             <div style={{ display: 'flex' }}>
               {campaign.steps[0].stats.map((s, i) => (
                 <div
+                  key={`stat-${i}`}
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -159,16 +160,16 @@ const ViewCampaign = () => {
             </Button>
           </div>
         </Grid>
-        <RichTextEditorPopup
+        {/* <RichTextEditorPopup
           title="Step 1"
           content={campaign.steps[0].content}
           setOpen={setOpen}
           open={open}
           onClose={handleClose}
-        />
+        /> */}
       </Grid>
     </Container>
   );
 };
 
-export default ViewCampaign;
+export default CampaignContent;
