@@ -34,7 +34,6 @@ def user_entry(method_name):
         if fail, the return will be in the format
                 {"status":False, "error_code":-[1-9]}
     """
-    print(get_jwt_identity())
     user = User.get_by_id(get_jwt_identity()["_id"])
     if method_name not in user_entry_allow_methods.keys():
         return fail_response(error_code.METHODS_NOT_ALLOWED), 400

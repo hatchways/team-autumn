@@ -215,3 +215,26 @@ export const campaignStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
 }));
+
+export const tabNavStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 0.2,
+    backgroundColor: theme.palette.background.paper,
+    minHeight: 64,
+  },
+  tabLink: {
+    textTransform: 'none',
+    fontWeight: 700,
+    '&[aria-selected="true"] > span': {
+      color: theme.palette.primary.light,
+    },
+    paddingTop: 16,
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
+  topIndicator: {
+    top: 0,
+    height: 4,
+    backgroundColor: theme.palette.primary.light,
+  },
+}));

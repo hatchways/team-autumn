@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 
 import ContentTemplate from '../../components/ContentTemplate';
+import EnhancedDataTable from '../../components/EnhancedDataTable';
 import CampaignsAdd from './CampaignsAdd';
-import DialogPopup from '../../components/DialogPopup';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import MessageContext from '../../contexts/MessageContext';
 import FilterContext from '../../contexts/FilterContext';
@@ -15,6 +15,7 @@ const headCells = [
   { id: 'campaignName', numeric: false, disablePadding: false, label: 'Name' },
   { id: 'createdAt', numeric: false, disablePadding: false, label: 'Creation Date' },
   { id: 'numProspects', numeric: false, disablePadding: false, label: 'Prospects' },
+  { id: 'numReached', numeric: false, disablePadding: false, label: 'Reached' },
   { id: 'numReplies', numeric: false, disablePadding: false, label: 'Replies' },
   { id: 'numSteps', numeric: false, disablePadding: false, label: 'Steps' },
 ];
@@ -25,7 +26,8 @@ const transformCampaigns = (campaignList) =>
     campaignName: campaign.name,
     createdAt: transformDate(campaign.creation_date),
     numProspects: campaign.prospects?.length || 0,
-    numReplies: 0,
+    numReached: campaign.num_reached,
+    numReplies: campaign.num_reply,
     numSteps: campaign.steps?.length || 0,
   }));
 
@@ -34,7 +36,6 @@ const CampaignsContent = () => {
 
   const [loading, setLoading] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [campaigns, setCampaigns] = useState();
 
   const [message, setMessage] = useContext(MessageContext);
@@ -42,25 +43,24 @@ const CampaignsContent = () => {
   const [filter] = filterContext;
 
   useEffect(() => {
-    if (!formDialogOpen) {
-      fetch('/user/campaigns_list', {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}),
+    fetch('/user/campaigns_list', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    })
+      .then((response) => response.json())
+      .then((d) => {
+        setCampaigns(transformCampaigns(d.response));
+        setLoading(false);
       })
-        .then((response) => response.json())
-        .then((d) => {
-          setCampaigns(transformCampaigns(d.response));
-          setLoading(false);
-        })
-        .catch(() => {
-          setMessage('There was a problem fetching your campaigns');
-          setLoading(false);
-        });
-    }
-  }, [setMessage, formDialogOpen]);
+      .catch(() => {
+        setMessage('There was a problem fetching your campaigns');
+        setCampaigns([]);
+        setLoading(false);
+      });
+  }, [setMessage]);
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -84,38 +84,22 @@ const CampaignsContent = () => {
 
   const actionSlots = [
     <div />,
-    <Button
-      variant="contained"
-      className={`${buttonClasses.base} ${buttonClasses.action}`}
-      onClick={() => setFormDialogOpen(true)}
-    >
+    <Button variant="contained" className={`${buttonClasses.base} ${buttonClasses.action}`}>
       Add New Campaign
     </Button>,
   ];
 
-  if (!loading) {
+  if (!loading && campaigns.length > 0) {
     return (
-      <>
-        <ContentTemplate
-          pageTitle="Campaigns"
-          data={campaigns}
-          actionSlots={actionSlots}
-          tableProps={tableProps}
-          snackbarOpen={snackbarOpen}
-          handleClose={handleClose}
-          message={message}
-        />
-        <DialogPopup
-          actionItem={<CampaignsAdd setOpen={setFormDialogOpen} />}
-          title="New Campaign"
-          bodyText="Name your campaign"
-          buttonText="Cancel"
-          ariaLabeledBy="campaign-add-dialog"
-          ariaDescribedBy="new campaign form"
-          open={formDialogOpen}
-          setOpen={setFormDialogOpen}
-        />
-      </>
+      <ContentTemplate
+        pageTitle="Campaigns"
+        data={filteredCampaigns}
+        actionSlots={actionSlots}
+        content={<EnhancedDataTable {...tableProps} />}
+        snackbarOpen={snackbarOpen}
+        handleClose={handleClose}
+        message={message}
+      />
     );
   }
 

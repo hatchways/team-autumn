@@ -6,6 +6,7 @@ import CampaignsDrawer from './CampaignsDrawer';
 import CampaignsContent from './CampaignsContent';
 import CampaignDrawer from '../campaign/CampaignDrawer';
 import CampaignContent from '../campaign/CampaignContent';
+import AddStep from '../campaign/AddStep';
 import { FilterProvider } from '../../contexts/FilterContext';
 import { MessageProvider } from '../../contexts/MessageContext';
 
@@ -15,10 +16,14 @@ const CampaignsPage = () => {
   return (
     <FilterProvider>
       <MessageProvider>
-        <DrawerAndContent
-          drawer={pathSegments.length > 2 ? <CampaignDrawer /> : <CampaignsDrawer />}
-          content={pathSegments.length > 2 ? <CampaignContent /> : <CampaignsContent />}
-        />
+        {pathSegments.length > 2 ? (
+          <DrawerAndContent
+            drawer={<CampaignDrawer />}
+            content={pathSegments.includes('add_step') ? <AddStep /> : <CampaignContent />}
+          />
+        ) : (
+          <DrawerAndContent drawer={<CampaignsDrawer />} content={<CampaignsContent />} />
+        )}
       </MessageProvider>
     </FilterProvider>
   );

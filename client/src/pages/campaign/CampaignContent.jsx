@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import RichTextEditorPopup from '../../components/RichTextEditorPopup';
+// import RichTextEditorPopup from '../../components/RichTextEditorPopup';
 import { buttonStyles, cardStyles, campaignStyles } from '../../assets/styles';
 
 const StatCard = ({ stat }) => {
@@ -32,13 +32,15 @@ const StatCard = ({ stat }) => {
 };
 
 const CampaignContent = () => {
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const [currentCampaign, setCurrentCampaign] = useState();
 
   const pathSegments = location.pathname.split('/');
   const campaignId = pathSegments[pathSegments.length - 1];
+
+  const history = useHistory();
 
   const campaignClasses = campaignStyles();
   const buttonClasses = buttonStyles();
@@ -55,6 +57,7 @@ const CampaignContent = () => {
       .then((d) => {
         const campaignInfo = d.response;
         setCurrentCampaign({
+          id: campaignInfo._id,
           name: campaignInfo.name,
           prospects: campaignInfo.prospects,
           stats: {
@@ -71,15 +74,12 @@ const CampaignContent = () => {
       });
   }, [location.pathname, campaignId]);
 
-  const transformStats = (stats) => {
-    console.log(stats);
-    console.log(currentCampaign);
-    return Object.entries(stats).map((stat) => ({
+  const transformStats = (stats) =>
+    Object.entries(stats).map((stat) => ({
       name: stat[0],
       value: stat[1],
       percent: ((100 * stat[1]) / stats.prospects).toFixed(2),
     }));
-  };
 
   if (!loading) {
     return (
@@ -108,13 +108,12 @@ const CampaignContent = () => {
             <Grid item>
               <Button
                 className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
-                onClick={() => setOpen(true)}
+                onClick={() => history.push(`/campaigns/${currentCampaign.id}/add_step`)}
               >
                 Add Step
               </Button>
             </Grid>
           </Grid>
-          <RichTextEditorPopup open={open} onClose={() => setOpen(false)} />
         </div>
       </Container>
     );
