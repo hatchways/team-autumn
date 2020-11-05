@@ -24,7 +24,7 @@ const StatCard = ({ stat }) => {
           {stat.value}
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
-          {stat.name !== 'contacted' ? `(${stat.percent} %)` : ''}
+          {stat.name !== 'prospects' ? `(${stat.percent} %)` : ''}
         </Typography>
       </CardContent>
     </Card>
@@ -53,22 +53,33 @@ const CampaignContent = () => {
     })
       .then((response) => response.json())
       .then((d) => {
-        setCurrentCampaign(d.response);
+        const campaignInfo = d.response;
+        setCurrentCampaign({
+          name: campaignInfo.name,
+          prospects: campaignInfo.prospects,
+          stats: {
+            prospects: campaignInfo.num_prospects,
+            reached: campaignInfo.num_reached,
+            replied: campaignInfo.num_reply,
+          },
+        });
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
         setCurrentCampaign({ campaign: {}, stats: {} });
         setLoading(false);
       });
   }, [location.pathname, campaignId]);
 
-  const transformStats = (stats) =>
-    Object.entries(stats).map((stat) => ({
+  const transformStats = (stats) => {
+    console.log(stats);
+    console.log(currentCampaign);
+    return Object.entries(stats).map((stat) => ({
       name: stat[0],
       value: stat[1],
-      percent: ((100 * stat[1]) / stats.contacted).toFixed(2),
+      percent: ((100 * stat[1]) / stats.prospects).toFixed(2),
     }));
+  };
 
   if (!loading) {
     return (
@@ -86,7 +97,7 @@ const CampaignContent = () => {
                   <Grid key={stat.name} item xs={3}>
                     <StatCard stat={stat} />
                   </Grid>
-                ))}
+                )) || ''}
               </Grid>
             </Grid>
             <Grid item>
@@ -103,12 +114,7 @@ const CampaignContent = () => {
               </Button>
             </Grid>
           </Grid>
-          {/* <RichTextEditorPopup
-            open={open}
-            onClose={() => setOpen(false)}
-            prospects={currentCampaign?.campaign.prospects}
-            campaignId={campaignId}
-          /> */}
+          <RichTextEditorPopup open={open} onClose={() => setOpen(false)} />
         </div>
       </Container>
     );

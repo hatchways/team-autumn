@@ -59,9 +59,11 @@ const ProspectsContent = () => {
           if (prospects.length > 0) {
             setData(prospects);
             setLoading(false);
+          } else {
+            setLoading(false);
           }
         })
-        .catch((err) => {
+        .catch(() => {
           setMessage({ type: 'error', text: `There was a problem fetching prospects` });
           setLoading(false);
         });
@@ -79,7 +81,8 @@ const ProspectsContent = () => {
     setMessage('');
   };
 
-  const handleUploadProspects = () => {
+  const handleAddProspectsToCampaign = () => {
+    setLoading(true);
     if (selectedCampaign && selectedItems.length > 0) {
       fetch(`/campaign/${selectedCampaign._id}/prospects_add`, {
         method: 'POST',
@@ -107,9 +110,11 @@ const ProspectsContent = () => {
             });
           }
           setSelectedItems([]);
+          setLoading(false);
         })
         .catch((err) => {
           setMessage({ type: 'error', text: `There was a problem uplading the prospects: ${err}` });
+          setLoading(false);
         });
     } else if (!selectedCampaign) {
       setMessage({ type: 'warning', text: 'You must select a campaign first' });
@@ -130,7 +135,7 @@ const ProspectsContent = () => {
   const actionSlots = [
     <Button
       className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
-      onClick={handleUploadProspects}
+      onClick={handleAddProspectsToCampaign}
     >
       Add to Campaign
     </Button>,
