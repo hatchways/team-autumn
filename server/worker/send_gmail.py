@@ -43,6 +43,11 @@ def send_gmail_worker(user_id, campaign_id, step_index):
         step.prospects_email_status[str(each._id)] = value
         status_dict[str(each_p._id)] = status
 
+    def update_thread_id(prospect, thread_id):
+        prospect_id = str(prospect._id)
+        campaign.prospects_thread_id[thread_id] = (step_index, prospect_id)
+        prospect.thread_id[str(campaign._id)] = thread_id
+
     def status_send():
         if not room_id:
             return
@@ -57,8 +62,8 @@ def send_gmail_worker(user_id, campaign_id, step_index):
         email_text = campaign.steps_email_replace_keyword(step.email, each)
         msg = create_message(each.email, campaign.subject, email_text)
         # Set threadId to keep the email in a conversation in the same campagin
-        if campaign.name in each.thread_id:
-            msg["threadId"] = each.thread_id[campaign.name]
+        if str(campaign._id) in each.thread_id:
+            msg["threadId"] = each.thread_id[str(campaign._id)]
 
         res = session.post(METAONLY_URL, json=msg)
         if res.status_code != 200:
@@ -66,8 +71,7 @@ def send_gmail_worker(user_id, campaign_id, step_index):
             status_update(each, fail_text, -1)
         else:
             res_json = res.json()
-            each.thread_id[campaign.name] = res_json["threadId"]
-            # TODO: watch this thread_id
+            update_thread_id(each, res_json["threadId"])
             each.last_contacted = datetime.now()
             each.save()
 

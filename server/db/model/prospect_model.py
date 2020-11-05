@@ -20,12 +20,12 @@ class Prospect(MongoModel):
     status = fields.CharField()
     campaigns = fields.ListField(fields.ReferenceField(
         "Campaign"))
-    thread_id = fields.DictField()
     last_contacted = fields.DateTimeField()
     keyword_dict = fields.DictField()
+    thread_id = fields.DictField()
 
-    @staticmethod
-    def find_by_id(_id):
+    @classmethod
+    def find_by_id(cls, _id):
         """
 
         Args:
@@ -37,10 +37,15 @@ class Prospect(MongoModel):
         if isinstance(_id, str):
             _id = ObjectId(_id)
         try:
-            prospect = Prospect.objects.get({'_id': _id})
+            prospect = cls.objects.get({'_id': _id})
             return prospect
         except:
             return None
+    @classmethod
+    def get_by_owner(cls, _id):
+        if isinstance(_id, str):
+            _id = ObjectId(_id)
+        return cls.objects.raw({"owner": _id})
 
     def to_dict(self):
         return self.to_son().to_dict()
