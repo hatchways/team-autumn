@@ -21,3 +21,5 @@ def disconnect():
     redis.delete(get_jwt_identity()["_id"])
     return
 
+# emit("sent_email_status", status_dict, room=room_id)
+# emit("new_email_reply", {"campaign": campaign._id, "step_index": step_index, "prospect": prospect_id})

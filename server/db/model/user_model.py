@@ -1,6 +1,8 @@
+import os
 from datetime import datetime
 import pymongo
 from bson import ObjectId
+from flask.cli import load_dotenv
 from pymodm import MongoModel, fields
 import pymodm.errors
 from google.auth.transport.requests import AuthorizedSession
@@ -12,6 +14,7 @@ from pymodm.context_managers import no_auto_dereference
 from addon import rq
 from .prospect_model import Prospect
 from .campaign_model import Campaign, Step
+load_dotenv()
 
 
 class UserBase(MongoModel):
@@ -101,25 +104,72 @@ class GmailOauthInfo(MongoModel):
 
 class UserGmail(UserBase):
     gmail_oauth_info = fields.EmbeddedDocumentField(GmailOauthInfo)
+    gmail_link_address = fields.CharField()
+    gmail_history_id = fields.CharField()
 
-    def gmail_profile(self):
+    def gmail_update_history_id(self, hid):
+        self.gmail_history_id = hid
+        self.save()
+
+    @classmethod
+    def get_by_gmail_link_address(cls, gmail):
+        ret = cls.objects.raw({"gmail_link_address": gmail})
+        ret_list = list(ret)
+        return ret_list[0] if ret_list else None
+
+    def gmail_profile(self, text=True):
         _token = self._gmail_session.credentials.token
 
         res = self._gmail_session.get(
             "https://gmail.googleapis.com/gmail/v1/users/me/profile?alt=json")
-        if self._gmail_session.credentials.token != _token:
-            self.save_credentials(self._gmail_session.credentials)
-        return res.text
 
-    # update_credentials
+        if self._gmail_session.credentials.token != _token:
+            self.gmail_update_credentials(self._gmail_session.credentials)
+        return res.text if text else res.json()
+
+    def gmail_history_list(self):
+        res = self._gmail_session.get("https://gmail.googleapis.com/gmail/v1/users/me/history",
+                                      params={"startHistoryId": self.gmail_history_id, "historyTypes": "MESSAGE_ADDED"})
+        # nextPageToken
+        res = res.json()
+        print("hisId",self.gmail_history_id)
+        print("history list",res)
+        if "history" not in res:
+            return []
+        message_list = []  # [{"id":"","threadId":""},...]
+        for each in res["history"]:
+            message_list.extend([i["message"] for i in each["messagesAdded"]])
+        return message_list
+
     def gmail_update_credentials(self, cred):
         if self.gmail_oauth_info and self.gmail_oauth_info.token == cred.token:
             return
         self.gmail_oauth_info = GmailOauthInfo(**json.loads(cred.to_json()))
         self.save()
 
+        # Update profile
+        profile = self.gmail_profile(text=False)
+        if profile and "emailAddress" in profile:
+            self.gmail_link_address = profile["emailAddress"]
+            self.gmail_history_id = profile["historyId"]
+            self.save()
+        # Start webhook
+        self.gmail_start_webhook()
+
+    def gmail_start_webhook(self):
+        print("Starting web hook")
+        res = self._gmail_session.post("https://www.googleapis.com/gmail/v1/users/me/watch", json={
+            "topicName": os.getenv("TOPIC_NAME", "projects/quickstart-1603250317186/topics/new_gmail_notify"),
+            "labelIds": ["INBOX"]
+        })
+        # TODO: renew with rq if we can schedule time
+        res = res.json()
+        print("Webhook response: ", res)
+        if res and "historyId" in res:
+            self.gmail_history_id = res["historyId"]
+            self.save()
+
     @property
-    # is_oauthed
     def gmail_oauthed(self):
         return self.gmail_oauth_info is not None
 
@@ -139,6 +189,17 @@ class UserGmail(UserBase):
 
 class UserCampaign(UserBase):
     campaigns_count = fields.IntegerField(default=0)
+
+    def campaign_by_thread_id(self, thread_id):
+        """
+        Get thread id dict from all campaigns of user
+        Returns:
+            Campaign: obj
+        """
+        for each in self.campaigns:
+            if thread_id in each.prospects_thread_id:
+                return each
+        return None
 
     def campaigns_list(self):
         """
@@ -223,6 +284,8 @@ class UserProspects(UserBase):
 class User(UserGmail, UserCampaign, UserProspects):
     class Meta:
         # This model will be used in the connection "user-db"
+        # TODO another gmail index
         indexes = [pymongo.IndexModel([("email", pymongo.HASHED)])]
+        collection_name = "User"
         connection_alias = 'user-db'
         ignore_unknown_fields = True

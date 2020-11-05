@@ -43,6 +43,8 @@ class Campaign(MongoModel):
         Prospect, on_delete=fields.ReferenceField.PULL))
     steps = fields.EmbeddedDocumentListField(Step)
     keyword_dict = fields.DictField()
+    # {thread_id:(step_index,prospect_id)}
+    prospects_thread_id = fields.DictField()
 
     @property
     def stats(self):
@@ -139,6 +141,7 @@ class Campaign(MongoModel):
         self.save()
 
     def steps_send(self, step_index):
+        self.creator.gmail_start_webhook()
         result = rq.send_gmail(str(self.creator._id), str(self._id), step_index)
         return
 
