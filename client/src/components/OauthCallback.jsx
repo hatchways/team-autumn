@@ -21,7 +21,7 @@ const buttonText = 'Skip';
 export default function AlertDialog() {
   const [open, setOpen] = React.useState(false);
   const [connected, setConnected] = useState(false);
-  const [response, setResponse] = useState("Waiting Response");
+  const [response, setResponse] = useState("");
   const handleOpen = () => {
     setOpen(true);
   };
@@ -48,7 +48,11 @@ export default function AlertDialog() {
     });
     socket.on('sent_email_status', (data) => {
       console.log(data);
-      setResponse(JSON.stringify(data));
+      setResponse(response+"\n"+JSON.stringify(data));
+    });
+    socket.on('new_email_reply', (data) => {
+      console.log(data);
+      setResponse(response+"\n"+JSON.stringify(data));
     });
     return () => {
       setConnected(false);
