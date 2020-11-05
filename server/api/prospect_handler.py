@@ -31,7 +31,7 @@ def upload_prospects():
     """
 
     # Change this to work with one or many prospects
-    owner = User.get_by_email(get_jwt_identity()['email'])
+    owner = User.get_by_id(get_jwt_identity()['_id'])
 
     if not request.is_json:
         return fail_response(error_code.MIME_NOT_JSON), 400
@@ -53,11 +53,12 @@ def upload_prospects():
     return success_response(**result), 201
 
 
-@ prospect_handler.route('/prospects', methods=['GET'])
-@ jwt_required
+
+@prospect_handler.route('/prospects', methods=['GET'])
+@jwt_required
 def get_prospects():
 
-    owner = User.get_by_email(get_jwt_identity()['email'])
+    owner = User.get_by_id(get_jwt_identity()['_id'])
 
     if not owner:
         return fail_response(error_code.USER_NOT_EXIST), 400

@@ -24,8 +24,8 @@ class GmailAuthHandlerTest(TestBase):
         u = User.get_by_email("a@b.com")
         print(u.user_info())
         print(u.campaigns)
-        new_campaign = Campaign(u, "Test_campaign").save()
-        u.campaign_append(new_campaign)
+        # new_campaign = Campaign(u, "Test_campaign").save()
+        u.campaigns_append(name="Test campaign")
         # u.save()
         u = User.get_by_email("a@b.com")
         with no_auto_dereference(Campaign):
@@ -36,7 +36,8 @@ class GmailAuthHandlerTest(TestBase):
         for each in u.campaigns:
             print(each.name)
         from db.model import Step
-        u.campaigns[0].steps.append(Step("aaa", "title"))
+        u.campaigns[0].steps_add("aaa", "title")
+        print(u.campaigns[0].steps)
         u.campaigns[0].steps[0].email = "b"
 
         print(u.campaigns[0].steps)

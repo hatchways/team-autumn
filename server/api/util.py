@@ -3,6 +3,31 @@ from flask import jsonify
 from flask_jwt_extended import set_access_cookies, set_refresh_cookies
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from api import error_code
+import base64
+from email.mime.text import MIMEText
+
+
+class SafeDict(dict):
+    def __missing__(self, key):
+        return "{"+str(key)+"}"
+
+
+def create_message(to, subject, message_text):
+    """
+    Create a message for an email.
+
+    Args:
+        to: Email address of the receiver.
+        subject: The subject of the email message.
+        message_text: The text of the email message.
+
+    Returns:
+        An object containing a base64url encoded str email object.
+  """
+    message = MIMEText(message_text)
+    message['to'] = to
+    message['subject'] = subject
+    return {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
 
 def get_schema(input_type="string", **kwargs):

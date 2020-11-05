@@ -18,7 +18,6 @@ import GoogleAuthPopup from './GoogleAuthPopup';
 import OauthCallback from './OauthCallback';
 import LoadingSpinner from './LoadingSpinner';
 import UserContext from '../contexts/UserContext';
-
 import SocketTest from './SocketTest';
 
 const App = () => {
@@ -64,7 +63,7 @@ const App = () => {
               <ProtectedRoute path="/profile" component={ProfilePage} />
               <ProtectedRoute path="/logout" component={Logout} />
               <ProtectedRoute path="/gmail_auth" component={GoogleAuthPopup} />
-              <ProtectedRoute path="/socket_test" component={SocketTest} />
+              <ProtectedRoute path="/ws_test" component={SocketTest} />
               <Route path="/gmail_oauth_callback" component={OauthCallback} />
               <Route path="/signup" component={SignupPage} />
               <Route path="/login" component={LoginPage} />

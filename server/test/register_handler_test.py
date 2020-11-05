@@ -46,6 +46,7 @@ class RegisterHandlerTest(TestBase):
         r_json = response.json["user_info"]
         del r_json["access_token"]
         del r_json["refresh_token"]
+        del r_json["_id"]
         del fake_json["password"]
         del fake_json["confirm_password"]
         self.assertDictEqual(fake_json, r_json)

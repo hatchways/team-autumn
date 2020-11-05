@@ -34,7 +34,7 @@ def user_entry(method_name):
         if fail, the return will be in the format
                 {"status":False, "error_code":-[1-9]}
     """
-    user = User.get_by_email(get_jwt_identity()["email"])
+    user = User.get_by_id(get_jwt_identity()["_id"])
     if method_name not in user_entry_allow_methods.keys():
         return fail_response(error_code.METHODS_NOT_ALLOWED), 400
     err, user_json = validate_json_input(
@@ -48,6 +48,7 @@ def user_entry(method_name):
 campaign_entry_allow_methods = {
     "steps_add": new_schema("content", "subject"),
     "steps_edit": new_schema("content", "subject", step_index=get_schema("integer")),
+    "steps_send": new_schema(step_index=get_schema("integer")),
     "prospects_add": new_schema(prospect_ids=get_schema("array"))
 }
 
@@ -66,6 +67,8 @@ def campaign_entry(campaign_id, method_name):
         method_name:
             steps_add
             steps_edit
+            steps_send
+            prospects_add
     Returns:
         {"status":True, "error_code":0,"response":jsonified_RETURN_FROM_CORRESPONDING_METHOD}
         if fail, the return will be in the format
@@ -78,7 +81,7 @@ def campaign_entry(campaign_id, method_name):
     if err:
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
 
-    user = User.get_by_email(get_jwt_identity()["email"])
+    user = User.get_by_id(get_jwt_identity()["_id"])
     cur_campaign = user.campaign_by_id(campaign_id)
     res = cur_campaign.__getattribute__(method_name)(**user_json)
     return success_response(response=res), 200

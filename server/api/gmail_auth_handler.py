@@ -16,6 +16,7 @@ SCOPES = [
     'https://www.googleapis.com/auth/userinfo.profile',
     'https://www.googleapis.com/auth/gmail.compose',
     'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/gmail.send'
     # Add other requested scopes.
 ]
 
@@ -67,14 +68,23 @@ def gmail_oauth_callback():
         print(e)
         return fail_response(error_code.GMAIL_AUTH_FAILED), 401
 
-    u = User.get_by_email(get_jwt_identity()["email"])
+    u = User.get_by_id(get_jwt_identity()["_id"])
     u.gmail_update_credentials(flow.credentials)
+
     return redirect(REDIRECT_URI_FRONT)
 
 
 @gmail_auth_handler.route('/gmail_profile')
 @jwt_required
 def get_gmail_profile():
-    email = get_jwt_identity()["email"]
-    user = User.get_by_email(email)
-    return success_response(gmail_info=user.get_gmail_profile()), 200
+    u = User.get_by_id(get_jwt_identity()["_id"])
+    if True:
+        c = u.campaigns_append(name="TestCampaign")
+        u.prospects_bulk_append([{"email": "api.test.gm@gmail.com", "first_name": "FN", "last_name": "LN"}])
+        prospect = u.get_prospects()[0]
+        print(prospect)
+        c.prospects_add(prospect_ids=[str(prospect._id)])
+        c.steps_add("Test Email Content", "Test Title")
+        c.prospects_add_to_step()
+        c.steps_send(0)
+    return success_response(gmail_info=u.gmail_profile()), 200
