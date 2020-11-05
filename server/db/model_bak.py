@@ -309,6 +309,7 @@ class User(MongoModel):
         return res.text
 
     # update_credentials
+
     def gmail_update_credentials(self, cred):
         if self.gmail_oauth_info and self.gmail_oauth_info.token == cred.token:
             return
@@ -376,7 +377,10 @@ class User(MongoModel):
         campaign = Campaign.objects.get(
             {"$and": [{"_id": ObjectId(campaign_id)}, {"creator": self._id}]})
 
-        prospect_ids = campaign.to_dict()['prospects']
+        prospect_ids = []
+        for key in campaign.to_dict().keys():
+            if key == 'prospects':
+                prospect_ids = campaign.to_dict()['prospects']
 
         prospects = Prospect.objects.raw(
             {"_id": {"$in": [prosp_id for prosp_id in prospect_ids]}})
@@ -385,7 +389,7 @@ class User(MongoModel):
 
         prospects_count = len(prospects_list)
 
-        return {'campaign': campaign, 'stats': {'contacted': prospects_count, 'reached': 120, 'opened': 28, 'replied': 4}}
+        return {'campaign': campaign, 'stats': {'num_prospects': prospects_count, 'contacted': 121, 'reached': 120, 'replied': 4}}
 
     @ property
     def campaigns(self):
