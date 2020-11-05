@@ -63,6 +63,16 @@ class CampaignHandlerTest(TestBase):
         self.assertTrue(User.get_by_email(fake_json["email"]).campaigns_list()[0].steps[0].to_son().to_dict()[
                             "subject"] == "Title2")
 
+        res = self.api.post("/user/prospects_bulk_append",
+                            json={"prospects_list": [{"email": "email"}, {"email": "email2"}]})
+        print(res.json)
+        res = self.api.post("/campaign/{}/prospects_add".format(_id),
+                            json={"prospect_ids": res.json["response"]["prospects_ids"]})
+        print(res.json)
+        res = self.api.post("/campaign/{}/prospects_auto_add_to_step".format(_id),
+                            json={"step_index": 0})
+        print(res.json)
+
     def tearDown(self):
         User.objects.raw({"email": {"$regex": r".*@test\.test"}}).delete()
         User.objects.raw({"email": "a@b.com"}).delete()

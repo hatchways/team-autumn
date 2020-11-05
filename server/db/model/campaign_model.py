@@ -111,7 +111,7 @@ class Campaign(MongoModel):
 
     def prospects_add(self, prospect_ids):
         """
-
+        Add prospects to campaign
         Args:
             prospect_ids: list of str _id of prospects
 
@@ -139,6 +139,35 @@ class Campaign(MongoModel):
         for pid in prospect_ids:
             self.steps[step_index].prospects.append(ObjectId(pid))
         self.save()
+
+    def prospects_auto_add_to_step(self, step_index):
+        """
+        Route: to move prospects to a step
+        All prospects in previous step that did receive an email, is moved to the next step
+        For the first step, all prospects that are not part of any step are moved to the first step
+        Args:
+            step_index:
+
+        Returns:
+
+        """
+        if step_index == 0:
+            # all prospects that are not part of any step are moved to the first step
+            for each_p in self.prospects:
+                exist = False
+                for each_step in self.steps:
+                    if each_p in each_step.prospects:
+                        exist = True
+                        break
+                if not exist:
+                    self.steps[step_index].prospects.append(each_p)
+        else:
+            for each_p in self.steps[step_index-1]:
+                if each_p in self.steps[step_index]:
+                    continue
+                self.steps[step_index].prospects.append(each_p)
+        self.save()
+        return self.steps[step_index].prospects
 
     def steps_send(self, step_index):
         self.creator.gmail_start_webhook()
