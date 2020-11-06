@@ -40,7 +40,7 @@ def send_gmail_worker(user_id, campaign_id, step_index):
     status_dict = {}
 
     def status_update(each_p, status, value):
-        step.prospects_email_status[str(each._id)] = value
+        step.prospects_email_status[str(each_p._id)] = value
         status_dict[str(each_p._id)] = status
 
     def update_thread_id(prospect, thread_id):
@@ -59,6 +59,9 @@ def send_gmail_worker(user_id, campaign_id, step_index):
 
     count = 0
     for each in step.prospects:
+        # Skip prospects that already receive the email
+        if str(each._id) in step.prospects_email_status and step.prospects_email_status[str(each._id)] > 0:
+            continue
         email_text = campaign.steps_email_replace_keyword(step.email, each)
         msg = create_message(each.email, campaign.subject, email_text)
         # Set threadId to keep the email in a conversation in the same campagin

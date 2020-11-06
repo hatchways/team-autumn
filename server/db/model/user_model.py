@@ -267,6 +267,7 @@ class UserProspects(UserBase):
             if prospect_obj['email'] not in own_prospect_emails_set:
                 new_prospects_set.add(tuple(prospect_obj.items()))
 
+        prospect_objs = []
         if len(new_prospects_set) > 0:
             prospect_objs = Prospect.objects.bulk_create(
                 [Prospect(owner=self._id, **dict(prospect_tup)) for prospect_tup in new_prospects_set], retrieve=False)
@@ -274,7 +275,8 @@ class UserProspects(UserBase):
             self.prospects_count += len(prospect_objs)
             self.save()
 
-        return {'new_prospects': len(new_prospects_set), 'dup_prospects': len(prospects_list) - len(new_prospects_set)}
+        return {'new_prospects': len(new_prospects_set), 'dup_prospects': len(prospects_list) - len(new_prospects_set),
+                'prospects_ids': prospect_objs}
 
     def get_prospects(self):
         with no_auto_dereference(Prospect):
