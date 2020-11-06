@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 
 import ContentTemplate from '../../components/ContentTemplate';
+import CampaignsAdd from './CampaignsAdd';
 import EnhancedDataTable from '../../components/EnhancedDataTable';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import MessageContext from '../../contexts/MessageContext';
 import FilterContext from '../../contexts/FilterContext';
 import { buttonStyles } from '../../assets/styles';
 import transformDate from '../../util/transformDate';
+import DialogPopup from '../../components/DialogPopup';
 
 const headCells = [
   { id: '_id', numeric: false, disablePadding: false, label: 'id' },
@@ -33,33 +35,37 @@ const transformCampaigns = (campaignList) =>
 const CampaignsContent = () => {
   const buttonClasses = buttonStyles();
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [campaigns, setCampaigns] = useState();
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const [message, setMessage] = useContext(MessageContext);
   const { filterContext } = useContext(FilterContext);
   const [filter] = filterContext;
 
   useEffect(() => {
-    fetch('/user/campaigns_list', {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({}),
-    })
-      .then((response) => response.json())
-      .then((d) => {
-        setCampaigns(transformCampaigns(d.response));
-        setLoading(false);
+    if (!dialogOpen) {
+      setLoading(true);
+      fetch('/user/campaigns_list', {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
       })
-      .catch(() => {
-        setMessage('There was a problem fetching your campaigns');
-        setCampaigns([]);
-        setLoading(false);
-      });
-  }, [setMessage]);
+        .then((response) => response.json())
+        .then((d) => {
+          setCampaigns(transformCampaigns(d.response));
+          setLoading(false);
+        })
+        .catch(() => {
+          setMessage('There was a problem fetching your campaigns');
+          setCampaigns([]);
+          setLoading(false);
+        });
+    }
+  }, [setMessage, dialogOpen]);
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -83,22 +89,35 @@ const CampaignsContent = () => {
 
   const actionSlots = [
     <div />,
-    <Button variant="contained" className={`${buttonClasses.base} ${buttonClasses.action}`}>
+    <Button
+      variant="contained"
+      className={`${buttonClasses.base} ${buttonClasses.action}`}
+      onClick={() => setDialogOpen(true)}
+    >
       Add New Campaign
     </Button>,
   ];
 
-  if (!loading && campaigns.length > 0) {
+  if (!loading) {
     return (
-      <ContentTemplate
-        pageTitle="Campaigns"
-        data={filteredCampaigns}
-        actionSlots={actionSlots}
-        content={<EnhancedDataTable {...tableProps} />}
-        snackbarOpen={snackbarOpen}
-        handleClose={handleClose}
-        message={message}
-      />
+      <>
+        <ContentTemplate
+          pageTitle="Campaigns"
+          data={filteredCampaigns}
+          actionSlots={actionSlots}
+          content={<EnhancedDataTable {...tableProps} />}
+          snackbarOpen={snackbarOpen}
+          handleClose={handleClose}
+          message={message}
+        />
+        <DialogPopup
+          actionItem={<CampaignsAdd setOpen={setDialogOpen} />}
+          title="New Campaign"
+          buttonText="Cancel"
+          open={dialogOpen}
+          setOpen={setDialogOpen}
+        />
+      </>
     );
   }
 

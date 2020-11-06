@@ -149,7 +149,7 @@ const ProspectsContent = () => {
     </Button>,
   ];
 
-  if (!loading && data) {
+  if (!loading) {
     return (
       <ContentTemplate
         pageTitle="Prospects"

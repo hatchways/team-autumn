@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import socketIOClient from 'socket.io-client';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -9,8 +10,12 @@ import Typography from '@material-ui/core/Typography';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import Snackbar from '@material-ui/core/Snackbar';
 
 import { buttonStyles, cardStyles, campaignStyles } from '../../assets/styles';
+import Alert from '../../components/Alert';
+
+const ENDPOINT = 'http://localhost:3000';
 
 const StatCard = ({ stat }) => {
   const classes = cardStyles();
@@ -32,11 +37,6 @@ const StatCard = ({ stat }) => {
 };
 
 const StepCard = ({ step, index }) => {
-  const prospectStats = [
-    {
-      prospects: step.prospects?.length || 0,
-    },
-  ];
   const classes = cardStyles();
   return (
     <Card style={{ width: '100%' }}>
@@ -62,10 +62,12 @@ const StepCard = ({ step, index }) => {
 };
 
 const CampaignContent = () => {
-  // const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const [currentCampaign, setCurrentCampaign] = useState();
+  const [socketResponse, setSocketResponse] = useState('');
+  const [message, setMessage] = useState({ type: '', text: '' });
+  const [open, setOpen] = useState(false);
 
   const pathSegments = location.pathname.split('/');
   const campaignId = pathSegments[pathSegments.length - 1];
@@ -74,6 +76,20 @@ const CampaignContent = () => {
 
   const campaignClasses = campaignStyles();
   const buttonClasses = buttonStyles();
+
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+
+    socket.on('sent_email_status', (data) => {
+      console.log(data);
+      setSocketResponse(data);
+      setMessage({ type: 'info', text: 'Email sent successfully' });
+      setOpen(true);
+    });
+    return () => {
+      socket.on('disconnect', () => console.log('disconnected'));
+    };
+  }, [setSocketResponse]);
 
   useEffect(() => {
     fetch('/user/campaign_by_id', {
@@ -118,79 +134,110 @@ const CampaignContent = () => {
       // setMessage({ type: 'warning', text: 'Prospects have already been added to this step' });
       console.log('nope');
     } else {
-      fetch(`/campaign/${currentCampaign.id}/prospects_add_to_step`, {
+      setLoading(true);
+      fetch(`/campaign/${currentCampaign.id}/prospects_auto_add_to_step`, {
         method: 'post',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prospect_ids: currentCampaign.prospects, step_index: stepIndex }),
+        body: JSON.stringify({ step_index: stepIndex }),
       })
         .then((response) => response.json())
-        .then((r) => console.log(r))
-        .catch((err) => console.log(err));
+        .then(() => setLoading(false))
+        .catch(() => setLoading(false));
     }
   };
 
-  if (!loading) {
+  const handleSendEmail = (stepIndex) => {
+    fetch(`/campaign/${currentCampaign.id}/steps_send`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ step_index: stepIndex }),
+    })
+      .then((response) => response.json())
+      .then(() => console.log('Sent'))
+      .catch((err) => console.log(err));
+  };
+
+  if (!loading && currentCampaign) {
+    const steps = currentCampaign.steps || [];
+    const stats = currentCampaign.stats || [];
     return (
-      <Container maxWidth="lg" component="main">
-        <div className={campaignClasses.paper}>
-          <Grid direction="column" spacing={2} container>
-            <Grid item>
-              <Typography className={campaignClasses.sectionHeading} variant="h5" component="h2">
-                {currentCampaign.name}
-              </Typography>
-            </Grid>
-            <Grid item container spacing={1}>
-              <Grid container item xs={12}>
-                {transformStats(currentCampaign?.stats).map((stat) => (
-                  <Grid key={stat.name} item xs={4}>
-                    <StatCard stat={stat} />
-                  </Grid>
-                )) || ''}
+      <>
+        <Container maxWidth="lg" component="main">
+          <div className={campaignClasses.paper}>
+            <Grid direction="column" spacing={2} container>
+              <Grid item>
+                <Typography className={campaignClasses.sectionHeading} variant="h5" component="h2">
+                  {currentCampaign.name}
+                </Typography>
+              </Grid>
+              <Grid item container spacing={1}>
+                <Grid container item xs={12}>
+                  {transformStats(stats).map((stat) => (
+                    <Grid key={stat.name} item xs={4}>
+                      <StatCard stat={stat} />
+                    </Grid>
+                  )) || ''}
+                </Grid>
+              </Grid>
+              <Grid item>
+                <Typography className={campaignClasses.sectionHeading} variant="h5" component="h2">
+                  Steps List
+                </Typography>
+              </Grid>
+              <Grid item>
+                {steps.map((step, i) => (
+                  <div key={`step-${i}`}>
+                    <StepCard step={step} index={i + 1} />
+                    <Grid container direction="row">
+                      <Grid item xs={3}>
+                        <Button
+                          className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
+                          onClick={() => handleAddProspectsToStep(i)}
+                        >
+                          Add Prospects
+                        </Button>
+                      </Grid>
+                      <Grid item xs={3}>
+                        {step.prospects?.length > 0 && (
+                          <Button
+                            className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
+                            onClick={() => handleSendEmail(i)}
+                          >
+                            Send Email
+                          </Button>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </div>
+                ))}
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  className={`${buttonClasses.base} ${buttonClasses.extraWide}`}
+                  onClick={() => history.push(`/campaigns/${currentCampaign.id}/add_step`)}
+                >
+                  Add Step
+                </Button>
               </Grid>
             </Grid>
-            <Grid item>
-              <Typography className={campaignClasses.sectionHeading} variant="h5" component="h2">
-                Steps List
-              </Typography>
-            </Grid>
-            <Grid item>
-              {currentCampaign.steps.map((step, i) => (
-                <>
-                  <StepCard key={step.subject} step={step} index={i + 1} />
-                  <Grid container direction="row">
-                    <Grid item xs={3}>
-                      <Button
-                        className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
-                        onClick={() => handleAddProspectsToStep(i)}
-                      >
-                        Add Prospects
-                      </Button>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Button
-                        className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
-                      >
-                        Send Email
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </>
-              ))}
-            </Grid>
-            <Grid item>
-              <Button
-                variant="outlined"
-                className={`${buttonClasses.base} ${buttonClasses.extraWide}`}
-                onClick={() => history.push(`/campaigns/${currentCampaign.id}/add_step`)}
-              >
-                Add Step
-              </Button>
-            </Grid>
-          </Grid>
-        </div>
-      </Container>
+          </div>
+        </Container>
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={() => setOpen(false)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        >
+          <Alert onClose={() => setOpen(false)} severity={message.type}>
+            {message.text}
+          </Alert>
+        </Snackbar>
+      </>
     );
   }
 
