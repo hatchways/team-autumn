@@ -47,6 +47,7 @@ class RegisterHandlerTest(TestBase):
         del r_json["access_token"]
         del r_json["refresh_token"]
         del r_json["_id"]
+        del r_json["gmail_oauthed"]
         del fake_json["password"]
         del fake_json["confirm_password"]
         self.assertDictEqual(fake_json, r_json)
@@ -83,6 +84,11 @@ class RegisterHandlerTest(TestBase):
         self.assertFalse(response.json["status"], response.json)
         self.assertTrue(response.json["error_code"] == error_code.USER_EXIST)
         self.assertTrue(len(list(User.objects.raw({"email": fake_json["email"]}))) == 1)
+
+    def test_user_fields(self):
+        fake_json = fake_user_json()
+        _ = self.api.post('/register', json=fake_json)
+        print(User.get_by_email(fake_json["email"]).to_dict())
 
     def tearDown(self):
         User.objects.raw({"email": {"$regex": r".*@test\.test"}}).delete()

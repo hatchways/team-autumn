@@ -3,7 +3,8 @@ from datetime import datetime
 import pymongo
 from bson import ObjectId
 from flask.cli import load_dotenv
-from pymodm import MongoModel, fields
+from pymodm import fields
+from ._mongo_model import MongoModel
 import pymodm.errors
 from google.auth.transport.requests import AuthorizedSession
 from google.oauth2.credentials import Credentials
@@ -14,6 +15,7 @@ from pymodm.context_managers import no_auto_dereference
 from addon import rq
 from .prospect_model import Prospect
 from .campaign_model import Campaign, Step
+
 load_dotenv()
 
 
@@ -34,6 +36,16 @@ class UserBase(MongoModel):
     salted_password = fields.CharField()
 
     keyword_dict = fields.DictField()
+
+    def keyword_init(self):
+        self.keyword_dict.update({
+            "my_name": "{} {}".format(self.first_name, self.last_name),
+            "user_name": "{} {}".format(self.first_name, self.last_name),
+        })
+
+    def keyword_add(self, new_kw):
+        self.keyword_dict.update(new_kw)
+        self.save()
 
     @classmethod
     def get_by_email(cls, email):
@@ -132,8 +144,8 @@ class UserGmail(UserBase):
                                       params={"startHistoryId": self.gmail_history_id, "historyTypes": "MESSAGE_ADDED"})
         # nextPageToken
         res = res.json()
-        print("hisId",self.gmail_history_id)
-        print("history list",res)
+        print("hisId", self.gmail_history_id)
+        print("history list", res)
         if "history" not in res:
             return []
         message_list = []  # [{"id":"","threadId":""},...]
@@ -282,12 +294,17 @@ class UserProspects(UserBase):
 
 
 class User(UserGmail, UserCampaign, UserProspects):
+
+    def __post_init__(self):
+        self.keyword_init()
+
     def user_info(self):
         return {"_id": self._id,
                 "email": self.email,
                 "first_name": self.first_name,
                 "last_name": self.last_name,
                 "gmail_oauthed": self.gmail_oauthed}
+
     class Meta:
         # This model will be used in the connection "user-db"
         # TODO another gmail index
