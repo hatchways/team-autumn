@@ -118,6 +118,7 @@ const EnhancedDataTable = ({
   const history = useHistory();
 
   const rows = data.map((datum) => createData(datum));
+  console.log(rows);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';

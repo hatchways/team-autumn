@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -84,8 +84,8 @@ const CampaignDrawer = () => (
     <ListSelect
       ariaLabel="campaign select options"
       listItemText={['SUMMARY', 'PROSPECTS']}
-      listHeader="Header"
-      listType="Header"
+      listHeader="Select View"
+      listType="Select View"
       isBold
     />
   </div>

@@ -183,3 +183,58 @@ export const utilStyles = makeStyles(() => ({
     justifyContent: 'center',
   },
 }));
+export const cardStyles = makeStyles({
+  root: {
+    minHeight: 125,
+    maxWidth: 225,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textTransform: 'capitalize',
+  },
+});
+
+export const campaignStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(4),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(3),
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
+  sectionHeading: {
+    alignSelf: 'baseline',
+    margin: theme.spacing(1),
+  },
+}));
+
+export const tabNavStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 0.2,
+    backgroundColor: theme.palette.background.paper,
+    minHeight: 64,
+  },
+  tabLink: {
+    textTransform: 'none',
+    fontWeight: 700,
+    '&[aria-selected="true"] > span': {
+      color: theme.palette.primary.light,
+    },
+    paddingTop: 16,
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
+  topIndicator: {
+    top: 0,
+    height: 4,
+    backgroundColor: theme.palette.primary.light,
+  },
+}));

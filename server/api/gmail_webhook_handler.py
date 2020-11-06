@@ -4,7 +4,7 @@ from flask import jsonify, request, Blueprint, Response, session, url_for, redir
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from db.model import User, Step
 from api.util import *
-from addon import redis,sio
+from addon import redis, sio
 from flask_socketio import emit
 
 gmail_webhook_handler = Blueprint('gmail_webhook_handler', __name__)
@@ -24,7 +24,7 @@ def get_webhook():
     message_data_byte = base64.decodebytes(message["data"].encode())
     message_data = json.loads(message_data_byte)
 
-    print("Webhook",message_data)
+    print("Webhook", message_data)
 
     user_link_gmail = message_data["emailAddress"]
     history_id = message_data["historyId"]
@@ -37,6 +37,8 @@ def get_webhook():
     user.gmail_update_history_id(history_id)
     # [{"id": "", "threadId": ""}, ...]
     for each in emails:
+        if redis.get(each["id"]):
+            continue
         campaign = user.campaign_by_thread_id(each["threadId"])
         if not campaign:
             print("ThreadId not in record")
@@ -49,6 +51,6 @@ def get_webhook():
         if room_id:
             room_id = room_id.decode()
             sio.emit("new_email_reply", {"campaign": str(campaign._id), "step_index": step_index, "prospect": prospect_id},
-                 room=room_id)
+                     room=room_id)
 
     return jsonify({}), 200

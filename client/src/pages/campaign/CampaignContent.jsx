@@ -1,174 +1,256 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Button, Grid, Paper, Card, CardContent, Container, Typography } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import socketIOClient from 'socket.io-client';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import Snackbar from '@material-ui/core/Snackbar';
 
-import RichTextEditorPopup from '../../components/RichTextEditorPopup';
-import UserContext from '../../contexts/UserContext';
+import { buttonStyles, cardStyles, campaignStyles } from '../../assets/styles';
+import Alert from '../../components/Alert';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    marginTop: theme.spacing(12),
-  },
-  paper: {
-    padding: theme.spacing(10),
-    width: '60vw',
-    display: 'flex',
-    justifyContent: 'space-between',
-    color: theme.palette.text.secondary,
-  },
-  stats: {
-    marginBottom: theme.spacing(12),
-  },
-  title: {
-    fontSize: 22,
-  },
-  body: {
-    fontSize: 40,
-  },
-  secondaryButton: {
-    padding: '1em',
-    color: 'black',
-    fontWeight: 'bold',
-  },
-  cardContainer: {
-    marginBottom: theme.spacing(12),
-  },
-}));
+const ENDPOINT = 'http://localhost:3000';
 
-const campaign = {
-  id: 0,
-  title: 'Nature interested prospects',
-  steps: [
-    {
-      id: 0,
-      subject: 'Showing you around',
-      content: 'Sample email. I am going to be edited in a rich text editor.',
-      type: 'New thread',
-      sent: 146,
-      stats: [
-        { name: 'Opened', number: '36%' },
-        { name: 'Clicked', number: '146%' },
-        { name: 'Replied', number: '2%' },
-      ],
-      thread: [
-        {
-          id: 0,
-          subject: "You didn't respond to my first email",
-          content: 'I am just checking in...',
-          type: 'Follow up',
-          sent: 34,
-          opened: '35%',
-          clicked: '16%',
-          replied: '6%',
-          thread: [],
-        },
-      ],
-    },
-  ],
-  stats: [
-    { id: 0, name: 'Contacted', number: 146 },
-    { id: 1, name: 'Reached', number: 145 },
-    { id: 2, name: 'Opened', number: 52 },
-    { id: 3, name: 'Replied', number: 3 },
-  ],
-};
-
-const StatsCard = ({ ...stat }) => {
-  const classes = useStyles();
-
+const StatCard = ({ stat }) => {
+  const classes = cardStyles();
   return (
-    <Card>
-      <CardContent
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Typography className={classes.title}>{stat.name}</Typography>
-        <Typography className={classes.body} color="primary">
-          {stat.number}
+    <Card className={classes.root}>
+      <CardContent>
+        <Typography className={classes.title} color="textSecondary" gutterBottom>
+          {stat.name}
+        </Typography>
+        <Typography variant="h5" component="h2">
+          {stat.value}
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          {stat.name !== 'prospects' ? `(${stat.percent} %)` : ''}
         </Typography>
       </CardContent>
     </Card>
   );
 };
 
+const StepCard = ({ step, index }) => {
+  const classes = cardStyles();
+  return (
+    <Card style={{ width: '100%' }}>
+      <CardContent>
+        <Grid container direction="row">
+          <Grid item xs={2}>
+            <MailOutlineIcon color="primary" fontSize="large" />
+          </Grid>
+          <Grid item xs={3}>
+            <Typography className={classes.title} color="textSecondary">
+              {step.subject}
+            </Typography>
+          </Grid>
+          <Grid item xs={7}>
+            <Typography className={classes.title} color="textSecondary">
+              {`Prospects: ${step.prospects?.length || 0}`}
+            </Typography>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
+  );
+};
+
 const CampaignContent = () => {
-  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const [currentCampaign, setCurrentCampaign] = useState();
+  const [socketResponse, setSocketResponse] = useState('');
+  const [message, setMessage] = useState({ type: '', text: '' });
+  const [open, setOpen] = useState(false);
 
-  const handleOpen = () => {
-    setOpen(true);
+  const pathSegments = location.pathname.split('/');
+  const campaignId = pathSegments[pathSegments.length - 1];
+
+  const history = useHistory();
+
+  const campaignClasses = campaignStyles();
+  const buttonClasses = buttonStyles();
+
+  useEffect(() => {
+    const socket = socketIOClient(ENDPOINT);
+
+    socket.on('sent_email_status', (data) => {
+      console.log(data);
+      setSocketResponse(data);
+      setMessage({ type: 'info', text: 'Email sent successfully' });
+      setOpen(true);
+    });
+    socket.on('new_email_reply', (data) => {
+      console.log(data);
+      setSocketResponse(data);
+      setMessage({ type: 'info', text: 'Prospect replied!' });
+      setOpen(true);
+    });
+    return () => {
+      socket.on('disconnect', () => console.log('disconnected'));
+    };
+  }, [setSocketResponse]);
+
+  useEffect(() => {
+    fetch('/user/campaign_by_id', {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ campaign_id: campaignId }),
+    })
+      .then((response) => response.json())
+      .then((d) => {
+        const campaignInfo = d.response;
+        setCurrentCampaign({
+          id: campaignInfo._id,
+          name: campaignInfo.name,
+          prospects: campaignInfo.prospects,
+          stats: {
+            prospects: campaignInfo.num_prospects,
+            sent: campaignInfo.num_reached,
+            replied: campaignInfo.num_reply,
+          },
+          steps: campaignInfo.steps,
+        });
+        setLoading(false);
+      })
+      .catch((err) => {
+        setCurrentCampaign({ campaign: {}, stats: {} });
+        setLoading(false);
+      });
+  }, [location.pathname, campaignId]);
+
+  const transformStats = (stats) =>
+    Object.entries(stats).map((stat) => ({
+      name: stat[0],
+      value: stat[1],
+      percent: ((100 * stat[1]) / stats.prospects).toFixed(2),
+    }));
+
+  const handleAddProspectsToStep = (stepIndex) => {
+    const prospectIds = currentCampaign.steps[stepIndex].prospects || [];
+    if (prospectIds.length > 0) {
+      // setMessage({ type: 'warning', text: 'Prospects have already been added to this step' });
+      console.log('nope');
+    } else {
+      setLoading(true);
+      fetch(`/campaign/${currentCampaign.id}/prospects_auto_add_to_step`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ step_index: stepIndex }),
+      })
+        .then((response) => response.json())
+        .then(() => setLoading(false))
+        .catch(() => setLoading(false));
+    }
   };
 
-  const handleClose = () => {
-    setOpen(!open);
+  const handleSendEmail = (stepIndex) => {
+    fetch(`/campaign/${currentCampaign.id}/steps_send`, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ step_index: stepIndex }),
+    })
+      .then((response) => response.json())
+      .then(() => console.log('Sent'))
+      .catch((err) => console.log(err));
   };
-  const classes = useStyles();
+
+  if (!loading && currentCampaign) {
+    const steps = currentCampaign.steps || [];
+    const stats = currentCampaign.stats || [];
+    return (
+      <>
+        <Container maxWidth="lg" component="main">
+          <div className={campaignClasses.paper}>
+            <Grid direction="column" spacing={2} container>
+              <Grid item>
+                <Typography className={campaignClasses.sectionHeading} variant="h5" component="h2">
+                  {currentCampaign.name}
+                </Typography>
+              </Grid>
+              <Grid item container spacing={1}>
+                <Grid container item xs={12}>
+                  {transformStats(stats).map((stat) => (
+                    <Grid key={stat.name} item xs={4}>
+                      <StatCard stat={stat} />
+                    </Grid>
+                  )) || ''}
+                </Grid>
+              </Grid>
+              <Grid item>
+                <Typography className={campaignClasses.sectionHeading} variant="h5" component="h2">
+                  Steps List
+                </Typography>
+              </Grid>
+              <Grid item>
+                {steps.map((step, i) => (
+                  <div key={`step-${i}`}>
+                    <StepCard step={step} index={i + 1} />
+                    <Grid container direction="row">
+                      <Grid item xs={3}>
+                        <Button
+                          className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
+                          onClick={() => handleAddProspectsToStep(i)}
+                        >
+                          Add Prospects
+                        </Button>
+                      </Grid>
+                      <Grid item xs={3}>
+                        {step.prospects?.length > 0 && (
+                          <Button
+                            className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
+                            onClick={() => handleSendEmail(i)}
+                          >
+                            Send Email
+                          </Button>
+                        )}
+                      </Grid>
+                    </Grid>
+                  </div>
+                ))}
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  className={`${buttonClasses.base} ${buttonClasses.extraWide}`}
+                  onClick={() => history.push(`/campaigns/${currentCampaign.id}/add_step`)}
+                >
+                  Add Step
+                </Button>
+              </Grid>
+            </Grid>
+          </div>
+        </Container>
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={() => setOpen(false)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        >
+          <Alert onClose={() => setOpen(false)} severity={message.type}>
+            {message.text}
+          </Alert>
+        </Snackbar>
+      </>
+    );
+  }
 
   return (
-    <Container maxWidth="lg" className={classes.root}>
-      <Grid container direction="column" spacing={3}>
-        <Grid container spacing={0} className={classes.stats}>
-          {campaign.stats.map((s, i) => (
-            <Grid key={`stat-card-${i}`} item xs={3}>
-              <StatsCard key={s.id} {...s} />
-            </Grid>
-          ))}
-        </Grid>
-
-        <Grid item xs={12} className={classes.stats}>
-          <Paper className={classes.paper}>
-            <div style={{ fontWeight: 'bold', fontSize: 40 }}>1</div>
-
-            <div style={{ fontSize: 22 }}>{campaign.title}</div>
-
-            <div style={{ display: 'flex' }}>
-              {campaign.steps[0].stats.map((s, i) => (
-                <div
-                  key={`stat-${i}`}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginLeft: '2em',
-                  }}
-                >
-                  <Typography className={classes.title}>{s.name}</Typography>
-                  <Typography className={classes.body} color="primary">
-                    {s.number}
-                  </Typography>
-                </div>
-              ))}
-            </div>
-          </Paper>
-        </Grid>
-
-        <Grid item>
-          <div style={{ width: '25%', margin: '1em' }}>
-            <Button
-              fullWidth
-              className={classes.secondaryButton}
-              variant="outlined"
-              color="primary"
-              onClick={handleOpen}
-            >
-              Add step
-            </Button>
-          </div>
-        </Grid>
-        {/* <RichTextEditorPopup
-          title="Step 1"
-          content={campaign.steps[0].content}
-          setOpen={setOpen}
-          open={open}
-          onClose={handleClose}
-        /> */}
-      </Grid>
-    </Container>
+    <Backdrop className={campaignClasses.backdrop} open={loading}>
+      <CircularProgress color="inherit" />
+    </Backdrop>
   );
 };
 

@@ -68,6 +68,20 @@ class Prospect(MongoModel):
         ignore_unknown_fields = True
 
 
+class StepProspect(Prospect):
+    prospect = fields.ReferenceField('Prospect')
+    step = fields.ReferenceField('Step')
+    status = fields.CharField()
+
+    def to_dict(self):
+        return self.to_son().to_dict()
+
+    class Meta:
+        # This model will be used in the connection "user-db"
+        connection_alias = 'user-db'
+        ignore_unknown_fields = True
+
+
 class Step(MongoModel):
     email = fields.CharField()  # =Template
     # =Title;Subject is only there for the first step in the campaign
@@ -103,7 +117,8 @@ class Campaign(MongoModel):
         num_reached = 0
         num_reply = 0
         if len(self.steps):
-            succ_status = [i for i in self.steps[-1].prospects_email_status.values() if i != -1]
+            succ_status = [
+                i for i in self.steps[-1].prospects_email_status.values() if i != -1]
             num_reached = len(succ_status)
             num_reply = succ_status.count(2)
         stat = {
@@ -126,12 +141,23 @@ class Campaign(MongoModel):
         Args:
             content: email content
             subject: email subject
+            prospects: reference to prospects who have received previous step
 
         Returns:
             Step: Step instance
         """
-        self.steps.append(Step(email=content, subject=subject))
+        prospect_refs = [ObjectId(prospect_id) for prospect_id in prospect_ids]
+        step = Step(email=content, subject=subject)
+        step.save()
+        self.steps.append(step)
         self.save()
+
+        step_prospects = []
+        for ref in prospect_refs:
+            step_prospects.append(StepProspect(
+                prospect=ref, step=self.steps[-1], status="contacted"))
+        # StepProspect.objects.bulk_create([StepProspect()])
+
         return self.steps[-1]
 
     def steps_edit(self, step_index, content, subject):
@@ -185,7 +211,8 @@ class Campaign(MongoModel):
         self.save()
 
     def steps_send(self, step_index):
-        result = rq.send_gmail(str(self.creator._id), str(self._id), step_index)
+        result = rq.send_gmail(str(self.creator._id),
+                               str(self._id), step_index)
         return
 
     def steps_email_replace_keyword(self, email_text, prospect):
@@ -282,6 +309,7 @@ class User(MongoModel):
         return res.text
 
     # update_credentials
+
     def gmail_update_credentials(self, cred):
         if self.gmail_oauth_info and self.gmail_oauth_info.token == cred.token:
             return
@@ -341,11 +369,29 @@ class User(MongoModel):
         Raises:
             DoesNotExist
         """
+
         if isinstance(campaign_id, str):
             campaign_id = ObjectId(campaign_id)
         return Campaign.objects.get({"$and": [{"_id": campaign_id}, {"creator": self._id}]})
 
-    @property
+        campaign = Campaign.objects.get(
+            {"$and": [{"_id": ObjectId(campaign_id)}, {"creator": self._id}]})
+
+        prospect_ids = []
+        for key in campaign.to_dict().keys():
+            if key == 'prospects':
+                prospect_ids = campaign.to_dict()['prospects']
+
+        prospects = Prospect.objects.raw(
+            {"_id": {"$in": [prosp_id for prosp_id in prospect_ids]}})
+
+        prospects_list = list(prospects)
+
+        prospects_count = len(prospects_list)
+
+        return {'campaign': campaign, 'stats': {'num_prospects': prospects_count, 'contacted': 121, 'reached': 120, 'replied': 4}}
+
+    @ property
     def campaigns(self):
         with no_auto_dereference(Campaign):
             return list(Campaign.objects.raw({"creator": self._id}))

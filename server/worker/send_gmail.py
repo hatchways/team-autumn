@@ -74,6 +74,7 @@ def send_gmail_worker(user_id, campaign_id, step_index):
             status_update(each, fail_text, -1)
         else:
             res_json = res.json()
+            r.set(res_json["id"], "e")
             update_thread_id(each, res_json["threadId"])
             each.last_contacted = datetime.now()
             each.save()

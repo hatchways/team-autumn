@@ -64,7 +64,8 @@ class Campaign(MongoModel):
         num_reached = 0
         num_reply = 0
         if len(self.steps):
-            succ_status = [i for i in self.steps[-1].prospects_email_status.values() if i != -1]
+            succ_status = [
+                i for i in self.steps[-1].prospects_email_status.values() if i != -1]
             num_reached = len(succ_status)
             num_reply = succ_status.count(2)
         stat = {
@@ -184,7 +185,8 @@ class Campaign(MongoModel):
 
     def steps_send(self, step_index):
         self.creator.gmail_start_webhook()
-        result = rq.send_gmail(str(self.creator._id), str(self._id), step_index)
+        result = rq.send_gmail(str(self.creator._id),
+                               str(self._id), step_index)
         return
 
     def steps_email_replace_keyword(self, email_text, prospect):

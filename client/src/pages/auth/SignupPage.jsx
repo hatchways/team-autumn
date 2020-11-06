@@ -41,10 +41,10 @@ const SignupPage = () => {
 
         setSubmitting(false);
         console.log(userData);
-        let path = '/campaigns';
-        if (userData.hasOwnProperty("gmail_oauthed") && !userData.gmail_oauthed){
-          path = '/gmail_auth';
-        }
+        const path = '/campaigns';
+        // if (userData.hasOwnProperty('gmail_oauthed') && !userData.gmail_oauthed) {
+        //   path = '/gmail_auth';
+        // }
         history.push(path);
       } else {
         // email is already in use

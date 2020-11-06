@@ -4,6 +4,8 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { Link, useHistory } from 'react-router-dom';
 
+import { tabNavStyles } from '../assets/styles';
+
 const LinkTab = (props) => {
   const history = useHistory();
   const { to } = props;
@@ -20,30 +22,8 @@ const LinkTab = (props) => {
   );
 };
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 0.2,
-    backgroundColor: theme.palette.background.paper,
-    minHeight: 64,
-  },
-  tabLink: {
-    textTransform: 'none',
-    fontWeight: 700,
-    '&[aria-selected="true"] > span': {
-      color: theme.palette.primary.light,
-    },
-    paddingTop: 16,
-    paddingLeft: 0,
-    paddingRight: 0,
-  },
-  topIndicator: {
-    top: 0,
-    height: 4,
-  },
-}));
-
 const TabNav = ({ tabs, initialState }) => {
-  const classes = useStyles();
+  const classes = tabNavStyles();
   const [value, setValue] = useState(initialState);
 
   const handleChange = (event, newValue) => {

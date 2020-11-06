@@ -8,6 +8,7 @@ import { buttonStyles, tableStyles } from '../../assets/styles';
 import UserContext from '../../contexts/UserContext';
 import MessageContext from '../../contexts/MessageContext';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import EnhancedDataTable from '../../components/EnhancedDataTable';
 
 const headCells = [
   { id: '_id', numeric: false, disablePadding: false, label: '_id' },
@@ -20,19 +21,19 @@ const headCells = [
 const ProspectsContent = () => {
   const buttonClasses = buttonStyles();
   const tableClasses = tableStyles();
+  const history = useHistory();
 
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const { filterContext, itemContext, campaignContext } = useContext(FilterContext);
-  const [message, setMessage] = useContext(MessageContext);
 
   const [filter] = filterContext;
   const [selectedItems, setSelectedItems] = itemContext;
   const [selectedCampaign] = campaignContext;
 
-  const history = useHistory();
+  const [message, setMessage] = useContext(MessageContext);
 
   useEffect(() => {
     const { text } = message;
@@ -59,9 +60,11 @@ const ProspectsContent = () => {
           if (prospects.length > 0) {
             setData(prospects);
             setLoading(false);
+          } else {
+            setLoading(false);
           }
         })
-        .catch((err) => {
+        .catch(() => {
           setMessage({ type: 'error', text: `There was a problem fetching prospects` });
           setLoading(false);
         });
@@ -79,7 +82,8 @@ const ProspectsContent = () => {
     setMessage('');
   };
 
-  const handleUploadProspects = () => {
+  const handleAddProspectsToCampaign = () => {
+    setLoading(true);
     if (selectedCampaign && selectedItems.length > 0) {
       fetch(`/campaign/${selectedCampaign._id}/prospects_add`, {
         method: 'POST',
@@ -107,9 +111,11 @@ const ProspectsContent = () => {
             });
           }
           setSelectedItems([]);
+          setLoading(false);
         })
         .catch((err) => {
           setMessage({ type: 'error', text: `There was a problem uplading the prospects: ${err}` });
+          setLoading(false);
         });
     } else if (!selectedCampaign) {
       setMessage({ type: 'warning', text: 'You must select a campaign first' });
@@ -130,7 +136,7 @@ const ProspectsContent = () => {
   const actionSlots = [
     <Button
       className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
-      onClick={handleUploadProspects}
+      onClick={handleAddProspectsToCampaign}
     >
       Add to Campaign
     </Button>,
@@ -143,21 +149,21 @@ const ProspectsContent = () => {
     </Button>,
   ];
 
-  if (loading) {
-    return <LoadingSpinner />;
+  if (!loading) {
+    return (
+      <ContentTemplate
+        pageTitle="Prospects"
+        data={filteredData}
+        actionSlots={actionSlots}
+        content={<EnhancedDataTable {...tableProps} />}
+        snackbarOpen={open}
+        handleClose={handleClose}
+        message={message}
+      />
+    );
   }
 
-  return (
-    <ContentTemplate
-      pageTitle="Prospects"
-      data={data}
-      tableProps={tableProps}
-      actionSlots={actionSlots}
-      snackbarOpen={open}
-      handleClose={handleClose}
-      message={message}
-    />
-  );
+  return <LoadingSpinner />;
 };
 
 export default ProspectsContent;

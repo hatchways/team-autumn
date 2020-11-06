@@ -81,6 +81,8 @@ def campaign_entry(campaign_id, method_name):
     err, user_json = validate_json_input(
         request.get_json(), campaign_entry_allow_methods[method_name])
     if err:
+        print(request.get_json())
+        print(err)
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
 
     user = User.get_by_id(get_jwt_identity()["_id"])
