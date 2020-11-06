@@ -54,9 +54,14 @@ class CampaignHandlerTest(TestBase):
         _id = res.json["response"]["_id"]
         res = self.api.post("/user/campaigns_list", json={})
         print(res.json)
-        res = self.api.post("/campaign/{}/steps_add".format(_id), json={"content": "TEXT", "subject": "Title"})
+        res = self.api.post("/campaign/{}/steps_add".format(_id), json={"content": "TEXT {my_name} {campaign_name}", "subject": "Title"})
         print("Step add",res.json)
-        self.assertTrue(res.json["response"]["email"] == "TEXT")
+        u = User.get_by_email(fake_json["email"])
+        class fake_prospect:
+            keyword_dict={}
+        print(u.campaign_by_id(_id).steps_email_replace_keyword("TEXT {my_name} {campaign_name}",fake_prospect))
+
+        self.assertTrue(res.json["response"]["email"].startswith("TEXT"))
         res = self.api.post("/campaign/{}/steps_edit".format(_id),
                             json={"step_index": 0, "content": "TEXT2", "subject": "Title2"})
         self.assertTrue(res.json["response"]["email"] == "TEXT2")

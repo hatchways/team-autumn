@@ -1,7 +1,8 @@
 from datetime import datetime
 import pymongo
 from bson import ObjectId
-from pymodm import MongoModel, fields
+from pymodm import fields
+from ._mongo_model import MongoModel
 import pymodm.errors
 from google.auth.transport.requests import AuthorizedSession
 from google.oauth2.credentials import Credentials
@@ -24,6 +25,18 @@ class Prospect(MongoModel):
     keyword_dict = fields.DictField()
     thread_id = fields.DictField()
 
+    def keyword_init(self):
+        self.keyword_dict.update({
+            "prospect_name": "{} {}".format(self.first_name, self.last_name)
+        })
+
+    def __post_init__(self):
+        self.keyword_init()
+
+    def keyword_add(self, new_kw):
+        self.keyword_dict.update(new_kw)
+        self.save()
+
     @classmethod
     def find_by_id(cls, _id):
         """
@@ -41,6 +54,7 @@ class Prospect(MongoModel):
             return prospect
         except:
             return None
+
     @classmethod
     def get_by_owner(cls, _id):
         if isinstance(_id, str):

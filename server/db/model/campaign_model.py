@@ -1,7 +1,8 @@
 from datetime import datetime
 import pymongo
 from bson import ObjectId
-from pymodm import MongoModel, fields
+from pymodm import fields
+from ._mongo_model import MongoModel
 import pymodm.errors
 from google.auth.transport.requests import AuthorizedSession
 from google.oauth2.credentials import Credentials
@@ -45,6 +46,18 @@ class Campaign(MongoModel):
     keyword_dict = fields.DictField()
     # {thread_id:(step_index,prospect_id)}
     prospects_thread_id = fields.DictField()
+
+    def keyword_init(self):
+        self.keyword_dict.update({
+            "campaign_name": self.name
+        })
+
+    def __post_init__(self):
+        self.keyword_init()
+
+    def keyword_add(self, new_kw):
+        self.keyword_dict.update(new_kw)
+        self.save()
 
     @property
     def stats(self):
