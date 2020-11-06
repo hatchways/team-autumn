@@ -16,17 +16,20 @@ import { StepProvider } from '../../contexts/StepContext';
 const CampaignsPage = () => {
   const [open, setOpen] = useState(false);
   const [user] = useContext(UserContext);
-
-  useEffect(() => {
-    if (user.hasOwnProperty('gmail_oauthed') && !user.gmail_oauthed) {
-      const timeout = setTimeout(() => {
-        setOpen(true);
-      }, 1500);
-      return () => {
-        clearTimeout(timeout);
-      };
-    }
-  }, [user]);
+  console.log(user);
+  // useEffect(() => {
+  //   if (
+  //     !user.hasOwnProperty('gmail_oauthed') ||
+  //     (user.hasOwnProperty('gmail_oauthed') && !user.gmail_oauthed)
+  //   ) {
+  //     const timeout = setTimeout(() => {
+  //       setOpen(true);
+  //     }, 1500);
+  //     return () => {
+  //       clearTimeout(timeout);
+  //     };
+  //   }
+  // }, [user]);
 
   const location = useLocation();
   const pathSegments = location.pathname.split('/');
@@ -42,7 +45,7 @@ const CampaignsPage = () => {
           ) : (
             <DrawerAndContent drawer={<CampaignsDrawer />} content={<CampaignsContent />} />
           )}
-          <GoogleAuthPopup open={open} />
+          <GoogleAuthPopup open={open} setOpen={setOpen} />
         </StepProvider>
       </MessageProvider>
     </FilterProvider>

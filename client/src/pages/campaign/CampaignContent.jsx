@@ -86,6 +86,12 @@ const CampaignContent = () => {
       setMessage({ type: 'info', text: 'Email sent successfully' });
       setOpen(true);
     });
+    socket.on('new_email_reply', (data) => {
+      console.log(data);
+      setSocketResponse(data);
+      setMessage({ type: 'info', text: 'Prospect replied!' });
+      setOpen(true);
+    });
     return () => {
       socket.on('disconnect', () => console.log('disconnected'));
     };
@@ -108,7 +114,7 @@ const CampaignContent = () => {
           prospects: campaignInfo.prospects,
           stats: {
             prospects: campaignInfo.num_prospects,
-            reached: campaignInfo.num_reached,
+            sent: campaignInfo.num_reached,
             replied: campaignInfo.num_reply,
           },
           steps: campaignInfo.steps,

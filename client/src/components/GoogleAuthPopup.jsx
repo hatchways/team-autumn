@@ -27,9 +27,10 @@ const GoogleButtonDetail = (
   />
 );
 
-const GoogleAuthPopup = ({ open }) => (
+const GoogleAuthPopup = ({ open, setOpen }) => (
   <DialogPopup
     open={open}
+    setOpen={setOpen}
     actionItem={GoogleButtonDetail}
     title="Authenticate with Google"
     bodyText="Authenticate with Google to access all of Mailsender's features"

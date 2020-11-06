@@ -19,7 +19,7 @@ const StepEditor = ({ setVariables, setMessage }) => {
     const bodyString = parsedContents.blocks
       .map((block) => {
         if (block.text === '') {
-          return block.text.replace('', /n/);
+          return block.text.replace('', '\n');
         }
         return block.text;
       })
