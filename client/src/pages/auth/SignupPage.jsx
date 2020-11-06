@@ -10,7 +10,7 @@ import { formStyles } from '../../assets/styles';
 const SignupPage = () => {
   const [user, setUser] = useContext(UserContext);
   const classes = formStyles();
-  const history = useHistory;
+  const history = useHistory();
 
   const formikHandleSubmit = async (values, setSubmitting, setFieldError) => {
     try {
@@ -40,7 +40,12 @@ const SignupPage = () => {
         });
 
         setSubmitting(false);
-        history.push('/campaigns');
+        console.log(userData);
+        let path = '/campaigns';
+        if (userData.hasOwnProperty("gmail_oauthed") && !userData.gmail_oauthed){
+          path = '/gmail_auth';
+        }
+        history.push(path);
       } else {
         // email is already in use
         setFieldError('email', 'Email is already in use');

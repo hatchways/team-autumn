@@ -282,6 +282,12 @@ class UserProspects(UserBase):
 
 
 class User(UserGmail, UserCampaign, UserProspects):
+    def user_info(self):
+        return {"_id": self._id,
+                "email": self.email,
+                "first_name": self.first_name,
+                "last_name": self.last_name,
+                "gmail_oauthed": self.gmail_oauthed}
     class Meta:
         # This model will be used in the connection "user-db"
         # TODO another gmail index

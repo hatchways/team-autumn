@@ -34,7 +34,12 @@ const LoginPage = () => {
         });
 
         setSubmitting(false);
-        history.push('/campaigns');
+        console.log(userData);
+        let path = '/campaigns';
+        if (userData.hasOwnProperty("gmail_oauthed") && !userData.gmail_oauthed){
+          path = '/gmail_auth';
+        }
+        history.push(path);
       } else {
         // username / password mismatch
         setFieldError('email', 'Invalid email/password combo');
