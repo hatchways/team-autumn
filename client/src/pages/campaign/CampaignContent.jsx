@@ -8,8 +8,8 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import MailOutlineIcon from '@material-ui/icons/MailOutline';
 
-// import RichTextEditorPopup from '../../components/RichTextEditorPopup';
 import { buttonStyles, cardStyles, campaignStyles } from '../../assets/styles';
 
 const StatCard = ({ stat }) => {
@@ -26,6 +26,36 @@ const StatCard = ({ stat }) => {
         <Typography className={classes.pos} color="textSecondary">
           {stat.name !== 'prospects' ? `(${stat.percent} %)` : ''}
         </Typography>
+      </CardContent>
+    </Card>
+  );
+};
+
+const StepCard = ({ step, index }) => {
+  const prospectStats = [
+    {
+      prospects: step.prospects?.length || 0,
+    },
+  ];
+  const classes = cardStyles();
+  return (
+    <Card style={{ width: '100%' }}>
+      <CardContent>
+        <Grid container direction="row">
+          <Grid item xs={2}>
+            <MailOutlineIcon color="primary" fontSize="large" />
+          </Grid>
+          <Grid item xs={3}>
+            <Typography className={classes.title} color="textSecondary">
+              {step.subject}
+            </Typography>
+          </Grid>
+          <Grid item xs={7}>
+            <Typography className={classes.title} color="textSecondary">
+              {`Prospects: ${step.prospects?.length || 0}`}
+            </Typography>
+          </Grid>
+        </Grid>
       </CardContent>
     </Card>
   );
@@ -65,6 +95,7 @@ const CampaignContent = () => {
             reached: campaignInfo.num_reached,
             replied: campaignInfo.num_reply,
           },
+          steps: campaignInfo.steps,
         });
         setLoading(false);
       })
@@ -81,6 +112,25 @@ const CampaignContent = () => {
       percent: ((100 * stat[1]) / stats.prospects).toFixed(2),
     }));
 
+  const handleAddProspectsToStep = (stepIndex) => {
+    const prospectIds = currentCampaign.steps[stepIndex].prospects || [];
+    if (prospectIds.length > 0) {
+      // setMessage({ type: 'warning', text: 'Prospects have already been added to this step' });
+      console.log('nope');
+    } else {
+      fetch(`/campaign/${currentCampaign.id}/prospects_add_to_step`, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prospect_ids: currentCampaign.prospects, step_index: stepIndex }),
+      })
+        .then((response) => response.json())
+        .then((r) => console.log(r))
+        .catch((err) => console.log(err));
+    }
+  };
+
   if (!loading) {
     return (
       <Container maxWidth="lg" component="main">
@@ -88,13 +138,13 @@ const CampaignContent = () => {
           <Grid direction="column" spacing={2} container>
             <Grid item>
               <Typography className={campaignClasses.sectionHeading} variant="h5" component="h2">
-                Campaign Summary
+                {currentCampaign.name}
               </Typography>
             </Grid>
             <Grid item container spacing={1}>
               <Grid container item xs={12}>
                 {transformStats(currentCampaign?.stats).map((stat) => (
-                  <Grid key={stat.name} item xs={3}>
+                  <Grid key={stat.name} item xs={4}>
                     <StatCard stat={stat} />
                   </Grid>
                 )) || ''}
@@ -106,8 +156,33 @@ const CampaignContent = () => {
               </Typography>
             </Grid>
             <Grid item>
+              {currentCampaign.steps.map((step, i) => (
+                <>
+                  <StepCard key={step.subject} step={step} index={i + 1} />
+                  <Grid container direction="row">
+                    <Grid item xs={3}>
+                      <Button
+                        className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
+                        onClick={() => handleAddProspectsToStep(i)}
+                      >
+                        Add Prospects
+                      </Button>
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Button
+                        className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
+                      >
+                        Send Email
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </>
+              ))}
+            </Grid>
+            <Grid item>
               <Button
-                className={`${buttonClasses.base} ${buttonClasses.action} ${buttonClasses.extraWide}`}
+                variant="outlined"
+                className={`${buttonClasses.base} ${buttonClasses.extraWide}`}
                 onClick={() => history.push(`/campaigns/${currentCampaign.id}/add_step`)}
               >
                 Add Step

@@ -11,7 +11,7 @@ import { buttonStyles } from '../../assets/styles';
 const AddStep = () => {
   const classes = buttonStyles();
 
-  const [data, setData] = useState();
+  const [data] = useState();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -40,7 +40,7 @@ const AddStep = () => {
         body: JSON.stringify({ content: variables.step.body, subject: variables.step.subject }),
       })
         .then((response) => response.json())
-        .then((r) => {
+        .then(() => {
           setSubmitting(false);
           setMessage({ type: 'success', text: 'Email successfully added!' });
           history.push(`/campaigns/${campaignId}`);
