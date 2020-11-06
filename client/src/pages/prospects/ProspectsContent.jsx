@@ -8,6 +8,7 @@ import { buttonStyles, tableStyles } from '../../assets/styles';
 import UserContext from '../../contexts/UserContext';
 import MessageContext from '../../contexts/MessageContext';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import EnhancedDataTable from '../../components/EnhancedDataTable';
 
 const headCells = [
   { id: '_id', numeric: false, disablePadding: false, label: '_id' },
@@ -148,21 +149,21 @@ const ProspectsContent = () => {
     </Button>,
   ];
 
-  if (loading) {
-    return <LoadingSpinner />;
+  if (!loading && data) {
+    return (
+      <ContentTemplate
+        pageTitle="Prospects"
+        data={filteredData}
+        actionSlots={actionSlots}
+        content={<EnhancedDataTable {...tableProps} />}
+        snackbarOpen={open}
+        handleClose={handleClose}
+        message={message}
+      />
+    );
   }
 
-  return (
-    <ContentTemplate
-      pageTitle="Prospects"
-      data={data}
-      tableProps={tableProps}
-      actionSlots={actionSlots}
-      snackbarOpen={open}
-      handleClose={handleClose}
-      message={message}
-    />
-  );
+  return <LoadingSpinner />;
 };
 
 export default ProspectsContent;

@@ -46,7 +46,7 @@ def user_entry(method_name):
 
 
 campaign_entry_allow_methods = {
-    "steps_add": new_schema("content", "subject", prospect_ids=get_schema("array")),
+    "steps_add": new_schema("content", "subject"),
     "steps_edit": new_schema("content", "subject", step_index=get_schema("integer")),
     "steps_send": new_schema(step_index=get_schema("integer")),
     "prospects_add": new_schema(prospect_ids=get_schema("array")),
@@ -81,6 +81,8 @@ def campaign_entry(campaign_id, method_name):
     err, user_json = validate_json_input(
         request.get_json(), campaign_entry_allow_methods[method_name])
     if err:
+        print(request.get_json())
+        print(err)
         return fail_response(error_code.EMPTY_REQUIRED_FIELD), 400
 
     user = User.get_by_id(get_jwt_identity()["_id"])

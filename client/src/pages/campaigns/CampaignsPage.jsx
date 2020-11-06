@@ -9,6 +9,7 @@ import CampaignContent from '../campaign/CampaignContent';
 import AddStep from '../campaign/AddStep';
 import { FilterProvider } from '../../contexts/FilterContext';
 import { MessageProvider } from '../../contexts/MessageContext';
+import { StepProvider } from '../../contexts/StepContext';
 
 const CampaignsPage = () => {
   const location = useLocation();
@@ -16,14 +17,16 @@ const CampaignsPage = () => {
   return (
     <FilterProvider>
       <MessageProvider>
-        {pathSegments.length > 2 ? (
-          <DrawerAndContent
-            drawer={<CampaignDrawer />}
-            content={pathSegments.includes('add_step') ? <AddStep /> : <CampaignContent />}
-          />
-        ) : (
-          <DrawerAndContent drawer={<CampaignsDrawer />} content={<CampaignsContent />} />
-        )}
+        <StepProvider>
+          {pathSegments.length > 2 ? (
+            <DrawerAndContent
+              drawer={<CampaignDrawer />}
+              content={pathSegments.includes('add_step') ? <AddStep /> : <CampaignContent />}
+            />
+          ) : (
+            <DrawerAndContent drawer={<CampaignsDrawer />} content={<CampaignsContent />} />
+          )}
+        </StepProvider>
       </MessageProvider>
     </FilterProvider>
   );

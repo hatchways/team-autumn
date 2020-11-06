@@ -3,7 +3,6 @@ import Button from '@material-ui/core/Button';
 
 import ContentTemplate from '../../components/ContentTemplate';
 import EnhancedDataTable from '../../components/EnhancedDataTable';
-import CampaignsAdd from './CampaignsAdd';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import MessageContext from '../../contexts/MessageContext';
 import FilterContext from '../../contexts/FilterContext';
