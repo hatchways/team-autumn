@@ -55,6 +55,7 @@ class CampaignHandlerTest(TestBase):
         res = self.api.post("/user/campaigns_list", json={})
         print(res.json)
         res = self.api.post("/campaign/{}/steps_add".format(_id), json={"content": "TEXT", "subject": "Title"})
+        print("Step add",res.json)
         self.assertTrue(res.json["response"]["email"] == "TEXT")
         res = self.api.post("/campaign/{}/steps_edit".format(_id),
                             json={"step_index": 0, "content": "TEXT2", "subject": "Title2"})
